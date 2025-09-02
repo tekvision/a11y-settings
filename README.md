@@ -20,6 +20,7 @@ Many websites do not meet accessibility standards, such as minimum color contras
    ```sh
    git clone https://github.com/yourusername/a11y-settings.git
 2. Include the tool in your web page:
+    ```sh
     <script type="module" src="path/to/ada_overlay.js"><script>
     <link rel="stylesheet" href="path/to/ada_overlay.css"/>
 
