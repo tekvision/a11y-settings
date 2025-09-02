@@ -1,0 +1,42 @@
+.yellowOnBlack
+{
+    color:yellow !important;
+    background-color: black !important;
+}
+.blackOnYellow
+{
+    color: black !important;
+    background-color: yellow !important;
+}
+.whiteOnBlack
+{
+    color: white !important;
+    background-color: black !important;
+}
+.blackOnWhite
+{
+    color: black !important;
+    background-color: white !important;
+}
+
+.yellowOnBlack::-webkit-input-placeholder {
+    color: yellow !important;
+    background-color: black !important;
+}
+.blackOnYellow::-webkit-input-placeholder {
+    color: black !important;
+    background-color: yellow !important;
+}
+
+.whiteOnBlack::-webkit-input-placeholder {
+    color: white !important;
+    background-color: black !important;
+}
+
+.blackOnWhite::-webkit-input-placeholder {
+    color: black !important;
+    background-color: white !important;
+}
+.highlightLinks{
+    text-decoration: underline !important;
+}

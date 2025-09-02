@@ -1,0 +1,62 @@
+/*Font Size Adjustment*/
+.font12{
+    font-size: 12pt !important;
+}
+.font14{
+    font-size: 14pt !important;
+}
+.font16{
+    font-size: 16pt !important;
+}
+.font18{
+    font-size: 18pt !important;
+}
+.font20{
+    font-size: 20pt !important;
+}
+.font22{
+    font-size: 22pt !important;
+}
+.font24{
+    font-size: 24pt !important;
+}
+.font26{
+    font-size: 26pt !important;
+}
+.font28{
+    font-size: 28pt !important;
+}
+.font30{
+    font-size: 30pt !important;
+}
+
+/*Font Adjustment*/
+.fontArial{
+    font-family: "Arial" !important;
+}
+.fontCalibri{
+    font-family: "Calibri" !important;
+}
+.fontComicSans{
+    font-family: "Comic Sans" !important;
+}
+.fontVerdana{
+    font-family: "Verdana" !important;
+}
+.fontTahoma{
+    font-family: "Tahoma" !important;
+}
+.fontCenturyGothic{
+    font-family: "Century Gothic" !important;
+}
+
+/*Font Alignment*/
+.textLeft{
+    text-align: left !important;
+}
+.textRight{
+    text-align: right !important;
+}
+.textCenter{
+    text-align: center !important;
+}

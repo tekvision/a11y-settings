@@ -1,0 +1,16 @@
+.focusVisible-On_white{
+    outline: solid white 2px !important;
+}
+
+.focusVisible-On_black{
+    outline: solid black 2px !important;
+}
+
+.focusVisible-On_yellow
+{
+    outline: solid yellow 2px !important;
+}
+.focusVisible-overlay-default {
+    outline: solid 3px var(--foundation-primaryprimary-700) !important;
+    outline-offset: 1px;
+}

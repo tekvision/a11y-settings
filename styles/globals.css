@@ -1,0 +1,126 @@
+/*@import url("https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css");
+
+@import url("https://fonts.googleapis.com/css?family=Roboto:500,400|Poppins:400");
+@import url("https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css");*/
+
+/*Dropdown List*/
+/*@import url("https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css");
+@import url("https://fonts.googleapis.com/css?family=Roboto:400|Poppins:500");*/
+
+/*Revert Icon*/
+/*@import url("https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css");
+@import url("https://fonts.googleapis.com/css?family=Roboto:500");*/
+
+/** {
+  -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0px;
+  height: 100%;
+}*/
+/* a blue color as a generic focus style */
+/*button:focus-visible {
+  outline: 2px solid #4a90e2 !important;
+  outline: -webkit-focus-ring-color auto 5px !important;
+}
+a {
+  text-decoration: none;
+}*/
+
+
+/*Frame Global CSS*/
+
+/** {
+  -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0px;
+  height: 100%;
+}*/
+/* a blue color as a generic focus style */
+/*button:focus-visible {
+  outline: 2px solid #4a90e2 !important;
+  outline: -webkit-focus-ring-color auto 5px !important;
+}
+a {
+  text-decoration: none;
+}*/
+
+@font-face {
+  font-family: "Font Awesome 5 Pro-Regular";
+  src: url("https://anima-uploads.s3.amazonaws.com/5b59ac6041bb8600090b709d/Font Awesome 5 Pro-Regular-400.otf")
+    format("opentype");
+}
+
+@font-face {
+  font-family: "Font Awesome 6 Pro-Light";
+  src: url("https://anima-uploads.s3.amazonaws.com/projects/61adf7ad720a734683e5cac0/fonts/font-awesome-6-pro-light-300.otf")
+    format("opentype");
+}
+
+@font-face {
+  font-family: "Font Awesome 5 Pro-Solid";
+  src: url("https://anima-uploads.s3.amazonaws.com/5b59ac6041bb8600090b709d/Font Awesome 5 Pro-Solid-900.otf")
+    format("opentype");
+}
+
+@font-face {
+  font-family: "Font Awesome 6 Pro-Regular";
+  src: url("https://anima-uploads.s3.amazonaws.com/projects/6233c7bbfd3dbe835841607c/fonts/font-awesome-6-pro-regular-400.otf")
+    format("opentype");
+}
+
+@font-face {
+  font-family: "Font Awesome 6 Pro-Solid";
+  src: url("https://anima-uploads.s3.amazonaws.com/projects/604bac611956acf622fcb3ae/fonts/font-awesome-6-pro-solid-900.otf")
+    format("opentype");
+}
+
+/*Dropdown list*/
+
+/** {
+  -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0px;
+  height: 100%;
+}*/
+/* a blue color as a generic focus style */
+/*button:focus-visible {
+  outline: 2px solid #4a90e2 !important;
+  outline: -webkit-focus-ring-color auto 5px !important;
+}
+a {
+  text-decoration: none;
+}
+
+* {
+    -webkit-font-smoothing: antialiased;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0px;
+    height: 100%;
+}*/
+/* a blue color as a generic focus style */
+/*button:focus-visible {
+    outline: 2px solid #4a90e2 !important;
+    outline: -webkit-focus-ring-color auto 5px !important;
+}
+
+a {
+    text-decoration: none;
+}*/
+
+/*@font-face {
+    font-family: "Font Awesome 5 Pro-Regular";
+    src: url("https://anima-uploads.s3.amazonaws.com/5b59ac6041bb8600090b709d/Font Awesome 5 Pro-Regular-400.otf") format("opentype");
+}*/
