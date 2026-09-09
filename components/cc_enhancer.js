@@ -70,7 +70,7 @@ let handleColorStickiness = (colorOptions) => {
 }
 
 let handleColorChange = (colorCombination) => {
-    let allElements = document.querySelectorAll("body, body *:not(#ada-overlay-widget-container *):not(svg):not(svg *)");
+    let allElements = document.querySelectorAll("body, body *:not(#ada-overlay-widget-container *):not(svg):not(svg *):not([data-rht-toaster])");
     let overlayIcon = document.getElementById("overlay-icon");
     allElements.forEach((ele) => {
         if (isContrastEnabled) {
