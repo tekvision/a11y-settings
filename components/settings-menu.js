@@ -222,13 +222,15 @@ export let bindSettingsMenu = (overlayIcon, contextMenu) => {
                     case "Bottom-Left":
                         overlayIcon.removeAttribute("style");
                         overlayIcon.style.left = "0px";
-                        overlayIcon.style.top = "90%";
+                        overlayIcon.style.top = "auto";
+                        overlayIcon.style.bottom = "8px";
                         handlePositionChange(dialog, overlayIcon, "TopLeft", "b-r-Left");
                         setTimeout(() => { $(overlayIcon).focus(); }, 50); break;
                     case "Bottom-Right":
                         overlayIcon.removeAttribute("style");
                         overlayIcon.style.right = "0px";
-                        overlayIcon.style.top = "90%";
+                        overlayIcon.style.top = "auto";
+                        overlayIcon.style.bottom = "8px";
                         handlePositionChange(dialog, overlayIcon, "TopRight", "b-r-Right");
                         setTimeout(() => { $(overlayIcon).focus(); }, 50); break;
                     default: break;
