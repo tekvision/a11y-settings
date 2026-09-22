@@ -1032,35 +1032,42 @@
     display: none;
     position: absolute;
 }
-.context-menu li
+.context-menu li,
+.context-sub-menu li
 {
     width:100%;
     text-align:left;
     height:30px;
     padding: 5px;
     box-sizing: border-box;
-    border-radius: 5px;
+    border-radius: 4px;
 }
-.context-menu li a
+.context-menu li a,
+.context-sub-menu li a
 {
     display:inline-block;
     text-decoration:none;
     color:black;
     cursor:pointer;
-    outline: none;
 }
-.context-menu li:focus-within
+.context-menu li:focus-within,
+.context-sub-menu li:focus-within
 {
     background-color: lightgray;
-    outline:none !important;
-    border: none !important;
+  outline: solid 3px var(--foundation-neutraln400) !important;
+  outline-offset: 0;
+  border: none !important;
 }
-.context-menu li:hover {
+.context-menu li:hover,
+.context-sub-menu li:hover {
     background-color: lightgray;
     outline: none !important;
     border: none !important;
 }
-.context-menu li a:focus{
-    border: none !important; 
-    outline: none !important;
+.context-menu li a:focus,
+.context-menu li a:focus-visible,
+.context-sub-menu li a:focus,
+.context-sub-menu li a:focus-visible{
+  border: none !important;
+  outline: none !important;
 }
