@@ -1,48 +1,67 @@
 export let bindSettingsMenu = (overlayIcon, contextMenu) => {
     if (overlayIcon) {
+        let positionContextMenuBelowOverlay = () => {
+            const overlayRect = overlayIcon.getBoundingClientRect();
+            const menuWidth = contextMenu.offsetWidth;
+            const menuHeight = contextMenu.offsetHeight;
+            const spacing = 6;
+            const computedOverlayStyle = window.getComputedStyle(overlayIcon);
+            const isRightAnchored = computedOverlayStyle.right !== "auto" && computedOverlayStyle.left === "auto";
+
+            let menuLeft = isRightAnchored ? overlayRect.right - menuWidth : overlayRect.left;
+            let menuTop = overlayRect.bottom + spacing;
+
+            // Keep menu fully visible in viewport while anchoring it under the overlay icon.
+            if (menuLeft + menuWidth > window.innerWidth) {
+                menuLeft = window.innerWidth - menuWidth;
+            }
+            if (menuLeft < 0) {
+                menuLeft = 0;
+            }
+
+            if (menuTop + menuHeight > window.innerHeight) {
+                menuTop = overlayRect.top - menuHeight - spacing;
+            }
+            if (menuTop < 0) {
+                menuTop = 0;
+            }
+
+            contextMenu.style.left = menuLeft + "px";
+            contextMenu.style.top = menuTop + "px";
+        };
+
+        let repositionContextMenuIfOpen = () => {
+            if (contextMenu.style.display === "block") {
+                positionContextMenuBelowOverlay();
+
+                const expandedMoveMenu = $(".move-menu[aria-expanded='true']");
+                if (expandedMoveMenu.length > 0) {
+                    positionContextSubmenu(contextMenu, expandedMoveMenu.parent());
+                }
+            }
+        };
+
         overlayIcon.addEventListener("contextmenu", (e) => {
             e.preventDefault();
             showContextMenu(true, contextMenu, e);
-            /* Old Code
-            let currentXPos = e.pageX + contextMenu.offsetWidth > window.innerWidth ? window.innerWidth - contextMenu.offsetWidth : e.pageX;
-            let currentYPos = e.pageY + contextMenu.offsetHeight > window.innerHeight ? window.innerHeight - contextMenu.offsetHeight : e.pageY;
-            contextMenu.style.left = currentXPos + "px";
-            contextMenu.style.top = currentYPos + "px";
-            */
-
-            const mouseX = e.clientX;
-            const mouseY = e.clientY;
-
-            // Position the context menu
-            const menuWidth = contextMenu.offsetWidth;
-            const menuHeight = contextMenu.offsetHeight;
-
-            let menuX = mouseX;
-            let menuY = mouseY;
-
-            // Check if the menu goes beyond the right edge
-            if (mouseX + menuWidth > window.innerWidth) {
-                menuX = window.innerWidth - menuWidth;
-            }
-
-            // Check if the menu goes beyond the bottom edge
-            if (mouseY + menuHeight > window.innerHeight) {
-                menuY = window.innerHeight - menuHeight;
-            }
-
-            contextMenu.style.left = menuX + 'px';
-            contextMenu.style.top = menuY + 'px';
+            positionContextMenuBelowOverlay();
             $(".context-menu").children().first().children().focus();
         });
 
+        window.addEventListener("resize", repositionContextMenuIfOpen);
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener("resize", repositionContextMenuIfOpen);
+            window.visualViewport.addEventListener("scroll", repositionContextMenuIfOpen);
+        }
+
         document.addEventListener("click", (e) => {
-            if ($(document.activeElement).hasClass("move-menu") || $(e.target).children().hasClass("move-menu")) {
+            const clickedMoveTrigger = $(e.target).closest(".move-menu");
+            if (clickedMoveTrigger.length > 0) {
                 e.preventDefault();
-                rightArrowInteraction($(".move-menu"), e);
+                rightArrowInteraction(clickedMoveTrigger, e);
             }
             else {
-                showContextMenu(false, contextMenu);
-                $(".context-sub-menu").css("display", "none");
+                closeAllMenus(false);
             }
         });
 
@@ -72,15 +91,72 @@ export let bindSettingsMenu = (overlayIcon, contextMenu) => {
             positionContextSubmenu(contextMenu, $(this));
         });
 
+        const moveSettingItem = contextMenu.querySelector(".move-setting");
+        if (moveSettingItem) {
+            moveSettingItem.addEventListener("focusout", (e) => {
+                const nextFocusedElement = e.relatedTarget;
+                if (!nextFocusedElement || !moveSettingItem.contains(nextFocusedElement)) {
+                    closeMoveSubmenu(false);
+                }
+            });
+
+            // Fallback for browsers/focus paths where relatedTarget is unreliable:
+            // whenever focus lands outside Move group, collapse the submenu.
+            document.addEventListener("focusin", (e) => {
+                const target = e.target;
+                const isMoveSubMenuOpen = $("#move-menu").css("display") === "block";
+
+                if (!isMoveSubMenuOpen) {
+                    return;
+                }
+
+                if (target instanceof Node && !moveSettingItem.contains(target)) {
+                    closeMoveSubmenu(false);
+                }
+            }, true);
+        }
+
+        // If focus leaves the context menu entirely, close the whole menu.
+        document.addEventListener("focusin", (e) => {
+            const target = e.target;
+            const isContextMenuOpen = contextMenu.style.display === "block";
+
+            if (!isContextMenuOpen) {
+                return;
+            }
+
+            if (target instanceof Node && !contextMenu.contains(target)) {
+                closeAllMenus(false);
+            }
+        }, true);
+
         let showContextMenu = (show, contextMenu, e) => {
             show === true ? contextMenu.style.display = 'block' : contextMenu.style.display = 'none';
         }
 
+        function closeMoveSubmenu(returnFocusToTrigger) {
+            $(".context-sub-menu").css("display", "none");
+            $(".context-sub-menu").find("a").attr("tabindex", "-1");
+            $(".move-menu").attr("aria-expanded", "false");
+
+            if (returnFocusToTrigger) {
+                $(".move-menu").first().focus().attr("tabindex", "0");
+            }
+        }
+
+        function closeAllMenus(returnFocusToOverlayIcon) {
+            showContextMenu(false, contextMenu);
+            closeMoveSubmenu(false);
+            $(contextMenu).find("a").attr("tabindex", "-1");
+
+            if (returnFocusToOverlayIcon) {
+                $("#overlay-icon").focus();
+            }
+        }
+
         function leftArrowInteraction(elem) {
             if ($(elem).parent().parent().attr("class") === "context-sub-menu") {
-                $(".context-sub-menu").css("display", "none");
-                $(".context-sub-menu").find("a").attr("tabindex", "-1");
-                $(".context-sub-menu").prev().attr("aria-expanded", "false").focus();
+                closeMoveSubmenu(true);
             }
         }
 
@@ -122,15 +198,10 @@ export let bindSettingsMenu = (overlayIcon, contextMenu) => {
         function escKeyInteraction(elem, e) {
             e.preventDefault();
             if ($(elem).parent().parent().attr("class") === "context-sub-menu") {
-                $(".context-sub-menu").css("display", "none");
-                $(".context-sub-menu").find("a").attr("tabindex", "-1");
-                $(".context-sub-menu").prev().attr("aria-expanded", "false").focus();
+                closeMoveSubmenu(true);
             }
             else {
-                $(contextMenu).css("display", "none");
-                $("#move-menu").css("display", "none");
-                $(contextMenu).find("a").attr("tabindex", "-1");
-                $("#overlay-icon").focus();
+                closeAllMenus(true);
             }
         }
 
@@ -168,45 +239,41 @@ export let bindSettingsMenu = (overlayIcon, contextMenu) => {
 }
 
 function positionContextSubmenu(contextMenu, elem) {
-    let menuLeft = contextMenu.style.left;
-    let menuTop = contextMenu.style.top;
     let contextSubMenu = document.querySelector(".context-sub-menu");
+    const moveMenuTrigger = $(elem).children(".move-menu").get(0);
 
-    //Menu at right side
-    if ($(elem).children().attr("class") === "move-menu" && parseInt(menuLeft, 10) > 1000) {
-        //and at top
-        if (parseInt(menuTop, 10) < 550) {
-            contextSubMenu.style.left = "-110px";
-            contextSubMenu.style.right = "auto";
-            contextSubMenu.style.top = "0px";
-            $(elem).children().next().css({ "display": "block" });
-        }
-        //at bottom
-        else if (parseInt(menuTop, 10) > 550) {
-            contextSubMenu.style.left = "-110px";
-            contextSubMenu.style.right = "auto";
-            contextSubMenu.style.top = "-88px";
-            $(elem).children().next().css({ "display": "block" });
-        }
-    }
-    //Menu at left side
-    else if ($(elem).children().attr("class") === "move-menu" && parseInt(menuLeft, 10) < 100) {
-        //and at top
-        if (parseInt(menuTop, 10) < 550) {
-            contextSubMenu.style.right = "-110px";
-            contextSubMenu.style.left = "auto";
-            contextSubMenu.style.top = "0px";
-            $(elem).children().next().css({ "display": "block" });
-        }
-        //at bottom
-        else if (parseInt(menuTop, 10) > 550) {
-            contextSubMenu.style.right = "-110px";
-            contextSubMenu.style.left = "auto";
-            contextSubMenu.style.top = "-88px";
-            $(elem).children().next().css({ "display": "block" });
-        }
-    }
-    else {
+    if (moveMenuTrigger) {
+        contextSubMenu.style.display = "block";
+        contextSubMenu.style.visibility = "hidden";
+
+        const triggerRect = moveMenuTrigger.getBoundingClientRect();
+        const subMenuWidth = contextSubMenu.offsetWidth;
+        const subMenuHeight = contextSubMenu.offsetHeight;
+        const spacing = 4;
+        const availableRight = window.innerWidth - (triggerRect.right + spacing);
+        const availableLeft = triggerRect.left - spacing;
+        const shouldOpenLeft = availableRight < subMenuWidth && availableLeft > availableRight;
+
+        const preferredTop = triggerRect.top;
+        const topIfBottomAligned = triggerRect.bottom - subMenuHeight;
+
+        const preferredTopOverflow = Math.max(0, preferredTop + subMenuHeight - window.innerHeight);
+        const bottomAlignedOverflow = Math.max(0, topIfBottomAligned + subMenuHeight - window.innerHeight) + Math.max(0, -topIfBottomAligned);
+
+        let subMenuLeft = shouldOpenLeft
+            ? triggerRect.left - subMenuWidth - spacing
+            : triggerRect.right + spacing;
+        let subMenuTop = bottomAlignedOverflow < preferredTopOverflow ? topIfBottomAligned : preferredTop;
+
+        subMenuLeft = Math.max(0, Math.min(subMenuLeft, window.innerWidth - subMenuWidth));
+        subMenuTop = Math.max(0, Math.min(subMenuTop, window.innerHeight - subMenuHeight));
+
+        contextSubMenu.style.position = "fixed";
+        contextSubMenu.style.left = subMenuLeft + "px";
+        contextSubMenu.style.top = subMenuTop + "px";
+        contextSubMenu.style.right = "auto";
+        contextSubMenu.style.visibility = "visible";
+    } else {
         $("#move-menu").css({ "display": "none" });
     }
 }
