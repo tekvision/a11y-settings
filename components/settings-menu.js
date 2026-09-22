@@ -213,6 +213,117 @@ function positionContextSubmenu(contextMenu, elem) {
 
 export let enableDragAndDrop = (draggableButton) => {
     draggableButton.draggable = true;
+    let viewportResizeBound = false;
+    let lastViewportWidth = null;
+    let lastViewportHeight = null;
+    let anchoredSide = null;
+
+    let getViewportSize = () => {
+        if (window.visualViewport) {
+            return {
+                width: Math.round(window.visualViewport.width),
+                height: Math.round(window.visualViewport.height)
+            };
+        }
+
+        return {
+            width: window.innerWidth,
+            height: window.innerHeight
+        };
+    };
+
+    let clampOverlayButtonWithinViewport = () => {
+        const viewport = getViewportSize();
+        const rect = draggableButton.getBoundingClientRect();
+        const buttonWidth = rect.width || draggableButton.offsetWidth;
+        const buttonHeight = rect.height || draggableButton.offsetHeight;
+
+        const currentLeft = Number.isFinite(parseFloat(draggableButton.style.left))
+            ? parseFloat(draggableButton.style.left)
+            : rect.left;
+        const currentTop = Number.isFinite(parseFloat(draggableButton.style.top))
+            ? parseFloat(draggableButton.style.top)
+            : rect.top;
+
+        const clampedLeft = Math.max(0, Math.min(currentLeft, viewport.width - buttonWidth));
+        const clampedTop = Math.max(0, Math.min(currentTop, viewport.height - buttonHeight));
+
+        draggableButton.style.left = clampedLeft + "px";
+        draggableButton.style.top = clampedTop + "px";
+        draggableButton.style.right = "auto";
+        draggableButton.style.bottom = "auto";
+    };
+
+    let snapOverlayButtonToSide = () => {
+        const viewport = getViewportSize();
+        const rect = draggableButton.getBoundingClientRect();
+        const buttonWidth = rect.width || draggableButton.offsetWidth;
+
+        if (anchoredSide === "right") {
+            draggableButton.style.left = Math.max(0, viewport.width - buttonWidth) + "px";
+        }
+        else {
+            draggableButton.style.left = "0px";
+        }
+
+        draggableButton.style.right = "auto";
+        draggableButton.style.bottom = "auto";
+    };
+
+    let preserveRelativePositionOnViewportChange = () => {
+        if (lastViewportWidth === null || lastViewportHeight === null) {
+            return;
+        }
+
+        const rect = draggableButton.getBoundingClientRect();
+        const buttonWidth = rect.width || draggableButton.offsetWidth;
+        const buttonHeight = rect.height || draggableButton.offsetHeight;
+        const viewport = getViewportSize();
+
+        const oldHorizontalSpace = Math.max(1, lastViewportWidth - buttonWidth);
+        const oldVerticalSpace = Math.max(1, lastViewportHeight - buttonHeight);
+        const newHorizontalSpace = Math.max(0, viewport.width - buttonWidth);
+        const newVerticalSpace = Math.max(0, viewport.height - buttonHeight);
+
+        const currentLeft = Number.isFinite(parseFloat(draggableButton.style.left))
+            ? parseFloat(draggableButton.style.left)
+            : rect.left;
+        const currentTop = Number.isFinite(parseFloat(draggableButton.style.top))
+            ? parseFloat(draggableButton.style.top)
+            : rect.top;
+
+        const horizontalRatio = Math.max(0, Math.min(1, currentLeft / oldHorizontalSpace));
+        const verticalRatio = Math.max(0, Math.min(1, currentTop / oldVerticalSpace));
+
+        draggableButton.style.left = (horizontalRatio * newHorizontalSpace) + "px";
+        draggableButton.style.top = (verticalRatio * newVerticalSpace) + "px";
+        draggableButton.style.right = "auto";
+        draggableButton.style.bottom = "auto";
+    };
+
+    let syncOverlayPositionOnViewportChange = () => {
+        preserveRelativePositionOnViewportChange();
+        clampOverlayButtonWithinViewport();
+        snapOverlayButtonToSide();
+
+        const iconRect = draggableButton.getBoundingClientRect();
+        const iconCenterX = iconRect.left + (iconRect.width / 2);
+        const viewportCenterX = getViewportSize().width / 2;
+        let dialog = document.getElementById("overlay-popup");
+        let overlayIcon = document.getElementById("overlay-icon");
+
+        if (iconCenterX >= viewportCenterX) {
+            handlePositionChange(dialog, overlayIcon, "TopRight", "b-r-Right");
+        }
+        else {
+            handlePositionChange(dialog, overlayIcon, "TopLeft", "b-r-Left");
+        }
+
+        const viewport = getViewportSize();
+        lastViewportWidth = viewport.width;
+        lastViewportHeight = viewport.height;
+    };
+
     document.body.addEventListener("dragover", (e) => { e.preventDefault(); })
     // Handle the start of the drag operation
     draggableButton.addEventListener('dragstart', (e) => {
@@ -223,7 +334,8 @@ export let enableDragAndDrop = (draggableButton) => {
 
     // Handle the end of the drag operation
     draggableButton.addEventListener('dragend', (e) => {
-        const centerX = window.innerWidth / 2;
+        const viewport = getViewportSize();
+        const centerX = viewport.width / 2;
         let dialog = document.getElementById("overlay-popup");
         let overlayIcon = document.getElementById("overlay-icon");
 
@@ -231,22 +343,37 @@ export let enableDragAndDrop = (draggableButton) => {
         let dropY = e.clientY - draggableButton.offsetHeight / 2;
 
         // To keep button stays within the viewport
-        dropX = Math.max(0, Math.min(dropX, window.innerWidth - draggableButton.offsetWidth));
-        dropY = Math.max(0, Math.min(dropY, window.innerHeight - draggableButton.offsetHeight));
+        dropX = Math.max(0, Math.min(dropX, viewport.width - draggableButton.offsetWidth));
+        dropY = Math.max(0, Math.min(dropY, viewport.height - draggableButton.offsetHeight));
 
         draggableButton.style.left = dropX + 'px';
         draggableButton.style.top = dropY + 'px';
+        draggableButton.style.right = 'auto';
+        draggableButton.style.bottom = 'auto';
 
         // Handle positioning based on the horizontal center
         if (e.clientX > centerX) {
-            // Position to the right of the screen
+            // Keep right-opening dialog when icon is on viewport right side.
+            anchoredSide = "right";
             handlePositionChange(dialog, overlayIcon, "TopRight", "b-r-Right");
-            draggableButton.style.left = (window.innerWidth - draggableButton.offsetWidth - 15) + 'px';
         }
         else {
-            //Position to the left of the scren
+            // Keep left-opening dialog when icon is on viewport left side.
+            anchoredSide = "left";
             handlePositionChange(dialog, overlayIcon, "TopLeft", "b-r-Left");
-            draggableButton.style.left = '0';
+        }
+
+        clampOverlayButtonWithinViewport();
+        snapOverlayButtonToSide();
+        lastViewportWidth = viewport.width;
+        lastViewportHeight = viewport.height;
+
+        if (!viewportResizeBound) {
+            window.addEventListener("resize", syncOverlayPositionOnViewportChange);
+            if (window.visualViewport) {
+                window.visualViewport.addEventListener("resize", syncOverlayPositionOnViewportChange);
+            }
+            viewportResizeBound = true;
         }
     });
 };
