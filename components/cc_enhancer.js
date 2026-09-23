@@ -280,16 +280,31 @@ let applyMuiSvgIconContrast = (ele, colorCombination) => {
 
         const fillAttr = shape.getAttribute("fill");
         const strokeAttr = shape.getAttribute("stroke");
+        const computed = window.getComputedStyle(shape);
+        const computedFill = computed.getPropertyValue("fill");
+        const computedStroke = computed.getPropertyValue("stroke");
+        const hasVisibleFill = fillAttr && fillAttr !== "none";
+        const hasVisibleStroke = strokeAttr && strokeAttr !== "none";
+        const computedHasFill = computedFill && computedFill !== "none" && computedFill !== "rgba(0, 0, 0, 0)";
+        const computedHasStroke = computedStroke && computedStroke !== "none" && computedStroke !== "rgba(0, 0, 0, 0)";
 
-        if (fillAttr !== "none") {
+        if (hasVisibleFill || (!fillAttr && computedHasFill)) {
             shape.style.setProperty("fill", "currentColor", "important");
         }
 
-        if (strokeAttr && strokeAttr !== "none") {
+        if (hasVisibleStroke || (!strokeAttr && computedHasStroke)) {
             shape.style.setProperty("stroke", "currentColor", "important");
         }
 
-        if (!fillAttr && !strokeAttr) {
+        // Fallback: keep icon visible if markup resolves to no paint channels.
+        if (
+            (fillAttr === "none" && (!strokeAttr || strokeAttr === "none")) ||
+            (!fillAttr && !strokeAttr && !computedHasFill && !computedHasStroke)
+        ) {
+            shape.style.setProperty("stroke", "currentColor", "important");
+        }
+
+        if (!fillAttr && !strokeAttr && !computedHasFill && !computedHasStroke) {
             shape.style.setProperty("fill", "currentColor", "important");
         }
     });
