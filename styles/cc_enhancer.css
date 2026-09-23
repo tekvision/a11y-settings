@@ -40,3 +40,16 @@
 .highlightLinks{
     text-decoration: underline !important;
 }
+
+/* Keep MUI icons transparent so contrast classes do not create white icon tiles. */
+.MuiSvgIcon-root.blackOnWhite,
+.MuiSvgIcon-root.whiteOnBlack,
+.MuiSvgIcon-root.yellowOnBlack,
+.MuiSvgIcon-root.blackOnYellow,
+.MuiSvgIcon-root.blackOnWhite *,
+.MuiSvgIcon-root.whiteOnBlack *,
+.MuiSvgIcon-root.yellowOnBlack *,
+.MuiSvgIcon-root.blackOnYellow * {
+    background: transparent !important;
+    background-color: transparent !important;
+}
