@@ -6,6 +6,8 @@ let defaultStyle = [];
 let processedElements = new Set(); //This will ensure that there is unique element entries while setting up the default styles.
 let defaultSVGStyle = [];
 let processedSVGElements = new Set(); //This will ensure that there is unique element entries while setting up the default styles.
+const CONTRAST_CLASSES = ["yellowOnBlack", "blackOnYellow", "whiteOnBlack", "blackOnWhite"];
+const CONTRAST_MODIFIED_ATTR = "data-ada-contrast-modified";
 
 export let handleColorContrastEnhancements = (colorOptions) => {
     observeNodeChanges();
@@ -84,7 +86,7 @@ let handleColorChange = (colorCombination) => {
             }
         }
         else {
-            ele.classList.remove("yellowOnBlack", "blackOnYellow", "whiteOnBlack", "blackOnWhite");
+            ele.classList.remove(...CONTRAST_CLASSES);
             setColorToDeafult(ele);
             setOverlayDefaultBorder(ele, "focusVisible-overlay-default");
             setOverlayDefaultBorder(overlayIcon, "focusVisible-overlay-default");
@@ -148,6 +150,36 @@ let handleColorChange = (colorCombination) => {
             setOverlayDefaultBorder(overlayIcon, "focusVisible-overlay-default");
         }
     });
+
+    if (!isContrastEnabled) {
+        clearContrastArtifacts();
+    }
+}
+
+let markContrastModified = (ele) => {
+    ele?.setAttribute?.(CONTRAST_MODIFIED_ATTR, "true");
+}
+
+let clearContrastArtifacts = () => {
+    let touchedElements = document.querySelectorAll(
+        `.yellowOnBlack, .blackOnYellow, .whiteOnBlack, .blackOnWhite, [${CONTRAST_MODIFIED_ATTR}="true"]`
+    );
+
+    touchedElements.forEach((ele) => {
+        ele.classList?.remove(...CONTRAST_CLASSES);
+        ele.style?.removeProperty("background");
+        ele.style?.removeProperty("background-color");
+        ele.style?.removeProperty("color");
+
+        if (ele instanceof SVGElement || ele.closest?.("svg")) {
+            ele.style?.removeProperty("fill");
+            ele.style?.removeProperty("stroke");
+            ele.removeAttribute?.("fill");
+            ele.removeAttribute?.("stroke");
+        }
+
+        ele.removeAttribute?.(CONTRAST_MODIFIED_ATTR);
+    });
 }
 
 let setColorToDeafult = (ele) => {
@@ -164,7 +196,7 @@ let setColorToDeafult = (ele) => {
 }
 
 let setSVGColorsToDefault = (ele) => {
-    ele.classList.remove("yellowOnBlack", "blackOnYellow", "whiteOnBlack", "blackOnWhite");
+    ele.classList.remove(...CONTRAST_CLASSES);
     ele.style.removeProperty("background");
     ele.style.removeProperty("background-color");
     ele.style.removeProperty("color");
@@ -282,8 +314,9 @@ let applyMuiSvgIconContrast = (ele, colorCombination) => {
     const iconRoot = ele.classList?.contains("MuiSvgIcon-root") ? ele : ele.closest(".MuiSvgIcon-root");
     if (!iconRoot) return;
 
-    iconRoot.classList.remove("yellowOnBlack", "blackOnYellow", "whiteOnBlack", "blackOnWhite");
+    iconRoot.classList.remove(...CONTRAST_CLASSES);
     iconRoot.classList.add(colorCombination);
+    markContrastModified(iconRoot);
     iconRoot.style.removeProperty("background");
     iconRoot.style.removeProperty("background-color");
 
@@ -292,7 +325,8 @@ let applyMuiSvgIconContrast = (ele, colorCombination) => {
 
     const shapes = iconRoot.querySelectorAll("path, circle, rect, polygon, polyline, line, ellipse");
     shapes.forEach((shape) => {
-        shape.classList?.remove("yellowOnBlack", "blackOnYellow", "whiteOnBlack", "blackOnWhite");
+        shape.classList?.remove(...CONTRAST_CLASSES);
+        markContrastModified(shape);
         shape.style.removeProperty("background");
         shape.style.removeProperty("background-color");
 
@@ -335,13 +369,13 @@ let updateColor = (ele, colorCombination) => {
 
     // SVG nodes are handled by SVG-specific logic; never apply generic backgrounds here.
     if (isSvgOrSvgChildElement(ele)) {
-        ele.classList?.remove("yellowOnBlack", "blackOnYellow", "whiteOnBlack", "blackOnWhite");
+        ele.classList?.remove(...CONTRAST_CLASSES);
         ele.style?.removeProperty("background");
         ele.style?.removeProperty("background-color");
         return;
     }
 
-    ele.classList.remove("yellowOnBlack", "blackOnYellow", "whiteOnBlack", "blackOnWhite");
+    ele.classList.remove(...CONTRAST_CLASSES);
     ele.style.removeProperty('background-color');
     ele.style.removeProperty('background');
     ele.style.removeProperty("color");
@@ -571,6 +605,7 @@ let setColorCombination = (ele, foreground, background) => {
 }
 
 let setSVGTextStyle = (ele, fill, stroke) => {
+    markContrastModified(ele);
     ele.style.removeProperty("background");
     ele.style.removeProperty("background-color");
     ele.removeAttribute("fill");
@@ -584,6 +619,7 @@ let setSVGTextStyle = (ele, fill, stroke) => {
 }
 
 let setSVGColors = (ele, fill, stroke) => {
+    markContrastModified(ele);
     ele.style.removeProperty("background");
     ele.style.removeProperty("background-color");
 
