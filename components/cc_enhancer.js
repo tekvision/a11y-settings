@@ -255,15 +255,29 @@ let isMuiSvgIconElement = (ele) => {
     return !!(ele.closest(".MuiSvgIcon-root") || ele.classList?.contains("MuiSvgIcon-root"));
 }
 
+let isSvgOrSvgChildElement = (ele) => {
+    if (!ele) return false;
+    return ele instanceof SVGElement || !!ele.closest?.("svg");
+}
+
 let applyMuiSvgIconContrast = (ele, colorCombination) => {
     const iconRoot = ele.classList?.contains("MuiSvgIcon-root") ? ele : ele.closest(".MuiSvgIcon-root");
     if (!iconRoot) return;
+
+    iconRoot.classList.remove("yellowOnBlack", "blackOnYellow", "whiteOnBlack", "blackOnWhite");
+    iconRoot.classList.add(colorCombination);
+    iconRoot.style.removeProperty("background");
+    iconRoot.style.removeProperty("background-color");
 
     const fg = getContrastForeground(colorCombination);
     iconRoot.style.setProperty("color", fg, "important");
 
     const shapes = iconRoot.querySelectorAll("path, circle, rect, polygon, polyline, line, ellipse");
     shapes.forEach((shape) => {
+        shape.classList?.remove("yellowOnBlack", "blackOnYellow", "whiteOnBlack", "blackOnWhite");
+        shape.style.removeProperty("background");
+        shape.style.removeProperty("background-color");
+
         const fillAttr = shape.getAttribute("fill");
         const strokeAttr = shape.getAttribute("stroke");
 
@@ -283,6 +297,14 @@ let applyMuiSvgIconContrast = (ele, colorCombination) => {
 
 let updateColor = (ele, colorCombination) => {
     if (isUiEffectElement(ele)) {
+        return;
+    }
+
+    // SVG nodes are handled by SVG-specific logic; never apply generic backgrounds here.
+    if (isSvgOrSvgChildElement(ele)) {
+        ele.classList?.remove("yellowOnBlack", "blackOnYellow", "whiteOnBlack", "blackOnWhite");
+        ele.style?.removeProperty("background");
+        ele.style?.removeProperty("background-color");
         return;
     }
 
@@ -314,6 +336,9 @@ let updateColor = (ele, colorCombination) => {
 }
 
 let updateSVGs = (ele, colorCombination) => {
+    ele.style?.removeProperty("background");
+    ele.style?.removeProperty("background-color");
+
     if (isMuiSvgIconElement(ele)) {
         applyMuiSvgIconContrast(ele, colorCombination);
         return;
@@ -513,6 +538,8 @@ let setColorCombination = (ele, foreground, background) => {
 }
 
 let setSVGTextStyle = (ele, fill, stroke) => {
+    ele.style.removeProperty("background");
+    ele.style.removeProperty("background-color");
     ele.removeAttribute("fill");
     ele.style.removeProperty("fill");
     ele.removeAttribute("stroke");
@@ -524,6 +551,9 @@ let setSVGTextStyle = (ele, fill, stroke) => {
 }
 
 let setSVGColors = (ele, fill, stroke) => {
+    ele.style.removeProperty("background");
+    ele.style.removeProperty("background-color");
+
     if (ele.hasAttribute("fill") && ele.getAttribute("fill") !== "none") {
         ele.removeAttribute("fill");
         ele.style.removeProperty("fill");
