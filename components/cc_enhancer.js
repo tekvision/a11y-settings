@@ -225,7 +225,67 @@ let saveOriginalSVGStyles = (ele) => {
     }
 }
 
+let getContrastForeground = (colorCombination) => {
+    switch (colorCombination) {
+        case "blackOnWhite": return "black";
+        case "whiteOnBlack": return "white";
+        case "yellowOnBlack": return "yellow";
+        case "blackOnYellow": return "black";
+        default: return "black";
+    }
+}
+
+let isUiEffectElement = (ele) => {
+    return !!(
+        ele?.classList?.contains("MuiTouchRipple-root") ||
+        ele?.closest?.(".MuiTouchRipple-root")
+    );
+}
+
+let isInsideExcludedSvgZone = (ele) => {
+    return !!(
+        ele?.closest?.("#chart_container") ||
+        ele?.closest?.("#radar-summary") ||
+        ele?.closest?.("#ada-overlay-widget-container")
+    );
+}
+
+let isMuiSvgIconElement = (ele) => {
+    if (!ele || !ele.closest || isInsideExcludedSvgZone(ele)) return false;
+    return !!(ele.closest(".MuiSvgIcon-root") || ele.classList?.contains("MuiSvgIcon-root"));
+}
+
+let applyMuiSvgIconContrast = (ele, colorCombination) => {
+    const iconRoot = ele.classList?.contains("MuiSvgIcon-root") ? ele : ele.closest(".MuiSvgIcon-root");
+    if (!iconRoot) return;
+
+    const fg = getContrastForeground(colorCombination);
+    iconRoot.style.setProperty("color", fg, "important");
+
+    const shapes = iconRoot.querySelectorAll("path, circle, rect, polygon, polyline, line, ellipse");
+    shapes.forEach((shape) => {
+        const fillAttr = shape.getAttribute("fill");
+        const strokeAttr = shape.getAttribute("stroke");
+
+        if (fillAttr !== "none") {
+            shape.style.setProperty("fill", "currentColor", "important");
+        }
+
+        if (strokeAttr && strokeAttr !== "none") {
+            shape.style.setProperty("stroke", "currentColor", "important");
+        }
+
+        if (!fillAttr && !strokeAttr) {
+            shape.style.setProperty("fill", "currentColor", "important");
+        }
+    });
+}
+
 let updateColor = (ele, colorCombination) => {
+    if (isUiEffectElement(ele)) {
+        return;
+    }
+
     ele.classList.remove("yellowOnBlack", "blackOnYellow", "whiteOnBlack", "blackOnWhite");
     ele.style.removeProperty('background-color');
     ele.style.removeProperty('background');
@@ -254,6 +314,11 @@ let updateColor = (ele, colorCombination) => {
 }
 
 let updateSVGs = (ele, colorCombination) => {
+    if (isMuiSvgIconElement(ele)) {
+        applyMuiSvgIconContrast(ele, colorCombination);
+        return;
+    }
+
     let overlayIcon = document.getElementById("overlay-icon");
     let tagName = ele.tagName.toLowerCase();
     if (tagName === "text" || tagName === 'textpath') {
