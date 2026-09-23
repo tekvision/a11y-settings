@@ -164,22 +164,40 @@ let setColorToDeafult = (ele) => {
 }
 
 let setSVGColorsToDefault = (ele) => {
-    if (ele.hasAttribute("style")) {
-        let defaultFillStyle = defaultSVGStyle.find(entry => entry.element === ele)?.fillStyle;
-        let defaultStrokeStyle = defaultSVGStyle.find(entry => entry.element === ele)?.strokeStyle;
-        let defaultFillAttr = defaultSVGStyle.find(entry => entry.element === ele)?.fillAttr;
-        let defaultStrokeAttr = defaultSVGStyle.find(entry => entry.element === ele)?.strokeAttr;
-        let defaultStyleAttr = defaultSVGStyle.find(entry => entry.element === ele)?.style;
-        /*defaultFillStyle !== null ? ele.style.fill = defaultFillStyle : "";
-        defaultStrokeStyle !== null ? ele.style.stroke = defaultStrokeStyle : "";
-        defaultStrokeAttr !== null ? ele.setAttribute("stroke", defaultStrokeAttr) : ele.removeAttribute("stroke");
-        defaultFillAttr !== null ? ele.setAttribute("fill", defaultFillAttr) : ele.removeAttribute("fill");
-        defaultStyleAttr !== null ? ele.setAttribute("style", defaultStyleAttr) : ele.removeAttribute("style");*/
-        (defaultFillStyle && (defaultStyleAttr && defaultStyleAttr.includes("fill"))) ? ele.style.fill = defaultFillStyle : ele.style.removeProperty("fill");
-        (defaultStrokeStyle && (defaultStyleAttr && defaultStyleAttr.includes("stroke"))) ? ele.style.stroke = defaultStrokeStyle : ele.style.removeProperty("stroke");
-        defaultStrokeAttr ? ele.setAttribute("stroke", defaultStrokeAttr) : ele.removeAttribute("stroke");
-        defaultFillAttr ? ele.setAttribute("fill", defaultFillAttr) : ele.removeAttribute("fill");
+    ele.classList.remove("yellowOnBlack", "blackOnYellow", "whiteOnBlack", "blackOnWhite");
+    ele.style.removeProperty("background");
+    ele.style.removeProperty("background-color");
+    ele.style.removeProperty("color");
+
+    const defaults = defaultSVGStyle.find(entry => entry.element === ele);
+
+    if (!defaults) {
+        // If we never captured defaults for this node, only remove inline enhancer paint.
+        // Keep authored attributes intact to avoid mutating non-overlay SVG definitions.
+        ele.style.removeProperty("fill");
+        ele.style.removeProperty("stroke");
+        return;
     }
+
+    const defaultFillStyle = defaults.fillStyle;
+    const defaultStrokeStyle = defaults.strokeStyle;
+    const defaultFillAttr = defaults.fillAttr;
+    const defaultStrokeAttr = defaults.strokeAttr;
+    const defaultStyleAttr = defaults.style;
+
+    (defaultFillStyle && defaultStyleAttr && defaultStyleAttr.includes("fill"))
+        ? ele.style.fill = defaultFillStyle
+        : ele.style.removeProperty("fill");
+    (defaultStrokeStyle && defaultStyleAttr && defaultStyleAttr.includes("stroke"))
+        ? ele.style.stroke = defaultStrokeStyle
+        : ele.style.removeProperty("stroke");
+
+    (defaultStrokeAttr !== null && defaultStrokeAttr !== undefined)
+        ? ele.setAttribute("stroke", defaultStrokeAttr)
+        : ele.removeAttribute("stroke");
+    (defaultFillAttr !== null && defaultFillAttr !== undefined)
+        ? ele.setAttribute("fill", defaultFillAttr)
+        : ele.removeAttribute("fill");
 }
 
 let handlePressedState = (colorOptions, option) => {
