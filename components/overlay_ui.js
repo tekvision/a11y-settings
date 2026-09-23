@@ -1,22 +1,24 @@
+const imageUrl = (name) => new URL(`../images/${name}`, import.meta.url).href;
+
 let toolUI = `
     <div id='overlay-announcement' aria-live='assertive' aria-atomic='true' aria-relevant='additions'>
         <span class='announce'></span>
     </div>
     <div class="frame positionTopRight b-r-Right" id="overlay-icon" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Accessibility settings">
-        <img class="vector" src='../images/vector.svg' draggable="false" alt=''/><span class="fa fa-close" draggable="false" style='display:none !important;'></span>
-        <img class="img" src="../images/vector-1.svg" draggable="false" alt=''/>
+        <img class="vector" src='${imageUrl('vector.svg')}' draggable="false" alt=''/><span class="fa fa-close" draggable="false" style='display:none !important;'></span>
+        <img class="img" src="${imageUrl('vector-1.svg')}" draggable="false" alt=''/>
     </div>
 
     <div class="frame overlay-popup popupPositionTopRight" id="overlay-popup" role="dialog" aria-modal="true" aria-labelledby="dialog-title"
         style="display:none">
         <div class="overlap">
-            <img class="polygon" src="../images/polygon-1.svg" alt="" style="display:none"/>
+            <img class="polygon" src="${imageUrl('polygon-1.svg')}" alt="" style="display:none"/>
             <div class="div">
                 <div class="div-2">
                     <div class="div-3">
                         <div class="div-4">
                             <div class="div-5">
-                                <img class="body" src="../images/body-3.svg" alt="" />
+                                <img class="body" src="${imageUrl('body-3.svg')}" alt="" />
                                 <div class="text-wrapper" id="dialog-title">Enhance Accessibility</div>
                             </div>
                             <div class="div-6" role="button" tabindex="0" id="revert-all">
@@ -37,7 +39,7 @@ let toolUI = `
                 <div class="div-7">
                     <div class="div-8" id="ccEnhancer" role="group" aria-labelledby="contrastGroup">
                         <div class="div-9">
-                            <img class="img" src="../images/colors-1.svg" />
+                            <img class="img" src="${imageUrl('colors-1.svg')}" />
                             <div class="text-wrapper-2" id="contrastGroup">
                                 Color Contrast
                             </div>
@@ -95,7 +97,7 @@ let toolUI = `
                     </div>
                     <div class="div-8" id="fontStyle" role="group" aria-labelledby="fontStyleGroup">
                         <div class="div-12">
-                            <img class="img" src="../images/font-size-1-1.svg" alt="" />
+                            <img class="img" src="${imageUrl('font-size-1-1.svg')}" alt="" />
                             <div class="text-wrapper-2" id="fontStyleGroup">
                                 Font Style
                             </div>
@@ -139,7 +141,7 @@ let toolUI = `
                     </div>
                     <div class="div-8" id="fontSize" role="group" aria-labelledby="fontSizeGroup">
                         <div class="div-9">
-                            <img class="img" src="../images/type-2-1.svg" alt="" />
+                            <img class="img" src="${imageUrl('type-2-1.svg')}" alt="" />
                             <div class="text-wrapper-2" id="fontSizeGroup">
                                 Font Size Adjustment
                             </div>
@@ -176,7 +178,7 @@ let toolUI = `
                         <div class="div-18" id="textMagnifier" role="group" aria-labelledby="magnifierGroup"
                             style="display:none">
                             <div class="div-12">
-                                <img class="img" src="../images/zoom-in-1.svg" alt="" />
+                                <img class="img" src="${imageUrl('zoom-in-1.svg')}" alt="" />
                                 <div class="text-wrapper-2" id="magnifierGroup">
                                     Text Magnifier
                                 </div>
@@ -196,7 +198,7 @@ let toolUI = `
                         </div>
                         <div class="div-18" id="focusVisibility" role="group" aria-labelledby="focusVisibilityGroup">
                             <div class="div-12">
-                                <img class="img" src="../images/eye-1.svg" alt="" />
+                                <img class="img" src="${imageUrl('eye-1.svg')}" alt="" />
                                 <div class="text-wrapper-2" id="focusVisibilityGroup">
                                     Focus Visibility
                                 </div>
@@ -217,7 +219,7 @@ let toolUI = `
                     </div>
                     <div class="div-8" id="textAlignment" role="group" aria-labelledby="textAlignmentGroup">
                         <div class="div-9">
-                            <img class="img" src="../images/font-1.svg" alt="" />
+                            <img class="img" src="${imageUrl('font-1.svg')}" alt="" />
                             <div class="text-wrapper-2" id="textAlignmentGroup">
                                 Font Alignment
                             </div>
