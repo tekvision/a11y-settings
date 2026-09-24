@@ -288,8 +288,23 @@ let getContrastForeground = (colorCombination) => {
 let isUiEffectElement = (ele) => {
     return !!(
         ele?.classList?.contains("MuiTouchRipple-root") ||
-        ele?.closest?.(".MuiTouchRipple-root")
+        ele?.closest?.(".MuiTouchRipple-root") ||
+        ele?.classList?.contains("MuiBackdrop-root") ||
+        ele?.classList?.contains("MuiBackdrop-invisible") ||
+        ele?.classList?.contains("MuiModal-backdrop") ||
+        ele?.closest?.(".MuiBackdrop-root") ||
+        ele?.classList?.contains("MuiModal-root") ||
+        ele?.classList?.contains("MuiPopover-root") ||
+        ele?.classList?.contains("MuiMenu-root")
     );
+}
+
+let clearContrastStyles = (ele) => {
+    if (!ele) return;
+    ele.classList?.remove(...CONTRAST_CLASSES);
+    ele.style?.removeProperty("background");
+    ele.style?.removeProperty("background-color");
+    ele.style?.removeProperty("color");
 }
 
 let isInsideExcludedSvgZone = (ele) => {
@@ -364,6 +379,8 @@ let applyMuiSvgIconContrast = (ele, colorCombination) => {
 
 let updateColor = (ele, colorCombination) => {
     if (isUiEffectElement(ele)) {
+        // Keep UI effect layers (ripples/backdrops) transparent and unstyled.
+        clearContrastStyles(ele);
         return;
     }
 
