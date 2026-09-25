@@ -8,6 +8,7 @@ let defaultSVGStyle = [];
 let processedSVGElements = new Set(); //This will ensure that there is unique element entries while setting up the default styles.
 const CONTRAST_CLASSES = ["yellowOnBlack", "blackOnYellow", "whiteOnBlack", "blackOnWhite"];
 const CONTRAST_MODIFIED_ATTR = "data-ada-contrast-modified";
+let contrastReapplyQueued = false;
 
 export let handleColorContrastEnhancements = (colorOptions) => {
     observeNodeChanges();
@@ -25,14 +26,48 @@ export let handleColorContrastEnhancements = (colorOptions) => {
 }
 
 function observeNodeChanges() {
+    const scheduleContrastReapply = () => {
+        if (contrastReapplyQueued) return;
+        contrastReapplyQueued = true;
+
+        requestAnimationFrame(() => {
+            contrastReapplyQueued = false;
+            const activeContrast = localStorage.getItem("cc_enhancer");
+            if (!activeContrast) return;
+
+            applyGlobalMuiIconVisibility(activeContrast);
+            applyReportDatePickerVisibility(activeContrast);
+            applyTableFilterVisibility(activeContrast);
+            applyTableMenuVisibility(activeContrast);
+            applyModalTreeSelectVisibility(activeContrast);
+        });
+    };
+
     let observer = new MutationObserver((mutations) => {
         mutations.forEach(function (mutation) {
             if (mutation.type === 'childList') {
                 handleUpdatedNodes(mutation.addedNodes);
             }
+
+            if (mutation.type === 'attributes' && localStorage.getItem("cc_enhancer")) {
+                const target = mutation.target;
+                if (!(target instanceof Element)) return;
+
+                if (
+                    target.closest(".MuiModal-root, .MuiDialog-root, .MuiPopover-root, .MuiMenu-root") ||
+                    target.matches(".MuiAutocomplete-popper, .base-Popper-root, .MuiPickersPopper-root")
+                ) {
+                    scheduleContrastReapply();
+                }
+            }
         });
     });
-    observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ["class", "aria-hidden", "aria-expanded", "open", "data-popper-placement"]
+    });
 }
 
 function handleUpdatedNodes(addedNodes) {
@@ -63,6 +98,7 @@ function handleUpdatedNodes(addedNodes) {
     }
 
     if (localStorage.getItem("cc_enhancer")) {
+        applyGlobalMuiIconVisibility(localStorage.getItem("cc_enhancer"));
         applyReportDatePickerVisibility(localStorage.getItem("cc_enhancer"));
         applyTableFilterVisibility(localStorage.getItem("cc_enhancer"));
         applyTableMenuVisibility(localStorage.getItem("cc_enhancer"));
@@ -159,6 +195,7 @@ let handleColorChange = (colorCombination) => {
     });
 
     if (isContrastEnabled) {
+        applyGlobalMuiIconVisibility(colorCombination);
         applyReportDatePickerVisibility(colorCombination);
         applyTableFilterVisibility(colorCombination);
         applyTableMenuVisibility(colorCombination);
@@ -308,6 +345,24 @@ let getContrastBackground = (colorCombination) => {
         case "blackOnYellow": return "yellow";
         default: return "white";
     }
+}
+
+let applyGlobalMuiIconVisibility = (colorCombination) => {
+    const foreground = getContrastForeground(colorCombination);
+    const icons = document.querySelectorAll(".MuiSvgIcon-root");
+
+    icons.forEach((icon) => {
+        if (isInsideExcludedSvgZone(icon)) return;
+
+        icon.style.setProperty("color", foreground, "important");
+        icon.style.setProperty("background", "transparent", "important");
+        icon.style.setProperty("background-color", "transparent", "important");
+
+        icon.querySelectorAll("path, circle, rect, polygon, polyline, line, ellipse").forEach((shape) => {
+            shape.style.setProperty("fill", "currentColor", "important");
+            shape.style.setProperty("stroke", "currentColor", "important");
+        });
+    });
 }
 
 let applyReportDatePickerVisibility = (colorCombination) => {
