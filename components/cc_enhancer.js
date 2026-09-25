@@ -66,6 +66,7 @@ function handleUpdatedNodes(addedNodes) {
         applyReportDatePickerVisibility(localStorage.getItem("cc_enhancer"));
         applyTableFilterVisibility(localStorage.getItem("cc_enhancer"));
         applyTableMenuVisibility(localStorage.getItem("cc_enhancer"));
+        applyModalTreeSelectVisibility(localStorage.getItem("cc_enhancer"));
     }
 }
 
@@ -161,11 +162,13 @@ let handleColorChange = (colorCombination) => {
         applyReportDatePickerVisibility(colorCombination);
         applyTableFilterVisibility(colorCombination);
         applyTableMenuVisibility(colorCombination);
+        applyModalTreeSelectVisibility(colorCombination);
     }
     else {
         clearReportDatePickerVisibility();
         clearTableFilterVisibility();
         clearTableMenuVisibility();
+        clearModalTreeSelectVisibility();
         clearContrastArtifacts();
     }
 }
@@ -711,6 +714,121 @@ let clearTableMenuVisibility = () => {
         });
 
         menu.querySelectorAll(".MuiSvgIcon-root path, .MuiSvgIcon-root circle, .MuiSvgIcon-root rect, .MuiSvgIcon-root polygon, .MuiSvgIcon-root polyline, .MuiSvgIcon-root line, .MuiSvgIcon-root ellipse").forEach((shape) => {
+            shape.style.removeProperty("fill");
+            shape.style.removeProperty("stroke");
+        });
+    });
+}
+
+let applyModalTreeSelectVisibility = (colorCombination) => {
+    const foreground = getContrastForeground(colorCombination);
+    const background = getContrastBackground(colorCombination);
+    const treeSelectPoppers = document.querySelectorAll(".MuiAutocomplete-popper, .base-Popper-root.MuiAutocomplete-listbox, [role='tree'].MuiAutocomplete-listbox");
+
+    treeSelectPoppers.forEach((popper) => {
+        popper.style.setProperty("color", foreground, "important");
+        popper.style.setProperty("background", background, "important");
+        popper.style.setProperty("background-color", background, "important");
+
+        popper.querySelectorAll(".MuiPaper-root, .MuiAutocomplete-listbox, [role='listbox'], [role='option'], [role='treeitem'], .MuiAutocomplete-option").forEach((node) => {
+            node.style.setProperty("color", foreground, "important");
+            node.style.setProperty("background", background, "important");
+            node.style.setProperty("background-color", background, "important");
+        });
+
+        popper.querySelectorAll(".MuiTypography-root, label, span, li, .MuiBox-root").forEach((node) => {
+            node.style.setProperty("color", foreground, "important");
+        });
+
+        popper.querySelectorAll(".MuiCheckbox-root, .MuiCheckbox-action, .MuiCheckbox-checkbox, .MuiFormControl-root").forEach((node) => {
+            node.style.setProperty("color", foreground, "important");
+            node.style.setProperty("background", "transparent", "important");
+            node.style.setProperty("background-color", "transparent", "important");
+        });
+
+        popper.querySelectorAll(".MuiCheckbox-root").forEach((root) => {
+            // Joy checkbox checkmark uses CSS vars; force a visible check color.
+            root.style.setProperty("--Icon-color", background, "important");
+        });
+
+        popper.querySelectorAll(".MuiCheckbox-checkbox").forEach((box) => {
+            box.style.setProperty("border", `1px solid ${foreground}`, "important");
+            box.style.setProperty("box-shadow", `inset 0 0 0 1px ${foreground}`, "important");
+        });
+
+        popper.querySelectorAll(".MuiCheckbox-root.Mui-checked .MuiCheckbox-checkbox, .MuiCheckbox-root.MuiCheckbox-checked .MuiCheckbox-checkbox").forEach((box) => {
+            box.style.setProperty("background", foreground, "important");
+            box.style.setProperty("background-color", foreground, "important");
+            box.style.setProperty("color", background, "important");
+            box.style.setProperty("border", `1px solid ${foreground}`, "important");
+        });
+
+        popper.querySelectorAll(".MuiCheckbox-root.Mui-indeterminate .MuiCheckbox-checkbox, .MuiCheckbox-root.MuiCheckbox-indeterminate .MuiCheckbox-checkbox").forEach((box) => {
+            box.style.setProperty("background", foreground, "important");
+            box.style.setProperty("background-color", foreground, "important");
+            box.style.setProperty("color", background, "important");
+            box.style.setProperty("border", `1px solid ${foreground}`, "important");
+        });
+
+        popper.querySelectorAll(".MuiCheckbox-root.Mui-checked .MuiCheckbox-action, .MuiCheckbox-root.MuiCheckbox-checked .MuiCheckbox-action, .MuiCheckbox-root.Mui-indeterminate .MuiCheckbox-action, .MuiCheckbox-root.MuiCheckbox-indeterminate .MuiCheckbox-action").forEach((action) => {
+            action.style.setProperty("color", background, "important");
+        });
+
+        popper.querySelectorAll(".MuiCheckbox-root .MuiSvgIcon-root, .MuiCheckbox-checkbox .MuiSvgIcon-root, .MuiIconButton-root .MuiSvgIcon-root, .MuiSvgIcon-root[data-testid='ChevronRightIcon'], .MuiSvgIcon-root[data-testid='ExpandMoreIcon']").forEach((icon) => {
+            icon.style.setProperty("color", foreground, "important");
+            icon.style.setProperty("background", "transparent", "important");
+            icon.style.setProperty("background-color", "transparent", "important");
+
+            icon.querySelectorAll("path, circle, rect, polygon, polyline, line, ellipse").forEach((shape) => {
+                shape.style.setProperty("fill", foreground, "important");
+                shape.style.setProperty("stroke", foreground, "important");
+            });
+        });
+
+        // Checked glyph must contrast against the checked checkbox fill.
+        popper.querySelectorAll(".MuiSvgIcon-root[data-testid='CheckIcon'], .MuiSvgIcon-root[data-testid='RemoveIcon'], .MuiSvgIcon-root[data-testid='HorizontalRuleIcon']").forEach((icon) => {
+            icon.style.setProperty("color", background, "important");
+            icon.querySelectorAll("path, circle, rect, polygon, polyline, line, ellipse").forEach((shape) => {
+                shape.style.setProperty("fill", background, "important");
+                shape.style.setProperty("stroke", background, "important");
+            });
+        });
+
+        popper.querySelectorAll(".MuiCheckbox-root input[type='checkbox']").forEach((input) => {
+            input.style.setProperty("accent-color", foreground, "important");
+        });
+    });
+}
+
+let clearModalTreeSelectVisibility = () => {
+    const treeSelectPoppers = document.querySelectorAll(".MuiAutocomplete-popper, .base-Popper-root.MuiAutocomplete-listbox, [role='tree'].MuiAutocomplete-listbox");
+
+    treeSelectPoppers.forEach((popper) => {
+        popper.style.removeProperty("color");
+        popper.style.removeProperty("background");
+        popper.style.removeProperty("background-color");
+
+        popper.querySelectorAll(".MuiPaper-root, .MuiAutocomplete-listbox, [role='listbox'], [role='option'], [role='treeitem'], .MuiAutocomplete-option, .MuiTypography-root, label, span, li, .MuiBox-root, .MuiCheckbox-root, .MuiCheckbox-action, .MuiCheckbox-checkbox, .MuiFormControl-root, .MuiCheckbox-root .MuiSvgIcon-root, .MuiCheckbox-checkbox .MuiSvgIcon-root, .MuiIconButton-root .MuiSvgIcon-root").forEach((node) => {
+            node.style.removeProperty("color");
+            node.style.removeProperty("background");
+            node.style.removeProperty("background-color");
+        });
+
+        popper.querySelectorAll(".MuiCheckbox-checkbox").forEach((box) => {
+            box.style.removeProperty("border");
+            box.style.removeProperty("box-shadow");
+        });
+
+        popper.querySelectorAll(".MuiCheckbox-root, .MuiCheckbox-root.Mui-checked .MuiCheckbox-checkbox, .MuiCheckbox-root.MuiCheckbox-checked .MuiCheckbox-checkbox, .MuiCheckbox-root.Mui-indeterminate .MuiCheckbox-checkbox, .MuiCheckbox-root.MuiCheckbox-indeterminate .MuiCheckbox-checkbox, .MuiCheckbox-root.Mui-checked .MuiCheckbox-action, .MuiCheckbox-root.MuiCheckbox-checked .MuiCheckbox-action, .MuiCheckbox-root.Mui-indeterminate .MuiCheckbox-action, .MuiCheckbox-root.MuiCheckbox-indeterminate .MuiCheckbox-action").forEach((node) => {
+            node.style.removeProperty("--Icon-color");
+            node.style.removeProperty("border");
+        });
+
+        popper.querySelectorAll(".MuiCheckbox-root input[type='checkbox']").forEach((input) => {
+            input.style.removeProperty("accent-color");
+        });
+
+        popper.querySelectorAll(".MuiCheckbox-root .MuiSvgIcon-root path, .MuiCheckbox-root .MuiSvgIcon-root circle, .MuiCheckbox-root .MuiSvgIcon-root rect, .MuiCheckbox-root .MuiSvgIcon-root polygon, .MuiCheckbox-root .MuiSvgIcon-root polyline, .MuiCheckbox-root .MuiSvgIcon-root line, .MuiCheckbox-root .MuiSvgIcon-root ellipse, .MuiCheckbox-checkbox .MuiSvgIcon-root path, .MuiCheckbox-checkbox .MuiSvgIcon-root circle, .MuiCheckbox-checkbox .MuiSvgIcon-root rect, .MuiCheckbox-checkbox .MuiSvgIcon-root polygon, .MuiCheckbox-checkbox .MuiSvgIcon-root polyline, .MuiCheckbox-checkbox .MuiSvgIcon-root line, .MuiCheckbox-checkbox .MuiSvgIcon-root ellipse, .MuiIconButton-root .MuiSvgIcon-root path, .MuiIconButton-root .MuiSvgIcon-root circle, .MuiIconButton-root .MuiSvgIcon-root rect, .MuiIconButton-root .MuiSvgIcon-root polygon, .MuiIconButton-root .MuiSvgIcon-root polyline, .MuiIconButton-root .MuiSvgIcon-root line, .MuiIconButton-root .MuiSvgIcon-root ellipse, .MuiSvgIcon-root[data-testid='CheckIcon'] path, .MuiSvgIcon-root[data-testid='RemoveIcon'] path, .MuiSvgIcon-root[data-testid='HorizontalRuleIcon'] path").forEach((shape) => {
             shape.style.removeProperty("fill");
             shape.style.removeProperty("stroke");
         });
