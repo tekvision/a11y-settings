@@ -61,6 +61,10 @@ function handleUpdatedNodes(addedNodes) {
             }
         }
     }
+
+    if (localStorage.getItem("cc_enhancer")) {
+        applyReportDatePickerVisibility(localStorage.getItem("cc_enhancer"));
+    }
 }
 
 let handleColorStickiness = (colorOptions) => {
@@ -151,7 +155,11 @@ let handleColorChange = (colorCombination) => {
         }
     });
 
-    if (!isContrastEnabled) {
+    if (isContrastEnabled) {
+        applyReportDatePickerVisibility(colorCombination);
+    }
+    else {
+        clearReportDatePickerVisibility();
         clearContrastArtifacts();
     }
 }
@@ -174,8 +182,6 @@ let clearContrastArtifacts = () => {
         if (ele instanceof SVGElement || ele.closest?.("svg")) {
             ele.style?.removeProperty("fill");
             ele.style?.removeProperty("stroke");
-            ele.removeAttribute?.("fill");
-            ele.removeAttribute?.("stroke");
         }
 
         ele.removeAttribute?.(CONTRAST_MODIFIED_ATTR);
@@ -283,6 +289,215 @@ let getContrastForeground = (colorCombination) => {
         case "blackOnYellow": return "black";
         default: return "black";
     }
+}
+
+let getContrastBackground = (colorCombination) => {
+    switch (colorCombination) {
+        case "blackOnWhite": return "white";
+        case "whiteOnBlack": return "black";
+        case "yellowOnBlack": return "black";
+        case "blackOnYellow": return "yellow";
+        default: return "white";
+    }
+}
+
+let applyReportDatePickerVisibility = (colorCombination) => {
+    const foreground = getContrastForeground(colorCombination);
+    const background = getContrastBackground(colorCombination);
+    const dateIcons = document.querySelectorAll('.MuiSvgIcon-root[data-testid="DateRangeIcon"]');
+
+    dateIcons.forEach((icon) => {
+        icon.style.setProperty("color", foreground, "important");
+        icon.style.setProperty("background", "transparent", "important");
+        icon.style.setProperty("background-color", "transparent", "important");
+
+        icon.querySelectorAll("path, circle, rect, polygon, polyline, line, ellipse").forEach((shape) => {
+            shape.style.setProperty("fill", "currentColor", "important");
+            shape.style.setProperty("stroke", "currentColor", "important");
+        });
+
+        const iconButton = icon.closest("button");
+        if (iconButton) {
+            iconButton.style.setProperty("color", foreground, "important");
+            iconButton.style.setProperty("background", "transparent", "important");
+            iconButton.style.setProperty("background-color", "transparent", "important");
+        }
+
+        const inputRoot = icon.closest('.MuiInputBase-root, .MuiOutlinedInput-root');
+        if (inputRoot) {
+            inputRoot.style.setProperty("background", background, "important");
+            inputRoot.style.setProperty("background-color", background, "important");
+            inputRoot.style.setProperty("color", foreground, "important");
+
+            const outline = inputRoot.querySelector('.MuiOutlinedInput-notchedOutline');
+            if (outline) {
+                outline.style.setProperty("background", "transparent", "important");
+                outline.style.setProperty("background-color", "transparent", "important");
+                outline.style.setProperty("color", foreground, "important");
+                outline.style.setProperty("border-color", foreground, "important");
+
+                outline.querySelectorAll('legend, legend span').forEach((node) => {
+                    node.style.setProperty("background", "transparent", "important");
+                    node.style.setProperty("background-color", "transparent", "important");
+                    node.style.setProperty("color", foreground, "important");
+                });
+            }
+
+            const input = inputRoot.querySelector('input, textarea');
+            if (input) {
+                input.style.setProperty("color", foreground, "important");
+                input.style.setProperty("-webkit-text-fill-color", foreground, "important");
+                input.style.setProperty("caret-color", foreground, "important");
+                input.style.setProperty("opacity", "1", "important");
+                input.style.setProperty("background", background, "important");
+                input.style.setProperty("background-color", background, "important");
+            }
+        }
+    });
+
+    applyOpenCalendarVisibility(colorCombination);
+}
+
+let clearReportDatePickerVisibility = () => {
+    const dateIcons = document.querySelectorAll('.MuiSvgIcon-root[data-testid="DateRangeIcon"]');
+
+    dateIcons.forEach((icon) => {
+        icon.style.removeProperty("color");
+        icon.style.removeProperty("background");
+        icon.style.removeProperty("background-color");
+
+        icon.querySelectorAll("path, circle, rect, polygon, polyline, line, ellipse").forEach((shape) => {
+            shape.style.removeProperty("fill");
+            shape.style.removeProperty("stroke");
+        });
+
+        const iconButton = icon.closest("button");
+        if (iconButton) {
+            iconButton.style.removeProperty("color");
+            iconButton.style.removeProperty("background");
+            iconButton.style.removeProperty("background-color");
+        }
+
+        const inputRoot = icon.closest('.MuiInputBase-root, .MuiOutlinedInput-root');
+        if (inputRoot) {
+            inputRoot.style.removeProperty("background");
+            inputRoot.style.removeProperty("background-color");
+            inputRoot.style.removeProperty("color");
+
+            const outline = inputRoot.querySelector('.MuiOutlinedInput-notchedOutline');
+            if (outline) {
+                outline.style.removeProperty("background");
+                outline.style.removeProperty("background-color");
+                outline.style.removeProperty("color");
+                outline.style.removeProperty("border-color");
+
+                outline.querySelectorAll('legend, legend span').forEach((node) => {
+                    node.style.removeProperty("background");
+                    node.style.removeProperty("background-color");
+                    node.style.removeProperty("color");
+                });
+            }
+
+            const input = inputRoot.querySelector('input, textarea');
+            if (input) {
+                input.style.removeProperty("color");
+                input.style.removeProperty("-webkit-text-fill-color");
+                input.style.removeProperty("caret-color");
+                input.style.removeProperty("opacity");
+                input.style.removeProperty("background");
+                input.style.removeProperty("background-color");
+            }
+        }
+    });
+
+    clearOpenCalendarVisibility();
+}
+
+let applyOpenCalendarVisibility = (colorCombination) => {
+    const foreground = getContrastForeground(colorCombination);
+    const background = getContrastBackground(colorCombination);
+    const popupRoots = document.querySelectorAll('.MuiPickersPopper-root, .MuiDialog-root .MuiPickersLayout-root, .MuiPickersLayout-root');
+
+    popupRoots.forEach((root) => {
+        root.style.setProperty("color", foreground, "important");
+        root.style.setProperty("background", background, "important");
+        root.style.setProperty("background-color", background, "important");
+
+        root.querySelectorAll('.MuiPaper-root, .MuiPickersLayout-contentWrapper, .MuiDayCalendar-root, .MuiDateCalendar-root').forEach((node) => {
+            node.style.setProperty("color", foreground, "important");
+            node.style.setProperty("background", background, "important");
+            node.style.setProperty("background-color", background, "important");
+        });
+
+        root.querySelectorAll('.MuiPickersCalendarHeader-label, .MuiPickersArrowSwitcher-button, .MuiDayCalendar-weekDayLabel, .MuiPickersYear-yearButton, .MuiPickersMonth-monthButton, .MuiPickersToolbar-root, .MuiPickersToolbar-content, .MuiPickersToolbarText-root').forEach((node) => {
+            node.style.setProperty("color", foreground, "important");
+            node.style.setProperty("background", "transparent", "important");
+            node.style.setProperty("background-color", "transparent", "important");
+        });
+
+        root.querySelectorAll('.MuiPickersCalendarHeader-switchViewButton, .MuiPickersArrowSwitcher-button').forEach((btn) => {
+            btn.style.setProperty("color", foreground, "important");
+            btn.style.setProperty("background", "transparent", "important");
+            btn.style.setProperty("background-color", "transparent", "important");
+        });
+
+        root.querySelectorAll('.MuiPickersCalendarHeader-switchViewButton .MuiSvgIcon-root, .MuiPickersArrowSwitcher-button .MuiSvgIcon-root').forEach((icon) => {
+            icon.style.setProperty("color", foreground, "important");
+            icon.style.setProperty("background", "transparent", "important");
+            icon.style.setProperty("background-color", "transparent", "important");
+
+            icon.querySelectorAll('path, circle, rect, polygon, polyline, line, ellipse').forEach((shape) => {
+                shape.style.setProperty("fill", "currentColor", "important");
+                shape.style.setProperty("stroke", "currentColor", "important");
+            });
+        });
+
+        root.querySelectorAll('.MuiPickersDay-root').forEach((day) => {
+            const isSelected = day.classList.contains("Mui-selected");
+            const isToday = day.classList.contains("MuiPickersDay-today");
+
+            day.style.setProperty("opacity", "1", "important");
+            day.style.setProperty("color", isSelected ? background : foreground, "important");
+            day.style.setProperty("background", isSelected ? foreground : "transparent", "important");
+            day.style.setProperty("background-color", isSelected ? foreground : "transparent", "important");
+            day.style.setProperty("border-color", foreground, "important");
+
+            if (isToday && !isSelected) {
+                day.style.setProperty("border", `1px solid ${foreground}`, "important");
+            }
+        });
+
+        root.querySelectorAll('.MuiPickersYear-yearButton.Mui-selected, .MuiPickersMonth-monthButton.Mui-selected').forEach((node) => {
+            node.style.setProperty("color", background, "important");
+            node.style.setProperty("background", foreground, "important");
+            node.style.setProperty("background-color", foreground, "important");
+            node.style.setProperty("border-color", foreground, "important");
+        });
+    });
+}
+
+let clearOpenCalendarVisibility = () => {
+    const popupRoots = document.querySelectorAll('.MuiPickersPopper-root, .MuiDialog-root .MuiPickersLayout-root, .MuiPickersLayout-root');
+
+    popupRoots.forEach((root) => {
+        root.style.removeProperty("color");
+        root.style.removeProperty("background");
+        root.style.removeProperty("background-color");
+
+        root.querySelectorAll('.MuiPaper-root, .MuiPickersLayout-contentWrapper, .MuiDayCalendar-root, .MuiDateCalendar-root, .MuiPickersCalendarHeader-label, .MuiPickersArrowSwitcher-button, .MuiPickersCalendarHeader-switchViewButton, .MuiDayCalendar-weekDayLabel, .MuiPickersYear-yearButton, .MuiPickersMonth-monthButton, .MuiPickersToolbar-root, .MuiPickersToolbar-content, .MuiPickersToolbarText-root, .MuiPickersDay-root, .MuiPickersArrowSwitcher-button .MuiSvgIcon-root, .MuiPickersCalendarHeader-switchViewButton .MuiSvgIcon-root').forEach((node) => {
+            node.style.removeProperty("color");
+            node.style.removeProperty("background");
+            node.style.removeProperty("background-color");
+            node.style.removeProperty("border");
+            node.style.removeProperty("border-color");
+            node.style.removeProperty("opacity");
+        });
+
+        root.querySelectorAll('.MuiPickersArrowSwitcher-button .MuiSvgIcon-root path, .MuiPickersCalendarHeader-switchViewButton .MuiSvgIcon-root path, .MuiPickersArrowSwitcher-button .MuiSvgIcon-root circle, .MuiPickersCalendarHeader-switchViewButton .MuiSvgIcon-root circle, .MuiPickersArrowSwitcher-button .MuiSvgIcon-root rect, .MuiPickersCalendarHeader-switchViewButton .MuiSvgIcon-root rect, .MuiPickersArrowSwitcher-button .MuiSvgIcon-root polygon, .MuiPickersCalendarHeader-switchViewButton .MuiSvgIcon-root polygon, .MuiPickersArrowSwitcher-button .MuiSvgIcon-root polyline, .MuiPickersCalendarHeader-switchViewButton .MuiSvgIcon-root polyline, .MuiPickersArrowSwitcher-button .MuiSvgIcon-root line, .MuiPickersCalendarHeader-switchViewButton .MuiSvgIcon-root line, .MuiPickersArrowSwitcher-button .MuiSvgIcon-root ellipse, .MuiPickersCalendarHeader-switchViewButton .MuiSvgIcon-root ellipse').forEach((shape) => {
+            shape.style.removeProperty("fill");
+            shape.style.removeProperty("stroke");
+        });
+    });
 }
 
 let isUiEffectElement = (ele) => {
