@@ -64,6 +64,8 @@ function handleUpdatedNodes(addedNodes) {
 
     if (localStorage.getItem("cc_enhancer")) {
         applyReportDatePickerVisibility(localStorage.getItem("cc_enhancer"));
+        applyTableFilterVisibility(localStorage.getItem("cc_enhancer"));
+        applyTableMenuVisibility(localStorage.getItem("cc_enhancer"));
     }
 }
 
@@ -157,9 +159,13 @@ let handleColorChange = (colorCombination) => {
 
     if (isContrastEnabled) {
         applyReportDatePickerVisibility(colorCombination);
+        applyTableFilterVisibility(colorCombination);
+        applyTableMenuVisibility(colorCombination);
     }
     else {
         clearReportDatePickerVisibility();
+        clearTableFilterVisibility();
+        clearTableMenuVisibility();
         clearContrastArtifacts();
     }
 }
@@ -494,6 +500,217 @@ let clearOpenCalendarVisibility = () => {
         });
 
         root.querySelectorAll('.MuiPickersArrowSwitcher-button .MuiSvgIcon-root path, .MuiPickersCalendarHeader-switchViewButton .MuiSvgIcon-root path, .MuiPickersArrowSwitcher-button .MuiSvgIcon-root circle, .MuiPickersCalendarHeader-switchViewButton .MuiSvgIcon-root circle, .MuiPickersArrowSwitcher-button .MuiSvgIcon-root rect, .MuiPickersCalendarHeader-switchViewButton .MuiSvgIcon-root rect, .MuiPickersArrowSwitcher-button .MuiSvgIcon-root polygon, .MuiPickersCalendarHeader-switchViewButton .MuiSvgIcon-root polygon, .MuiPickersArrowSwitcher-button .MuiSvgIcon-root polyline, .MuiPickersCalendarHeader-switchViewButton .MuiSvgIcon-root polyline, .MuiPickersArrowSwitcher-button .MuiSvgIcon-root line, .MuiPickersCalendarHeader-switchViewButton .MuiSvgIcon-root line, .MuiPickersArrowSwitcher-button .MuiSvgIcon-root ellipse, .MuiPickersCalendarHeader-switchViewButton .MuiSvgIcon-root ellipse').forEach((shape) => {
+            shape.style.removeProperty("fill");
+            shape.style.removeProperty("stroke");
+        });
+    });
+}
+
+let applyTableFilterVisibility = (colorCombination) => {
+    const foreground = getContrastForeground(colorCombination);
+    const background = getContrastBackground(colorCombination);
+    const tableHead = document.querySelector(".MuiTableHead-root");
+    if (tableHead) {
+        tableHead.querySelectorAll("th, .MuiTableCell-root, .Mui-TableHeadCell-Content, .Mui-TableHeadCell-Content-Labels, .Mui-TableHeadCell-Content-Wrapper").forEach((node) => {
+            node.style.setProperty("color", foreground, "important");
+            node.style.setProperty("background", background, "important");
+            node.style.setProperty("background-color", background, "important");
+        });
+
+        tableHead.querySelectorAll(".MuiInputBase-root, .MuiOutlinedInput-root, .MuiFormControl-root, .MuiTextField-root").forEach((root) => {
+            root.style.setProperty("color", foreground, "important");
+            root.style.setProperty("background", background, "important");
+            root.style.setProperty("background-color", background, "important");
+        });
+
+        tableHead.querySelectorAll(".MuiInputBase-input, .MuiOutlinedInput-input, .MuiSelect-select, [role='combobox']").forEach((input) => {
+            input.style.setProperty("color", foreground, "important");
+            input.style.setProperty("-webkit-text-fill-color", foreground, "important");
+            input.style.setProperty("caret-color", foreground, "important");
+            input.style.setProperty("opacity", "1", "important");
+            input.style.setProperty("background", "transparent", "important");
+            input.style.setProperty("background-color", "transparent", "important");
+        });
+
+        tableHead.querySelectorAll(".MuiOutlinedInput-notchedOutline").forEach((outline) => {
+            outline.style.setProperty("background", "transparent", "important");
+            outline.style.setProperty("background-color", "transparent", "important");
+            outline.style.setProperty("border-color", foreground, "important");
+        });
+
+        tableHead.querySelectorAll(".MuiInputAdornment-root").forEach((adornment) => {
+            adornment.style.setProperty("color", foreground, "important");
+            adornment.style.setProperty("background", "transparent", "important");
+            adornment.style.setProperty("background-color", "transparent", "important");
+        });
+
+        tableHead.querySelectorAll(".MuiSvgIcon-root").forEach((icon) => {
+            icon.style.setProperty("color", foreground, "important");
+            icon.style.setProperty("background", "transparent", "important");
+            icon.style.setProperty("background-color", "transparent", "important");
+
+            icon.querySelectorAll("path, circle, rect, polygon, polyline, line, ellipse").forEach((shape) => {
+                shape.style.setProperty("fill", "currentColor", "important");
+                shape.style.setProperty("stroke", "currentColor", "important");
+            });
+        });
+
+        tableHead.querySelectorAll(".MuiButtonBase-root, .MuiTableSortLabel-root, .MuiIconButton-root").forEach((btn) => {
+            btn.style.setProperty("color", foreground, "important");
+            btn.style.setProperty("background", "transparent", "important");
+            btn.style.setProperty("background-color", "transparent", "important");
+        });
+    }
+
+    document.querySelectorAll("button[aria-label='Show filters on column headers'], button[aria-label='Hide filters from column headers']").forEach((btn) => {
+        btn.style.setProperty("color", foreground, "important");
+        btn.style.setProperty("background", "transparent", "important");
+        btn.style.setProperty("background-color", "transparent", "important");
+
+        btn.querySelectorAll(".MuiSvgIcon-root").forEach((icon) => {
+            icon.style.setProperty("color", foreground, "important");
+            icon.style.setProperty("background", "transparent", "important");
+            icon.style.setProperty("background-color", "transparent", "important");
+
+            icon.querySelectorAll("path, circle, rect, polygon, polyline, line, ellipse").forEach((shape) => {
+                shape.style.setProperty("fill", "currentColor", "important");
+                shape.style.setProperty("stroke", "currentColor", "important");
+            });
+        });
+    });
+}
+
+let clearTableFilterVisibility = () => {
+    const tableHead = document.querySelector(".MuiTableHead-root");
+    if (tableHead) {
+        tableHead.querySelectorAll("th, .MuiTableCell-root, .Mui-TableHeadCell-Content, .Mui-TableHeadCell-Content-Labels, .Mui-TableHeadCell-Content-Wrapper, .MuiInputBase-root, .MuiOutlinedInput-root, .MuiFormControl-root, .MuiTextField-root, .MuiInputBase-input, .MuiOutlinedInput-input, .MuiSelect-select, [role='combobox'], .MuiOutlinedInput-notchedOutline, .MuiInputAdornment-root, .MuiSvgIcon-root, .MuiButtonBase-root, .MuiTableSortLabel-root, .MuiIconButton-root").forEach((node) => {
+            node.style.removeProperty("color");
+            node.style.removeProperty("background");
+            node.style.removeProperty("background-color");
+            node.style.removeProperty("-webkit-text-fill-color");
+            node.style.removeProperty("caret-color");
+            node.style.removeProperty("opacity");
+            node.style.removeProperty("border-color");
+        });
+
+        tableHead.querySelectorAll(".MuiSvgIcon-root path, .MuiSvgIcon-root circle, .MuiSvgIcon-root rect, .MuiSvgIcon-root polygon, .MuiSvgIcon-root polyline, .MuiSvgIcon-root line, .MuiSvgIcon-root ellipse").forEach((shape) => {
+            shape.style.removeProperty("fill");
+            shape.style.removeProperty("stroke");
+        });
+    }
+
+    document.querySelectorAll("button[aria-label='Show filters on column headers'], button[aria-label='Hide filters from column headers']").forEach((btn) => {
+        btn.style.removeProperty("color");
+        btn.style.removeProperty("background");
+        btn.style.removeProperty("background-color");
+
+        btn.querySelectorAll(".MuiSvgIcon-root").forEach((icon) => {
+            icon.style.removeProperty("color");
+            icon.style.removeProperty("background");
+            icon.style.removeProperty("background-color");
+        });
+
+        btn.querySelectorAll(".MuiSvgIcon-root path, .MuiSvgIcon-root circle, .MuiSvgIcon-root rect, .MuiSvgIcon-root polygon, .MuiSvgIcon-root polyline, .MuiSvgIcon-root line, .MuiSvgIcon-root ellipse").forEach((shape) => {
+            shape.style.removeProperty("fill");
+            shape.style.removeProperty("stroke");
+        });
+    });
+}
+
+let applyTableMenuVisibility = (colorCombination) => {
+    const foreground = getContrastForeground(colorCombination);
+    const background = getContrastBackground(colorCombination);
+    const menuRoots = document.querySelectorAll(".MuiMenu-paper, .MuiPopover-paper");
+
+    menuRoots.forEach((menu) => {
+        menu.style.setProperty("color", foreground, "important");
+        menu.style.setProperty("background", background, "important");
+        menu.style.setProperty("background-color", background, "important");
+
+        menu.querySelectorAll(".MuiMenu-list, .MuiList-root, .MuiListItem-root, .MuiMenuItem-root, [role='menuitem'], [role='menuitemcheckbox'], [role='menuitemradio']").forEach((node) => {
+            node.style.setProperty("color", foreground, "important");
+            node.style.setProperty("background", background, "important");
+            node.style.setProperty("background-color", background, "important");
+        });
+
+        menu.querySelectorAll(".MuiListItemIcon-root, .MuiListItemText-root, .MuiTypography-root, .MuiFormControlLabel-label, .MuiCheckbox-root, .MuiRadio-root, .MuiSwitch-root").forEach((node) => {
+            node.style.setProperty("color", foreground, "important");
+            node.style.setProperty("background", "transparent", "important");
+            node.style.setProperty("background-color", "transparent", "important");
+        });
+
+        menu.querySelectorAll(".MuiSwitch-track").forEach((track) => {
+            track.style.setProperty("background-color", foreground, "important");
+            track.style.setProperty("opacity", "0.35", "important");
+            track.style.setProperty("border", `1px solid ${foreground}`, "important");
+        });
+
+        menu.querySelectorAll(".MuiSwitch-thumb").forEach((thumb) => {
+            thumb.style.setProperty("background-color", foreground, "important");
+            thumb.style.setProperty("color", background, "important");
+            thumb.style.setProperty("border", `1px solid ${foreground}`, "important");
+        });
+
+        menu.querySelectorAll(".MuiSwitch-switchBase").forEach((base) => {
+            base.style.setProperty("color", foreground, "important");
+            base.style.setProperty("background", "transparent", "important");
+            base.style.setProperty("background-color", "transparent", "important");
+        });
+
+        menu.querySelectorAll(".MuiSwitch-switchBase.Mui-checked").forEach((checked) => {
+            checked.style.setProperty("color", foreground, "important");
+        });
+
+        menu.querySelectorAll(".MuiCheckbox-root .MuiSvgIcon-root, .MuiRadio-root .MuiSvgIcon-root").forEach((icon) => {
+            icon.style.setProperty("color", foreground, "important");
+            icon.querySelectorAll("path, circle, rect, polygon, polyline, line, ellipse").forEach((shape) => {
+                shape.style.setProperty("fill", "currentColor", "important");
+                shape.style.setProperty("stroke", "currentColor", "important");
+            });
+        });
+
+        menu.querySelectorAll(".MuiButtonBase-root, .MuiIconButton-root").forEach((btn) => {
+            btn.style.setProperty("color", foreground, "important");
+            btn.style.setProperty("background", "transparent", "important");
+            btn.style.setProperty("background-color", "transparent", "important");
+        });
+
+        menu.querySelectorAll(".MuiSvgIcon-root").forEach((icon) => {
+            icon.style.setProperty("color", foreground, "important");
+            icon.style.setProperty("background", "transparent", "important");
+            icon.style.setProperty("background-color", "transparent", "important");
+
+            icon.querySelectorAll("path, circle, rect, polygon, polyline, line, ellipse").forEach((shape) => {
+                shape.style.setProperty("fill", "currentColor", "important");
+                shape.style.setProperty("stroke", "currentColor", "important");
+            });
+        });
+    });
+}
+
+let clearTableMenuVisibility = () => {
+    const menuRoots = document.querySelectorAll(".MuiMenu-paper, .MuiPopover-paper");
+
+    menuRoots.forEach((menu) => {
+        menu.style.removeProperty("color");
+        menu.style.removeProperty("background");
+        menu.style.removeProperty("background-color");
+
+        menu.querySelectorAll(".MuiMenu-list, .MuiList-root, .MuiListItem-root, .MuiMenuItem-root, [role='menuitem'], [role='menuitemcheckbox'], [role='menuitemradio'], .MuiListItemIcon-root, .MuiListItemText-root, .MuiTypography-root, .MuiFormControlLabel-label, .MuiCheckbox-root, .MuiRadio-root, .MuiSwitch-root, .MuiButtonBase-root, .MuiIconButton-root, .MuiSvgIcon-root").forEach((node) => {
+            node.style.removeProperty("color");
+            node.style.removeProperty("background");
+            node.style.removeProperty("background-color");
+        });
+
+        menu.querySelectorAll(".MuiSwitch-track, .MuiSwitch-thumb, .MuiSwitch-switchBase, .MuiSwitch-switchBase.Mui-checked").forEach((node) => {
+            node.style.removeProperty("color");
+            node.style.removeProperty("background");
+            node.style.removeProperty("background-color");
+            node.style.removeProperty("opacity");
+            node.style.removeProperty("border");
+        });
+
+        menu.querySelectorAll(".MuiSvgIcon-root path, .MuiSvgIcon-root circle, .MuiSvgIcon-root rect, .MuiSvgIcon-root polygon, .MuiSvgIcon-root polyline, .MuiSvgIcon-root line, .MuiSvgIcon-root ellipse").forEach((shape) => {
             shape.style.removeProperty("fill");
             shape.style.removeProperty("stroke");
         });
