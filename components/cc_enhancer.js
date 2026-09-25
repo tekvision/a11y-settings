@@ -795,7 +795,7 @@ let applyModalTreeSelectVisibility = (colorCombination) => {
             node.style.setProperty("color", foreground, "important");
         });
 
-        popper.querySelectorAll(".MuiCheckbox-root, .MuiCheckbox-action, .MuiCheckbox-checkbox, .MuiFormControl-root").forEach((node) => {
+        popper.querySelectorAll(".MuiCheckbox-root, .MuiCheckbox-action, .MuiCheckbox-checkbox, .MuiRadio-root, .MuiRadio-radio, .MuiRadio-action, .MuiRadio-icon, .MuiRadio-label, .MuiFormControl-root").forEach((node) => {
             node.style.setProperty("color", foreground, "important");
             node.style.setProperty("background", "transparent", "important");
             node.style.setProperty("background-color", "transparent", "important");
@@ -827,6 +827,37 @@ let applyModalTreeSelectVisibility = (colorCombination) => {
 
         popper.querySelectorAll(".MuiCheckbox-root.Mui-checked .MuiCheckbox-action, .MuiCheckbox-root.MuiCheckbox-checked .MuiCheckbox-action, .MuiCheckbox-root.Mui-indeterminate .MuiCheckbox-action, .MuiCheckbox-root.MuiCheckbox-indeterminate .MuiCheckbox-action").forEach((action) => {
             action.style.setProperty("color", background, "important");
+        });
+
+        // Joy radio controls in report modal options.
+        popper.querySelectorAll(".MuiRadio-radio").forEach((radio) => {
+            radio.style.setProperty("border", `1px solid ${foreground}`, "important");
+            radio.style.setProperty("background", "transparent", "important");
+            radio.style.setProperty("background-color", "transparent", "important");
+        });
+
+        popper.querySelectorAll(".MuiRadio-root.Mui-checked .MuiRadio-radio, .MuiRadio-root.MuiRadio-checked .MuiRadio-radio").forEach((radio) => {
+            radio.style.setProperty("background", foreground, "important");
+            radio.style.setProperty("background-color", foreground, "important");
+            radio.style.setProperty("border", `1px solid ${foreground}`, "important");
+        });
+
+        popper.querySelectorAll(".MuiRadio-root .MuiRadio-icon").forEach((icon) => {
+            icon.style.setProperty("border", `1px solid ${foreground}`, "important");
+            icon.style.setProperty("background", "transparent", "important");
+            icon.style.setProperty("background-color", "transparent", "important");
+        });
+
+        popper.querySelectorAll(".MuiRadio-root.Mui-checked .MuiRadio-icon, .MuiRadio-root.MuiRadio-checked .MuiRadio-icon").forEach((icon) => {
+            icon.style.setProperty("background", background, "important");
+            icon.style.setProperty("background-color", background, "important");
+            icon.style.setProperty("border", `1px solid ${background}`, "important");
+        });
+
+        popper.querySelectorAll(".MuiRadio-label, .MuiRadio-label .MuiTypography-root").forEach((label) => {
+            label.style.setProperty("color", foreground, "important");
+            label.style.setProperty("background", "transparent", "important");
+            label.style.setProperty("background-color", "transparent", "important");
         });
 
         popper.querySelectorAll(".MuiCheckbox-root .MuiSvgIcon-root, .MuiCheckbox-checkbox .MuiSvgIcon-root, .MuiIconButton-root .MuiSvgIcon-root, .MuiSvgIcon-root[data-testid='ChevronRightIcon'], .MuiSvgIcon-root[data-testid='ExpandMoreIcon']").forEach((icon) => {
@@ -863,7 +894,7 @@ let clearModalTreeSelectVisibility = () => {
         popper.style.removeProperty("background");
         popper.style.removeProperty("background-color");
 
-        popper.querySelectorAll(".MuiPaper-root, .MuiAutocomplete-listbox, [role='listbox'], [role='option'], [role='treeitem'], .MuiAutocomplete-option, .MuiTypography-root, label, span, li, .MuiBox-root, .MuiCheckbox-root, .MuiCheckbox-action, .MuiCheckbox-checkbox, .MuiFormControl-root, .MuiCheckbox-root .MuiSvgIcon-root, .MuiCheckbox-checkbox .MuiSvgIcon-root, .MuiIconButton-root .MuiSvgIcon-root").forEach((node) => {
+        popper.querySelectorAll(".MuiPaper-root, .MuiAutocomplete-listbox, [role='listbox'], [role='option'], [role='treeitem'], .MuiAutocomplete-option, .MuiTypography-root, label, span, li, .MuiBox-root, .MuiCheckbox-root, .MuiCheckbox-action, .MuiCheckbox-checkbox, .MuiRadio-root, .MuiRadio-radio, .MuiRadio-action, .MuiRadio-icon, .MuiRadio-label, .MuiFormControl-root, .MuiCheckbox-root .MuiSvgIcon-root, .MuiCheckbox-checkbox .MuiSvgIcon-root, .MuiIconButton-root .MuiSvgIcon-root").forEach((node) => {
             node.style.removeProperty("color");
             node.style.removeProperty("background");
             node.style.removeProperty("background-color");
@@ -872,6 +903,10 @@ let clearModalTreeSelectVisibility = () => {
         popper.querySelectorAll(".MuiCheckbox-checkbox").forEach((box) => {
             box.style.removeProperty("border");
             box.style.removeProperty("box-shadow");
+        });
+
+        popper.querySelectorAll(".MuiRadio-radio, .MuiRadio-root.Mui-checked .MuiRadio-radio, .MuiRadio-root.MuiRadio-checked .MuiRadio-radio, .MuiRadio-root .MuiRadio-icon, .MuiRadio-root.Mui-checked .MuiRadio-icon, .MuiRadio-root.MuiRadio-checked .MuiRadio-icon").forEach((node) => {
+            node.style.removeProperty("border");
         });
 
         popper.querySelectorAll(".MuiCheckbox-root, .MuiCheckbox-root.Mui-checked .MuiCheckbox-checkbox, .MuiCheckbox-root.MuiCheckbox-checked .MuiCheckbox-checkbox, .MuiCheckbox-root.Mui-indeterminate .MuiCheckbox-checkbox, .MuiCheckbox-root.MuiCheckbox-indeterminate .MuiCheckbox-checkbox, .MuiCheckbox-root.Mui-checked .MuiCheckbox-action, .MuiCheckbox-root.MuiCheckbox-checked .MuiCheckbox-action, .MuiCheckbox-root.Mui-indeterminate .MuiCheckbox-action, .MuiCheckbox-root.MuiCheckbox-indeterminate .MuiCheckbox-action").forEach((node) => {
