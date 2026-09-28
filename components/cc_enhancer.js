@@ -61,7 +61,8 @@ function observeNodeChanges() {
 
                 if (
                     target.closest(".MuiModal-root, .MuiDialog-root, .MuiPopover-root, .MuiMenu-root") ||
-                    target.matches(".MuiAutocomplete-popper, .base-Popper-root, .MuiPickersPopper-root")
+                    target.matches(".MuiAutocomplete-popper, .base-Popper-root, .MuiPickersPopper-root") ||
+                    target.matches(".MuiRadio-root, .MuiRadio-radio, .MuiRadio-action, .MuiRadio-input, .MuiCheckbox-root, .MuiCheckbox-action, .MuiCheckbox-input")
                 ) {
                     scheduleContrastReapply();
                 }
@@ -1135,7 +1136,7 @@ let clearModalTreeSelectVisibility = () => {
 let applySurveyModalRadioVisibility = (colorCombination) => {
     const foreground = getContrastForeground(colorCombination);
     const background = getContrastBackground(colorCombination);
-    const modalRoots = document.querySelectorAll(".MuiDialog-root, .MuiModal-root");
+    const modalRoots = document.querySelectorAll(".MuiDialog-root, .MuiModal-root, .MuiRadioGroup-root, [role='group'][aria-labelledby*='question']");
 
     modalRoots.forEach((root) => {
         // Reset per-pass stateful styles so previous selections/focus do not linger.
@@ -1248,9 +1249,20 @@ let applySurveyModalRadioVisibility = (colorCombination) => {
 
         // Focus uses a solid ring (no dotted/dashed outlines).
         root.querySelectorAll(".MuiRadio-input:focus-visible, .MuiRadio-action:focus-visible, .MuiRadio-action.Mui-focusVisible").forEach((focused) => {
-            focused.style.setProperty("outline", `2px solid ${foreground}`, "important");
-            focused.style.setProperty("outline-offset", "4px", "important");
+            focused.style.setProperty("outline", `3px solid ${foreground}`, "important");
+            focused.style.setProperty("outline-offset", "3px", "important");
             focused.style.setProperty("box-shadow", "none", "important");
+        });
+
+        // Joy input is inside action; if input owns focus, style its action ring directly.
+        root.querySelectorAll(".MuiRadio-input:focus-visible").forEach((input) => {
+            const action = input.closest(".MuiRadio-action");
+            if (action) {
+                action.style.setProperty("outline", `3px solid ${foreground}`, "important");
+                action.style.setProperty("outline-offset", "3px", "important");
+                action.style.setProperty("border-radius", "999px", "important");
+                action.style.setProperty("box-shadow", `0 0 0 2px ${background}`, "important");
+            }
         });
 
         root.querySelectorAll(".MuiRadio-input[aria-pressed='true'], .MuiRadio-input:checked").forEach((input) => {
@@ -1279,7 +1291,7 @@ let applySurveyModalRadioVisibility = (colorCombination) => {
 }
 
 let clearSurveyModalRadioVisibility = () => {
-    const modalRoots = document.querySelectorAll(".MuiDialog-root, .MuiModal-root");
+    const modalRoots = document.querySelectorAll(".MuiDialog-root, .MuiModal-root, .MuiRadioGroup-root, [role='group'][aria-labelledby*='question']");
 
     modalRoots.forEach((root) => {
         root.querySelectorAll(".MuiRadio-root, .MuiRadio-radio, .MuiRadio-action, .MuiRadio-input, .MuiRadio-label, .MuiCheckbox-root, .MuiCheckbox-checkbox, .MuiCheckbox-action, .MuiCheckbox-input, .MuiCheckbox-label").forEach((node) => {
