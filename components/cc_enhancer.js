@@ -806,87 +806,79 @@ let clearTableFilterVisibility = () => {
 let applyTableCellToggleVisibility = (colorCombination) => {
     const foreground = getContrastForeground(colorCombination);
     const background = getContrastBackground(colorCombination);
-    const tables = document.querySelectorAll(".MuiTable-root");
+    document.querySelectorAll(".MuiSwitch-root").forEach((node) => {
+        node.style.setProperty("color", foreground, "important");
+        node.style.setProperty("background", "transparent", "important");
+        node.style.setProperty("background-color", "transparent", "important");
+        node.style.setProperty("--Switch-trackBackground", background, "important");
+        node.style.setProperty("--Switch-trackColor", foreground, "important");
+        node.style.setProperty("--Switch-thumbBackground", foreground, "important");
+        node.style.setProperty("--Switch-thumbColor", background, "important");
+        node.style.setProperty("--Switch-thumbBorder", `1px solid ${foreground}`, "important");
+        node.style.setProperty("visibility", "visible", "important");
+    });
 
-    tables.forEach((table) => {
-        table.querySelectorAll("tbody .MuiSwitch-root").forEach((node) => {
-            node.style.setProperty("color", foreground, "important");
-            node.style.setProperty("background", "transparent", "important");
-            node.style.setProperty("background-color", "transparent", "important");
-            node.style.setProperty("--Switch-trackBackground", background, "important");
-            node.style.setProperty("--Switch-trackColor", foreground, "important");
-            node.style.setProperty("--Switch-thumbBackground", foreground, "important");
-            node.style.setProperty("--Switch-thumbColor", background, "important");
-            node.style.setProperty("--Switch-thumbBorder", `1px solid ${foreground}`, "important");
-            node.style.setProperty("visibility", "visible", "important");
-        });
+    document.querySelectorAll(".MuiSwitch-action, .MuiSwitch-input, [role='switch']").forEach((node) => {
+        node.style.setProperty("color", foreground, "important");
+        node.style.setProperty("background", "transparent", "important");
+        node.style.setProperty("background-color", "transparent", "important");
+        node.style.setProperty("visibility", "visible", "important");
+    });
 
-        table.querySelectorAll("tbody .MuiSwitch-action, tbody .MuiSwitch-input").forEach((node) => {
-            node.style.setProperty("color", foreground, "important");
-            node.style.setProperty("background", "transparent", "important");
-            node.style.setProperty("background-color", "transparent", "important");
-            node.style.setProperty("visibility", "visible", "important");
-        });
+    document.querySelectorAll(".MuiSwitch-track").forEach((track) => {
+        track.style.setProperty("background-color", background, "important");
+        track.style.setProperty("opacity", "1", "important");
+        track.style.setProperty("border", `1px solid ${foreground}`, "important");
+    });
 
-        table.querySelectorAll("tbody .MuiSwitch-track").forEach((track) => {
-            track.style.setProperty("background-color", background, "important");
-            track.style.setProperty("opacity", "1", "important");
-            track.style.setProperty("border", `1px solid ${foreground}`, "important");
-        });
+    document.querySelectorAll(".MuiSwitch-thumb").forEach((thumb) => {
+        thumb.style.setProperty("background-color", foreground, "important");
+        thumb.style.setProperty("border", `1px solid ${foreground}`, "important");
+    });
 
-        table.querySelectorAll("tbody .MuiSwitch-thumb").forEach((thumb) => {
-            thumb.style.setProperty("background-color", foreground, "important");
-            thumb.style.setProperty("border", `1px solid ${foreground}`, "important");
-        });
+    document.querySelectorAll(".MuiSwitch-switchBase").forEach((base) => {
+        base.style.setProperty("color", foreground, "important");
+        base.style.setProperty("background", "transparent", "important");
+        base.style.setProperty("background-color", "transparent", "important");
+    });
 
-        table.querySelectorAll("tbody .MuiSwitch-switchBase").forEach((base) => {
-            base.style.setProperty("color", foreground, "important");
-            base.style.setProperty("background", "transparent", "important");
-            base.style.setProperty("background-color", "transparent", "important");
-        });
+    document.querySelectorAll(".MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track").forEach((checkedTrack) => {
+        checkedTrack.style.setProperty("opacity", "0.9", "important");
+        checkedTrack.style.setProperty("background-color", foreground, "important");
+    });
 
-        table.querySelectorAll("tbody .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track").forEach((checkedTrack) => {
-            checkedTrack.style.setProperty("opacity", "0.9", "important");
-            checkedTrack.style.setProperty("background-color", foreground, "important");
-        });
+    document.querySelectorAll(".MuiSwitch-root.Mui-checked .MuiSwitch-track, .MuiSwitch-track.Mui-checked").forEach((checkedTrack) => {
+        checkedTrack.style.setProperty("background-color", foreground, "important");
+        checkedTrack.style.setProperty("opacity", "1", "important");
+        checkedTrack.style.setProperty("border", `1px solid ${foreground}`, "important");
+    });
 
-        table.querySelectorAll("tbody .MuiSwitch-root.Mui-checked .MuiSwitch-track, tbody .MuiSwitch-track.Mui-checked").forEach((checkedTrack) => {
-            checkedTrack.style.setProperty("background-color", foreground, "important");
-            checkedTrack.style.setProperty("opacity", "1", "important");
-            checkedTrack.style.setProperty("border", `1px solid ${foreground}`, "important");
-        });
+    document.querySelectorAll(".MuiSwitch-root.Mui-checked .MuiSwitch-thumb, .MuiSwitch-thumb.Mui-checked").forEach((checkedThumb) => {
+        checkedThumb.style.setProperty("background-color", background, "important");
+        checkedThumb.style.setProperty("border", `1px solid ${foreground}`, "important");
+    });
 
-        table.querySelectorAll("tbody .MuiSwitch-root.Mui-checked .MuiSwitch-thumb, tbody .MuiSwitch-thumb.Mui-checked").forEach((checkedThumb) => {
-            checkedThumb.style.setProperty("background-color", background, "important");
-            checkedThumb.style.setProperty("border", `1px solid ${foreground}`, "important");
-        });
-
-        table.querySelectorAll("tbody .MuiSwitch-input[role='switch']").forEach((toggleInput) => {
-            toggleInput.style.setProperty("outline", `2px solid ${foreground}`, "important");
-            toggleInput.style.setProperty("outline-offset", "2px", "important");
-        });
+    document.querySelectorAll(".MuiSwitch-input[role='switch'], [role='switch']").forEach((toggleInput) => {
+        toggleInput.style.setProperty("outline", `2px solid ${foreground}`, "important");
+        toggleInput.style.setProperty("outline-offset", "2px", "important");
     });
 }
 
 let clearTableCellToggleVisibility = () => {
-    const tables = document.querySelectorAll(".MuiTable-root");
-
-    tables.forEach((table) => {
-        table.querySelectorAll("tbody .MuiSwitch-root, tbody .MuiSwitch-track, tbody .MuiSwitch-thumb, tbody .MuiSwitch-switchBase, tbody .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track, tbody .MuiSwitch-action, tbody .MuiSwitch-input, tbody .MuiSwitch-root.Mui-checked .MuiSwitch-track, tbody .MuiSwitch-track.Mui-checked, tbody .MuiSwitch-root.Mui-checked .MuiSwitch-thumb, tbody .MuiSwitch-thumb.Mui-checked").forEach((node) => {
-            node.style.removeProperty("color");
-            node.style.removeProperty("background");
-            node.style.removeProperty("background-color");
-            node.style.removeProperty("opacity");
-            node.style.removeProperty("border");
-            node.style.removeProperty("visibility");
-            node.style.removeProperty("--Switch-trackBackground");
-            node.style.removeProperty("--Switch-trackColor");
-            node.style.removeProperty("--Switch-thumbBackground");
-            node.style.removeProperty("--Switch-thumbColor");
-            node.style.removeProperty("--Switch-thumbBorder");
-            node.style.removeProperty("outline");
-            node.style.removeProperty("outline-offset");
-        });
+    document.querySelectorAll(".MuiSwitch-root, .MuiSwitch-track, .MuiSwitch-thumb, .MuiSwitch-switchBase, .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track, .MuiSwitch-action, .MuiSwitch-input, .MuiSwitch-root.Mui-checked .MuiSwitch-track, .MuiSwitch-track.Mui-checked, .MuiSwitch-root.Mui-checked .MuiSwitch-thumb, .MuiSwitch-thumb.Mui-checked, [role='switch']").forEach((node) => {
+        node.style.removeProperty("color");
+        node.style.removeProperty("background");
+        node.style.removeProperty("background-color");
+        node.style.removeProperty("opacity");
+        node.style.removeProperty("border");
+        node.style.removeProperty("visibility");
+        node.style.removeProperty("--Switch-trackBackground");
+        node.style.removeProperty("--Switch-trackColor");
+        node.style.removeProperty("--Switch-thumbBackground");
+        node.style.removeProperty("--Switch-thumbColor");
+        node.style.removeProperty("--Switch-thumbBorder");
+        node.style.removeProperty("outline");
+        node.style.removeProperty("outline-offset");
     });
 }
 
