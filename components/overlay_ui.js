@@ -19,7 +19,7 @@ let toolUI = `
                         <div class="div-4">
                             <div class="div-5">
                                 <img class="body" src="${imageUrl('body-3.svg')}" alt="" />
-                                <div class="text-wrapper" id="dialog-title">Enhance Accessibility</div>
+                                <div class="text-wrapper" id="dialog-title">telugu Accessibility</div>
                             </div>
                             <div class="div-6" role="button" tabindex="0" id="revert-all">
                                 <div class="link" aria-hidden="true"></div>
