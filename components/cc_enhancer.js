@@ -39,6 +39,7 @@ function observeNodeChanges() {
             applyMuiTextFieldVisibility(activeContrast);
             applyReportDatePickerVisibility(activeContrast);
             applyTableFilterVisibility(activeContrast);
+            applyTableCellToggleVisibility(activeContrast);
             applyTableMenuVisibility(activeContrast);
             applyModalTreeSelectVisibility(activeContrast);
             applyUploadListFlowVisibility(activeContrast);
@@ -104,6 +105,7 @@ function handleUpdatedNodes(addedNodes) {
         applyMuiTextFieldVisibility(localStorage.getItem("cc_enhancer"));
         applyReportDatePickerVisibility(localStorage.getItem("cc_enhancer"));
         applyTableFilterVisibility(localStorage.getItem("cc_enhancer"));
+        applyTableCellToggleVisibility(localStorage.getItem("cc_enhancer"));
         applyTableMenuVisibility(localStorage.getItem("cc_enhancer"));
         applyModalTreeSelectVisibility(localStorage.getItem("cc_enhancer"));
         applyUploadListFlowVisibility(localStorage.getItem("cc_enhancer"));
@@ -203,6 +205,7 @@ let handleColorChange = (colorCombination) => {
         applyMuiTextFieldVisibility(colorCombination);
         applyReportDatePickerVisibility(colorCombination);
         applyTableFilterVisibility(colorCombination);
+        applyTableCellToggleVisibility(colorCombination);
         applyTableMenuVisibility(colorCombination);
         applyModalTreeSelectVisibility(colorCombination);
         applyUploadListFlowVisibility(colorCombination);
@@ -211,6 +214,7 @@ let handleColorChange = (colorCombination) => {
         clearMuiTextFieldVisibility();
         clearReportDatePickerVisibility();
         clearTableFilterVisibility();
+        clearTableCellToggleVisibility();
         clearTableMenuVisibility();
         clearModalTreeSelectVisibility();
         clearUploadListFlowVisibility();
@@ -736,6 +740,93 @@ let clearTableFilterVisibility = () => {
         btn.querySelectorAll(".MuiSvgIcon-root path, .MuiSvgIcon-root circle, .MuiSvgIcon-root rect, .MuiSvgIcon-root polygon, .MuiSvgIcon-root polyline, .MuiSvgIcon-root line, .MuiSvgIcon-root ellipse").forEach((shape) => {
             shape.style.removeProperty("fill");
             shape.style.removeProperty("stroke");
+        });
+    });
+}
+
+let applyTableCellToggleVisibility = (colorCombination) => {
+    const foreground = getContrastForeground(colorCombination);
+    const background = getContrastBackground(colorCombination);
+    const tables = document.querySelectorAll(".MuiTable-root");
+
+    tables.forEach((table) => {
+        table.querySelectorAll("tbody .MuiSwitch-root").forEach((node) => {
+            node.style.setProperty("color", foreground, "important");
+            node.style.setProperty("background", "transparent", "important");
+            node.style.setProperty("background-color", "transparent", "important");
+            node.style.setProperty("--Switch-trackBackground", background, "important");
+            node.style.setProperty("--Switch-trackColor", foreground, "important");
+            node.style.setProperty("--Switch-thumbBackground", foreground, "important");
+            node.style.setProperty("--Switch-thumbColor", background, "important");
+            node.style.setProperty("--Switch-thumbBorder", `1px solid ${foreground}`, "important");
+            node.style.setProperty("visibility", "visible", "important");
+        });
+
+        table.querySelectorAll("tbody .MuiSwitch-action, tbody .MuiSwitch-input").forEach((node) => {
+            node.style.setProperty("color", foreground, "important");
+            node.style.setProperty("background", "transparent", "important");
+            node.style.setProperty("background-color", "transparent", "important");
+            node.style.setProperty("visibility", "visible", "important");
+        });
+
+        table.querySelectorAll("tbody .MuiSwitch-track").forEach((track) => {
+            track.style.setProperty("background-color", background, "important");
+            track.style.setProperty("opacity", "1", "important");
+            track.style.setProperty("border", `1px solid ${foreground}`, "important");
+        });
+
+        table.querySelectorAll("tbody .MuiSwitch-thumb").forEach((thumb) => {
+            thumb.style.setProperty("background-color", foreground, "important");
+            thumb.style.setProperty("border", `1px solid ${foreground}`, "important");
+        });
+
+        table.querySelectorAll("tbody .MuiSwitch-switchBase").forEach((base) => {
+            base.style.setProperty("color", foreground, "important");
+            base.style.setProperty("background", "transparent", "important");
+            base.style.setProperty("background-color", "transparent", "important");
+        });
+
+        table.querySelectorAll("tbody .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track").forEach((checkedTrack) => {
+            checkedTrack.style.setProperty("opacity", "0.9", "important");
+            checkedTrack.style.setProperty("background-color", foreground, "important");
+        });
+
+        table.querySelectorAll("tbody .MuiSwitch-root.Mui-checked .MuiSwitch-track, tbody .MuiSwitch-track.Mui-checked").forEach((checkedTrack) => {
+            checkedTrack.style.setProperty("background-color", foreground, "important");
+            checkedTrack.style.setProperty("opacity", "1", "important");
+            checkedTrack.style.setProperty("border", `1px solid ${foreground}`, "important");
+        });
+
+        table.querySelectorAll("tbody .MuiSwitch-root.Mui-checked .MuiSwitch-thumb, tbody .MuiSwitch-thumb.Mui-checked").forEach((checkedThumb) => {
+            checkedThumb.style.setProperty("background-color", background, "important");
+            checkedThumb.style.setProperty("border", `1px solid ${foreground}`, "important");
+        });
+
+        table.querySelectorAll("tbody .MuiSwitch-input[role='switch']").forEach((toggleInput) => {
+            toggleInput.style.setProperty("outline", `2px solid ${foreground}`, "important");
+            toggleInput.style.setProperty("outline-offset", "2px", "important");
+        });
+    });
+}
+
+let clearTableCellToggleVisibility = () => {
+    const tables = document.querySelectorAll(".MuiTable-root");
+
+    tables.forEach((table) => {
+        table.querySelectorAll("tbody .MuiSwitch-root, tbody .MuiSwitch-track, tbody .MuiSwitch-thumb, tbody .MuiSwitch-switchBase, tbody .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track, tbody .MuiSwitch-action, tbody .MuiSwitch-input, tbody .MuiSwitch-root.Mui-checked .MuiSwitch-track, tbody .MuiSwitch-track.Mui-checked, tbody .MuiSwitch-root.Mui-checked .MuiSwitch-thumb, tbody .MuiSwitch-thumb.Mui-checked").forEach((node) => {
+            node.style.removeProperty("color");
+            node.style.removeProperty("background");
+            node.style.removeProperty("background-color");
+            node.style.removeProperty("opacity");
+            node.style.removeProperty("border");
+            node.style.removeProperty("visibility");
+            node.style.removeProperty("--Switch-trackBackground");
+            node.style.removeProperty("--Switch-trackColor");
+            node.style.removeProperty("--Switch-thumbBackground");
+            node.style.removeProperty("--Switch-thumbColor");
+            node.style.removeProperty("--Switch-thumbBorder");
+            node.style.removeProperty("outline");
+            node.style.removeProperty("outline-offset");
         });
     });
 }
