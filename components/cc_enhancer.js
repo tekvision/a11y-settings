@@ -42,6 +42,7 @@ function observeNodeChanges() {
             applyTableCellToggleVisibility(activeContrast);
             applyTableMenuVisibility(activeContrast);
             applyModalTreeSelectVisibility(activeContrast);
+            applySurveyModalRadioVisibility(activeContrast);
             applyUploadListFlowVisibility(activeContrast);
         });
     };
@@ -108,6 +109,7 @@ function handleUpdatedNodes(addedNodes) {
         applyTableCellToggleVisibility(localStorage.getItem("cc_enhancer"));
         applyTableMenuVisibility(localStorage.getItem("cc_enhancer"));
         applyModalTreeSelectVisibility(localStorage.getItem("cc_enhancer"));
+        applySurveyModalRadioVisibility(localStorage.getItem("cc_enhancer"));
         applyUploadListFlowVisibility(localStorage.getItem("cc_enhancer"));
     }
 }
@@ -208,6 +210,7 @@ let handleColorChange = (colorCombination) => {
         applyTableCellToggleVisibility(colorCombination);
         applyTableMenuVisibility(colorCombination);
         applyModalTreeSelectVisibility(colorCombination);
+        applySurveyModalRadioVisibility(colorCombination);
         applyUploadListFlowVisibility(colorCombination);
     }
     else {
@@ -217,6 +220,7 @@ let handleColorChange = (colorCombination) => {
         clearTableCellToggleVisibility();
         clearTableMenuVisibility();
         clearModalTreeSelectVisibility();
+        clearSurveyModalRadioVisibility();
         clearUploadListFlowVisibility();
         clearContrastArtifacts();
     }
@@ -1077,6 +1081,157 @@ let clearModalTreeSelectVisibility = () => {
         popper.querySelectorAll(".MuiCheckbox-root .MuiSvgIcon-root path, .MuiCheckbox-root .MuiSvgIcon-root circle, .MuiCheckbox-root .MuiSvgIcon-root rect, .MuiCheckbox-root .MuiSvgIcon-root polygon, .MuiCheckbox-root .MuiSvgIcon-root polyline, .MuiCheckbox-root .MuiSvgIcon-root line, .MuiCheckbox-root .MuiSvgIcon-root ellipse, .MuiCheckbox-checkbox .MuiSvgIcon-root path, .MuiCheckbox-checkbox .MuiSvgIcon-root circle, .MuiCheckbox-checkbox .MuiSvgIcon-root rect, .MuiCheckbox-checkbox .MuiSvgIcon-root polygon, .MuiCheckbox-checkbox .MuiSvgIcon-root polyline, .MuiCheckbox-checkbox .MuiSvgIcon-root line, .MuiCheckbox-checkbox .MuiSvgIcon-root ellipse, .MuiIconButton-root .MuiSvgIcon-root path, .MuiIconButton-root .MuiSvgIcon-root circle, .MuiIconButton-root .MuiSvgIcon-root rect, .MuiIconButton-root .MuiSvgIcon-root polygon, .MuiIconButton-root .MuiSvgIcon-root polyline, .MuiIconButton-root .MuiSvgIcon-root line, .MuiIconButton-root .MuiSvgIcon-root ellipse, .MuiSvgIcon-root[data-testid='CheckIcon'] path, .MuiSvgIcon-root[data-testid='RemoveIcon'] path, .MuiSvgIcon-root[data-testid='HorizontalRuleIcon'] path").forEach((shape) => {
             shape.style.removeProperty("fill");
             shape.style.removeProperty("stroke");
+        });
+    });
+}
+
+let applySurveyModalRadioVisibility = (colorCombination) => {
+    const foreground = getContrastForeground(colorCombination);
+    const background = getContrastBackground(colorCombination);
+    const modalRoots = document.querySelectorAll(".MuiDialog-root, .MuiModal-root");
+
+    modalRoots.forEach((root) => {
+        // Reset per-pass stateful styles so previous selections/focus do not linger.
+        root.querySelectorAll(".MuiRadio-root, .MuiRadio-radio, .MuiRadio-action, .MuiRadio-input, .MuiRadio-label, .MuiCheckbox-root, .MuiCheckbox-checkbox, .MuiCheckbox-action, .MuiCheckbox-input, .MuiCheckbox-label, label[for]").forEach((node) => {
+            node.style.removeProperty("outline");
+            node.style.removeProperty("outline-offset");
+            node.style.removeProperty("box-shadow");
+            node.style.removeProperty("border-radius");
+            node.style.removeProperty("padding");
+            node.style.removeProperty("border-style");
+        });
+
+        root.querySelectorAll(".MuiRadio-root, .MuiRadio-radio, .MuiRadio-action, .MuiRadio-input, .MuiRadio-label").forEach((node) => {
+            node.style.setProperty("color", foreground, "important");
+            node.style.setProperty("background", "transparent", "important");
+            node.style.setProperty("background-color", "transparent", "important");
+        });
+
+        root.querySelectorAll(".MuiCheckbox-root, .MuiCheckbox-checkbox, .MuiCheckbox-action, .MuiCheckbox-input, .MuiCheckbox-label").forEach((node) => {
+            node.style.setProperty("color", foreground, "important");
+            node.style.setProperty("background", "transparent", "important");
+            node.style.setProperty("background-color", "transparent", "important");
+        });
+
+        root.querySelectorAll(".MuiCheckbox-checkbox").forEach((box) => {
+            box.style.setProperty("border", `1px solid ${foreground}`, "important");
+            box.style.setProperty("box-shadow", `inset 0 0 0 1px ${foreground}`, "important");
+        });
+
+        root.querySelectorAll(".MuiCheckbox-root").forEach((checkboxRoot) => {
+            checkboxRoot.style.setProperty("--Icon-color", background, "important");
+        });
+
+        root.querySelectorAll(".MuiCheckbox-root.Mui-checked .MuiCheckbox-checkbox, .MuiCheckbox-root.MuiCheckbox-checked .MuiCheckbox-checkbox, .MuiCheckbox-root.Mui-indeterminate .MuiCheckbox-checkbox, .MuiCheckbox-root.MuiCheckbox-indeterminate .MuiCheckbox-checkbox").forEach((box) => {
+            box.style.setProperty("background", foreground, "important");
+            box.style.setProperty("background-color", foreground, "important");
+            box.style.setProperty("color", background, "important");
+            box.style.setProperty("border", `1px solid ${foreground}`, "important");
+        });
+
+        root.querySelectorAll(".MuiCheckbox-root .MuiSvgIcon-root[data-testid='CheckIcon'], .MuiCheckbox-root .MuiSvgIcon-root[data-testid='RemoveIcon'], .MuiCheckbox-root .MuiSvgIcon-root[data-testid='HorizontalRuleIcon']").forEach((icon) => {
+            icon.style.setProperty("color", background, "important");
+            icon.querySelectorAll("path, circle, rect, polygon, polyline, line, ellipse").forEach((shape) => {
+                shape.style.setProperty("fill", background, "important");
+                shape.style.setProperty("stroke", background, "important");
+            });
+        });
+
+        root.querySelectorAll(".MuiCheckbox-input:focus-visible, .MuiCheckbox-action:focus-visible, .MuiCheckbox-action.Mui-focusVisible").forEach((focused) => {
+            focused.style.setProperty("outline", `2px solid ${foreground}`, "important");
+            focused.style.setProperty("outline-offset", "4px", "important");
+            focused.style.setProperty("box-shadow", "none", "important");
+        });
+
+        root.querySelectorAll(".MuiCheckbox-input:checked, .MuiCheckbox-input[aria-checked='true']").forEach((input) => {
+            const selectedRoot = input.closest(".MuiCheckbox-root");
+            if (selectedRoot) {
+                selectedRoot.style.setProperty("outline", `2px solid ${foreground}`, "important");
+                selectedRoot.style.setProperty("outline-offset", "2px", "important");
+                selectedRoot.style.setProperty("border-radius", "10px", "important");
+            }
+
+            const inputId = input.getAttribute("id");
+            if (inputId) {
+                root.querySelectorAll(`label[for='${inputId}']`).forEach((label) => {
+                    label.style.setProperty("outline", `2px solid ${foreground}`, "important");
+                    label.style.setProperty("outline-offset", "2px", "important");
+                    label.style.setProperty("border-radius", "6px", "important");
+                    label.style.setProperty("padding", "2px 4px", "important");
+                });
+            }
+        });
+
+        root.querySelectorAll(".MuiRadio-radio").forEach((radio) => {
+            radio.style.setProperty("border", `1px solid ${foreground}`, "important");
+        });
+
+        root.querySelectorAll(".MuiRadio-root.Mui-checked .MuiRadio-radio, .MuiRadio-root.MuiRadio-checked .MuiRadio-radio").forEach((radio) => {
+            radio.style.setProperty("outline", `2px solid ${foreground}`, "important");
+            radio.style.setProperty("outline-offset", "2px", "important");
+            radio.style.setProperty("box-shadow", `0 0 0 2px ${background} inset`, "important");
+        });
+
+        root.querySelectorAll(".MuiRadio-root.Mui-checked .MuiRadio-action, .MuiRadio-root.MuiRadio-checked .MuiRadio-action").forEach((action) => {
+            action.style.setProperty("outline", `2px solid ${foreground}`, "important");
+            action.style.setProperty("outline-offset", "2px", "important");
+        });
+
+        // Focus is visually distinct from selected: dashed ring + wider offset.
+        root.querySelectorAll(".MuiRadio-input:focus-visible, .MuiRadio-action:focus-visible, .MuiRadio-action.Mui-focusVisible").forEach((focused) => {
+            focused.style.setProperty("outline", `2px dashed ${foreground}`, "important");
+            focused.style.setProperty("outline-offset", "4px", "important");
+            focused.style.setProperty("box-shadow", "none", "important");
+        });
+
+        root.querySelectorAll(".MuiRadio-input[aria-pressed='true'], .MuiRadio-input:checked").forEach((input) => {
+            input.style.setProperty("outline", `2px solid ${foreground}`, "important");
+            input.style.setProperty("outline-offset", "2px", "important");
+
+            const selectedRoot = input.closest(".MuiRadio-root");
+            if (selectedRoot) {
+                selectedRoot.style.setProperty("outline", `2px solid ${foreground}`, "important");
+                selectedRoot.style.setProperty("outline-offset", "2px", "important");
+                selectedRoot.style.setProperty("border-radius", "10px", "important");
+                selectedRoot.style.setProperty("box-shadow", `0 0 0 2px ${background} inset`, "important");
+            }
+
+            const inputId = input.getAttribute("id");
+            if (inputId) {
+                root.querySelectorAll(`label[for='${inputId}']`).forEach((label) => {
+                    label.style.setProperty("outline", `2px solid ${foreground}`, "important");
+                    label.style.setProperty("outline-offset", "2px", "important");
+                    label.style.setProperty("border-radius", "6px", "important");
+                    label.style.setProperty("padding", "2px 4px", "important");
+                });
+            }
+        });
+    });
+}
+
+let clearSurveyModalRadioVisibility = () => {
+    const modalRoots = document.querySelectorAll(".MuiDialog-root, .MuiModal-root");
+
+    modalRoots.forEach((root) => {
+        root.querySelectorAll(".MuiRadio-root, .MuiRadio-radio, .MuiRadio-action, .MuiRadio-input, .MuiRadio-label, .MuiCheckbox-root, .MuiCheckbox-checkbox, .MuiCheckbox-action, .MuiCheckbox-input, .MuiCheckbox-label").forEach((node) => {
+            node.style.removeProperty("color");
+            node.style.removeProperty("background");
+            node.style.removeProperty("background-color");
+            node.style.removeProperty("border");
+            node.style.removeProperty("outline");
+            node.style.removeProperty("outline-offset");
+            node.style.removeProperty("box-shadow");
+            node.style.removeProperty("border-radius");
+            node.style.removeProperty("padding");
+            node.style.removeProperty("border-style");
+            node.style.removeProperty("--Icon-color");
+        });
+
+        root.querySelectorAll("label[for]").forEach((label) => {
+            label.style.removeProperty("outline");
+            label.style.removeProperty("outline-offset");
+            label.style.removeProperty("border-radius");
+            label.style.removeProperty("padding");
         });
     });
 }
