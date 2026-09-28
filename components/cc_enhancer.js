@@ -44,9 +44,9 @@ function observeNodeChanges() {
             applyTableCellToggleVisibility(activeContrast);
             applyTableMenuVisibility(activeContrast);
             applyModalTreeSelectVisibility(activeContrast);
+            applyGlobalCheckboxVisibility(activeContrast);
             applySurveyModalRadioVisibility(activeContrast);
             applySurveyProgressVisibility(activeContrast);
-            applyUploadListFlowVisibility(activeContrast);
         });
     };
 
@@ -114,9 +114,9 @@ function handleUpdatedNodes(addedNodes) {
         applyTableCellToggleVisibility(localStorage.getItem("cc_enhancer"));
         applyTableMenuVisibility(localStorage.getItem("cc_enhancer"));
         applyModalTreeSelectVisibility(localStorage.getItem("cc_enhancer"));
+        applyGlobalCheckboxVisibility(localStorage.getItem("cc_enhancer"));
         applySurveyModalRadioVisibility(localStorage.getItem("cc_enhancer"));
         applySurveyProgressVisibility(localStorage.getItem("cc_enhancer"));
-        applyUploadListFlowVisibility(localStorage.getItem("cc_enhancer"));
     }
 }
 
@@ -217,9 +217,9 @@ let handleColorChange = (colorCombination) => {
         applyTableCellToggleVisibility(colorCombination);
         applyTableMenuVisibility(colorCombination);
         applyModalTreeSelectVisibility(colorCombination);
+        applyGlobalCheckboxVisibility(colorCombination);
         applySurveyModalRadioVisibility(colorCombination);
         applySurveyProgressVisibility(colorCombination);
-        applyUploadListFlowVisibility(colorCombination);
     }
     else {
         clearMuiTextFieldVisibility();
@@ -229,9 +229,9 @@ let handleColorChange = (colorCombination) => {
         clearTableCellToggleVisibility();
         clearTableMenuVisibility();
         clearModalTreeSelectVisibility();
+        clearGlobalCheckboxVisibility();
         clearSurveyModalRadioVisibility();
         clearSurveyProgressVisibility();
-        clearUploadListFlowVisibility();
         clearContrastArtifacts();
     }
 }
@@ -1137,6 +1137,80 @@ let clearModalTreeSelectVisibility = () => {
     });
 }
 
+let applyGlobalCheckboxVisibility = (colorCombination) => {
+    const foreground = getContrastForeground(colorCombination);
+    const background = getContrastBackground(colorCombination);
+
+    document.querySelectorAll(".MuiCheckbox-root, .MuiCheckbox-action, .MuiCheckbox-checkbox, .MuiCheckbox-input, .MuiCheckbox-label").forEach((node) => {
+        node.style.setProperty("color", foreground, "important");
+        node.style.setProperty("background", "transparent", "important");
+        node.style.setProperty("background-color", "transparent", "important");
+    });
+
+    document.querySelectorAll(".MuiCheckbox-root").forEach((checkboxRoot) => {
+        checkboxRoot.style.setProperty("--Icon-color", background, "important");
+    });
+
+    document.querySelectorAll(".MuiCheckbox-checkbox").forEach((box) => {
+        box.style.setProperty("border", `1px solid ${foreground}`, "important");
+        box.style.setProperty("box-shadow", `inset 0 0 0 1px ${foreground}`, "important");
+    });
+
+    document.querySelectorAll(".MuiCheckbox-root.Mui-checked .MuiCheckbox-checkbox, .MuiCheckbox-root.MuiCheckbox-checked .MuiCheckbox-checkbox, .MuiCheckbox-root.Mui-indeterminate .MuiCheckbox-checkbox, .MuiCheckbox-root.MuiCheckbox-indeterminate .MuiCheckbox-checkbox").forEach((box) => {
+        box.style.setProperty("background", foreground, "important");
+        box.style.setProperty("background-color", foreground, "important");
+        box.style.setProperty("color", background, "important");
+        box.style.setProperty("border", `1px solid ${foreground}`, "important");
+    });
+
+    document.querySelectorAll(".MuiCheckbox-root .MuiSvgIcon-root[data-testid='CheckIcon'], .MuiCheckbox-root .MuiSvgIcon-root[data-testid='RemoveIcon'], .MuiCheckbox-root .MuiSvgIcon-root[data-testid='HorizontalRuleIcon']").forEach((icon) => {
+        icon.style.setProperty("color", background, "important");
+        icon.querySelectorAll("path, circle, rect, polygon, polyline, line, ellipse").forEach((shape) => {
+            shape.style.setProperty("fill", background, "important");
+            shape.style.setProperty("stroke", background, "important");
+        });
+    });
+
+    document.querySelectorAll(".MuiCheckbox-input[id]").forEach((input) => {
+        const inputId = input.getAttribute("id");
+        if (!inputId) return;
+        document.querySelectorAll(`label[for='${inputId}']`).forEach((label) => {
+            label.style.setProperty("color", foreground, "important");
+            label.style.setProperty("background", "transparent", "important");
+            label.style.setProperty("background-color", "transparent", "important");
+        });
+    });
+}
+
+let clearGlobalCheckboxVisibility = () => {
+    document.querySelectorAll(".MuiCheckbox-root, .MuiCheckbox-action, .MuiCheckbox-checkbox, .MuiCheckbox-input, .MuiCheckbox-label").forEach((node) => {
+        node.style.removeProperty("color");
+        node.style.removeProperty("background");
+        node.style.removeProperty("background-color");
+        node.style.removeProperty("border");
+        node.style.removeProperty("box-shadow");
+        node.style.removeProperty("--Icon-color");
+    });
+
+    document.querySelectorAll(".MuiCheckbox-root .MuiSvgIcon-root[data-testid='CheckIcon'], .MuiCheckbox-root .MuiSvgIcon-root[data-testid='RemoveIcon'], .MuiCheckbox-root .MuiSvgIcon-root[data-testid='HorizontalRuleIcon']").forEach((icon) => {
+        icon.style.removeProperty("color");
+        icon.querySelectorAll("path, circle, rect, polygon, polyline, line, ellipse").forEach((shape) => {
+            shape.style.removeProperty("fill");
+            shape.style.removeProperty("stroke");
+        });
+    });
+
+    document.querySelectorAll(".MuiCheckbox-input[id]").forEach((input) => {
+        const inputId = input.getAttribute("id");
+        if (!inputId) return;
+        document.querySelectorAll(`label[for='${inputId}']`).forEach((label) => {
+            label.style.removeProperty("color");
+            label.style.removeProperty("background");
+            label.style.removeProperty("background-color");
+        });
+    });
+}
+
 let applySurveyModalRadioVisibility = (colorCombination) => {
     const foreground = getContrastForeground(colorCombination);
     const background = getContrastBackground(colorCombination);
@@ -1346,102 +1420,9 @@ let clearSurveyProgressVisibility = () => {
     });
 }
 
-let applyUploadListFlowVisibility = (colorCombination) => {
-    const foreground = getContrastForeground(colorCombination);
-    const background = getContrastBackground(colorCombination);
-    const uploadRoots = getUploadFlowRoots();
 
-    uploadRoots.forEach((root) => {
-        root.querySelectorAll("fieldset, legend, .MuiTypography-root, .MuiCheckbox-label, .MuiFormLabel-root").forEach((node) => {
-            node.classList?.remove(...CONTRAST_CLASSES);
-            node.style.setProperty("color", foreground, "important");
-            node.style.setProperty("background", "transparent", "important");
-            node.style.setProperty("background-color", "transparent", "important");
-        });
 
-        root.querySelectorAll(".MuiCheckbox-root, .MuiCheckbox-action, .MuiCheckbox-checkbox").forEach((node) => {
-            node.classList?.remove(...CONTRAST_CLASSES);
-            node.style.setProperty("color", foreground, "important");
-            node.style.setProperty("background", "transparent", "important");
-            node.style.setProperty("background-color", "transparent", "important");
-        });
 
-        root.querySelectorAll(".MuiCheckbox-root").forEach((checkboxRoot) => {
-            checkboxRoot.style.setProperty("--Icon-color", background, "important");
-
-            const checkboxInput = checkboxRoot.querySelector(".MuiCheckbox-input");
-            const inputId = checkboxInput?.id;
-            if (inputId) {
-                root.querySelectorAll("label[for]").forEach((label) => {
-                    if (label.getAttribute("for") !== inputId) return;
-                    label.classList?.remove(...CONTRAST_CLASSES);
-                    label.style.setProperty("color", foreground, "important");
-                    label.style.setProperty("background", "transparent", "important");
-                    label.style.setProperty("background-color", "transparent", "important");
-                });
-            }
-        });
-
-        root.querySelectorAll(".MuiCheckbox-checkbox").forEach((box) => {
-            box.style.setProperty("border", `1px solid ${foreground}`, "important");
-            box.style.setProperty("box-shadow", `inset 0 0 0 1px ${foreground}`, "important");
-        });
-
-        root.querySelectorAll(".MuiCheckbox-root.Mui-checked .MuiCheckbox-checkbox, .MuiCheckbox-root.MuiCheckbox-checked .MuiCheckbox-checkbox, .MuiCheckbox-root.Mui-indeterminate .MuiCheckbox-checkbox, .MuiCheckbox-root.MuiCheckbox-indeterminate .MuiCheckbox-checkbox").forEach((box) => {
-            box.style.setProperty("background", foreground, "important");
-            box.style.setProperty("background-color", foreground, "important");
-            box.style.setProperty("color", background, "important");
-            box.style.setProperty("border", `1px solid ${foreground}`, "important");
-        });
-
-        root.querySelectorAll(".MuiCheckbox-root .MuiSvgIcon-root").forEach((icon) => {
-            icon.classList?.remove(...CONTRAST_CLASSES);
-            icon.style.setProperty("color", foreground, "important");
-            icon.style.setProperty("background", "transparent", "important");
-            icon.style.setProperty("background-color", "transparent", "important");
-
-            icon.querySelectorAll("path, circle, rect, polygon, polyline, line, ellipse").forEach((shape) => {
-                shape.style.setProperty("fill", "currentColor", "important");
-                shape.style.setProperty("stroke", "currentColor", "important");
-            });
-        });
-
-        // Ensure checked glyph remains visible on solid checked checkbox fill.
-        root.querySelectorAll(".MuiCheckbox-root.Mui-checked .MuiSvgIcon-root[data-testid='CheckIcon'], .MuiCheckbox-root.MuiCheckbox-checked .MuiSvgIcon-root[data-testid='CheckIcon'], .MuiCheckbox-root.Mui-indeterminate .MuiSvgIcon-root[data-testid='RemoveIcon'], .MuiCheckbox-root.MuiCheckbox-indeterminate .MuiSvgIcon-root[data-testid='RemoveIcon'], .MuiCheckbox-root.Mui-indeterminate .MuiSvgIcon-root[data-testid='HorizontalRuleIcon'], .MuiCheckbox-root.MuiCheckbox-indeterminate .MuiSvgIcon-root[data-testid='HorizontalRuleIcon']").forEach((icon) => {
-            icon.style.setProperty("color", background, "important");
-            icon.querySelectorAll("path, circle, rect, polygon, polyline, line, ellipse").forEach((shape) => {
-                shape.style.setProperty("fill", background, "important");
-                shape.style.setProperty("stroke", background, "important");
-            });
-        });
-    });
-}
-
-let clearUploadListFlowVisibility = () => {
-    const uploadRoots = getUploadFlowRoots();
-
-    uploadRoots.forEach((root) => {
-        root.querySelectorAll("fieldset, legend, .MuiTypography-root, .MuiCheckbox-label, .MuiFormLabel-root, .MuiCheckbox-root, .MuiCheckbox-action, .MuiCheckbox-checkbox, .MuiCheckbox-root .MuiSvgIcon-root").forEach((node) => {
-            node.style.removeProperty("color");
-            node.style.removeProperty("background");
-            node.style.removeProperty("background-color");
-        });
-
-        root.querySelectorAll(".MuiCheckbox-root").forEach((checkboxRoot) => {
-            checkboxRoot.style.removeProperty("--Icon-color");
-        });
-
-        root.querySelectorAll(".MuiCheckbox-checkbox").forEach((box) => {
-            box.style.removeProperty("border");
-            box.style.removeProperty("box-shadow");
-        });
-
-        root.querySelectorAll(".MuiCheckbox-root .MuiSvgIcon-root path, .MuiCheckbox-root .MuiSvgIcon-root circle, .MuiCheckbox-root .MuiSvgIcon-root rect, .MuiCheckbox-root .MuiSvgIcon-root polygon, .MuiCheckbox-root .MuiSvgIcon-root polyline, .MuiCheckbox-root .MuiSvgIcon-root line, .MuiCheckbox-root .MuiSvgIcon-root ellipse").forEach((shape) => {
-            shape.style.removeProperty("fill");
-            shape.style.removeProperty("stroke");
-        });
-    });
-}
 
 let isUiEffectElement = (ele) => {
     return !!(
@@ -1465,61 +1446,6 @@ let clearContrastStyles = (ele) => {
     ele.style?.removeProperty("color");
 }
 
-let getUploadFlowRoots = () => {
-    const uploadInputs = document.querySelectorAll("input#file-upload[type='file'][accept='.xlsx']");
-    const roots = new Set();
-
-    uploadInputs.forEach((input) => {
-        const gridCell = input.closest(".MuiGrid-grid-xs-12, .MuiGrid-grid-sm-12, .MuiGrid-grid-md-12, .MuiGrid-grid-lg-12, .MuiGrid-grid-xl-12");
-        const flowRoot =
-            gridCell?.parentElement ||
-            input.closest(".MuiDialog-root, .MuiModal-root") ||
-            input.closest("form") ||
-            input.closest("section");
-
-        if (flowRoot) {
-            roots.add(flowRoot);
-        }
-    });
-
-    // Step 2/3/4 often have no file input. Infer the same flow root from
-    // checkboxes rendered inside a Joy stepper region (TEP contributor upload).
-    document.querySelectorAll(".MuiCheckbox-root").forEach((checkboxRoot) => {
-        let node = checkboxRoot;
-        while (node && node !== document.body) {
-            if (!(node instanceof Element)) break;
-
-            const hasStepper = !!node.querySelector(".MuiStepper-root");
-            const hasUploaderHint = !!(
-                node.querySelector("#episode-list-filter") ||
-                node.querySelector("input#file-upload[type='file'][accept='.xlsx']") ||
-                node.querySelector("button[aria-label*='step'], button[aria-label*='Step']")
-            );
-
-            if (hasStepper && hasUploaderHint) {
-                roots.add(node);
-                break;
-            }
-
-            node = node.parentElement;
-        }
-    });
-
-    // Direct-entry path can land on step 3 without import controls.
-    document.querySelectorAll("#episode-list-filter").forEach((node) => {
-        const flowRoot =
-            node.closest(".MuiDialog-root, .MuiModal-root") ||
-            node.closest(".MuiSheet-root") ||
-            node.closest(".MuiBox-root") ||
-            node.closest("form") ||
-            node.closest("section");
-        if (flowRoot) {
-            roots.add(flowRoot);
-        }
-    });
-
-    return roots;
-}
 
 let isInsideExcludedSvgZone = (ele) => {
     return !!(
