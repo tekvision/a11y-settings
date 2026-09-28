@@ -36,6 +36,7 @@ function observeNodeChanges() {
             if (!activeContrast) return;
 
             applyGlobalMuiIconVisibility(activeContrast);
+            applyMuiTextFieldVisibility(activeContrast);
             applyReportDatePickerVisibility(activeContrast);
             applyTableFilterVisibility(activeContrast);
             applyTableMenuVisibility(activeContrast);
@@ -99,6 +100,7 @@ function handleUpdatedNodes(addedNodes) {
 
     if (localStorage.getItem("cc_enhancer")) {
         applyGlobalMuiIconVisibility(localStorage.getItem("cc_enhancer"));
+        applyMuiTextFieldVisibility(localStorage.getItem("cc_enhancer"));
         applyReportDatePickerVisibility(localStorage.getItem("cc_enhancer"));
         applyTableFilterVisibility(localStorage.getItem("cc_enhancer"));
         applyTableMenuVisibility(localStorage.getItem("cc_enhancer"));
@@ -196,12 +198,14 @@ let handleColorChange = (colorCombination) => {
 
     if (isContrastEnabled) {
         applyGlobalMuiIconVisibility(colorCombination);
+        applyMuiTextFieldVisibility(colorCombination);
         applyReportDatePickerVisibility(colorCombination);
         applyTableFilterVisibility(colorCombination);
         applyTableMenuVisibility(colorCombination);
         applyModalTreeSelectVisibility(colorCombination);
     }
     else {
+        clearMuiTextFieldVisibility();
         clearReportDatePickerVisibility();
         clearTableFilterVisibility();
         clearTableMenuVisibility();
@@ -361,6 +365,63 @@ let applyGlobalMuiIconVisibility = (colorCombination) => {
         icon.querySelectorAll("path, circle, rect, polygon, polyline, line, ellipse").forEach((shape) => {
             shape.style.setProperty("fill", "currentColor", "important");
             shape.style.setProperty("stroke", "currentColor", "important");
+        });
+    });
+}
+
+let applyMuiTextFieldVisibility = (colorCombination) => {
+    const foreground = getContrastForeground(colorCombination);
+    const background = getContrastBackground(colorCombination);
+    const fieldRoots = document.querySelectorAll(".MuiTextField-root, .MuiInputBase-root, .MuiOutlinedInput-root, .MuiFilledInput-root, .MuiInput-root");
+
+    fieldRoots.forEach((root) => {
+        root.style.setProperty("color", foreground, "important");
+        root.style.setProperty("background", background, "important");
+        root.style.setProperty("background-color", background, "important");
+
+        const outline = root.querySelector(".MuiOutlinedInput-notchedOutline");
+        if (outline) {
+            outline.style.setProperty("background", "transparent", "important");
+            outline.style.setProperty("background-color", "transparent", "important");
+
+            // Keep border untouched for borderless designs.
+            outline.style.removeProperty("border-color");
+        }
+
+        root.querySelectorAll("input, textarea, .MuiInputBase-input, .MuiOutlinedInput-input, .MuiInput-input, .MuiFilledInput-input").forEach((input) => {
+            input.style.setProperty("color", foreground, "important");
+            input.style.setProperty("-webkit-text-fill-color", foreground, "important");
+            input.style.setProperty("caret-color", foreground, "important");
+            input.style.setProperty("opacity", "1", "important");
+            input.style.setProperty("background", "transparent", "important");
+            input.style.setProperty("background-color", "transparent", "important");
+            input.style.setProperty("--ada-placeholder-color", foreground, "important");
+        });
+    });
+}
+
+let clearMuiTextFieldVisibility = () => {
+    const fieldRoots = document.querySelectorAll(".MuiTextField-root, .MuiInputBase-root, .MuiOutlinedInput-root, .MuiFilledInput-root, .MuiInput-root");
+
+    fieldRoots.forEach((root) => {
+        root.style.removeProperty("color");
+        root.style.removeProperty("background");
+        root.style.removeProperty("background-color");
+
+        const outline = root.querySelector(".MuiOutlinedInput-notchedOutline");
+        if (outline) {
+            outline.style.removeProperty("background");
+            outline.style.removeProperty("background-color");
+        }
+
+        root.querySelectorAll("input, textarea, .MuiInputBase-input, .MuiOutlinedInput-input, .MuiInput-input, .MuiFilledInput-input").forEach((input) => {
+            input.style.removeProperty("color");
+            input.style.removeProperty("-webkit-text-fill-color");
+            input.style.removeProperty("caret-color");
+            input.style.removeProperty("opacity");
+            input.style.removeProperty("background");
+            input.style.removeProperty("background-color");
+            input.style.removeProperty("--ada-placeholder-color");
         });
     });
 }
