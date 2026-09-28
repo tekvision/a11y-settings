@@ -9,6 +9,7 @@ let processedSVGElements = new Set(); //This will ensure that there is unique el
 const CONTRAST_CLASSES = ["yellowOnBlack", "blackOnYellow", "whiteOnBlack", "blackOnWhite"];
 const CONTRAST_MODIFIED_ATTR = "data-ada-contrast-modified";
 const BORDERLESS_BUTTON_ATTR = "data-ada-borderless-button";
+const BUTTON_BORDER_COLORIZED_ATTR = "data-ada-button-border-colorized";
 let contrastReapplyQueued = false;
 
 export let handleColorContrastEnhancements = (colorOptions) => {
@@ -403,13 +404,17 @@ let applyBorderlessButtonVisibility = (colorCombination) => {
             computed.borderStyle === "hidden" ||
             borderWidth <= 0.01;
 
-        if (!hasNoBorder) return;
+        if (hasNoBorder) {
+            node.setAttribute(BORDERLESS_BUTTON_ATTR, "true");
+            node.style.setProperty("border", `1px solid ${foreground}`, "important");
+            node.style.setProperty("border-color", foreground, "important");
+            node.style.setProperty("border-style", "solid", "important");
+            node.style.setProperty("border-width", "1px", "important");
+            return;
+        }
 
-        node.setAttribute(BORDERLESS_BUTTON_ATTR, "true");
-        node.style.setProperty("border", `1px solid ${foreground}`, "important");
+        node.setAttribute(BUTTON_BORDER_COLORIZED_ATTR, "true");
         node.style.setProperty("border-color", foreground, "important");
-        node.style.setProperty("border-style", "solid", "important");
-        node.style.setProperty("border-width", "1px", "important");
     });
 }
 
@@ -420,6 +425,11 @@ let clearBorderlessButtonVisibility = () => {
         node.style.removeProperty("border-style");
         node.style.removeProperty("border-width");
         node.removeAttribute(BORDERLESS_BUTTON_ATTR);
+    });
+
+    document.querySelectorAll(`[${BUTTON_BORDER_COLORIZED_ATTR}='true']`).forEach((node) => {
+        node.style.removeProperty("border-color");
+        node.removeAttribute(BUTTON_BORDER_COLORIZED_ATTR);
     });
 }
 
@@ -449,6 +459,10 @@ let applyMuiTextFieldVisibility = (colorCombination) => {
     const forcedBorderColor =
         colorCombination === "blackOnWhite"
             ? highContrastBorder
+            : colorCombination === "whiteOnBlack"
+                ? "#FFFFFF"
+            : colorCombination === "yellowOnBlack"
+                ? "#FFFF00"
             : colorCombination === "blackOnYellow"
                 ? "#000000"
                 : null;
