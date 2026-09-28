@@ -824,6 +824,7 @@ let applyTableCellToggleVisibility = (colorCombination) => {
     });
 
     document.querySelectorAll(".MuiSwitch-action, .MuiSwitch-input, [role='switch']").forEach((node) => {
+        if (node.closest("#ada-overlay-widget-container")) return;
         node.style.setProperty("color", foreground, "important");
         node.style.setProperty("background", "transparent", "important");
         node.style.setProperty("background-color", "transparent", "important");
@@ -864,6 +865,7 @@ let applyTableCellToggleVisibility = (colorCombination) => {
     });
 
     document.querySelectorAll(".MuiSwitch-input[role='switch'], [role='switch']").forEach((toggleInput) => {
+        if (toggleInput.closest("#ada-overlay-widget-container")) return;
         toggleInput.style.setProperty("outline", `2px solid ${foreground}`, "important");
         toggleInput.style.setProperty("outline-offset", "2px", "important");
     });
@@ -871,6 +873,7 @@ let applyTableCellToggleVisibility = (colorCombination) => {
 
 let clearTableCellToggleVisibility = () => {
     document.querySelectorAll(".MuiSwitch-root, .MuiSwitch-track, .MuiSwitch-thumb, .MuiSwitch-switchBase, .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track, .MuiSwitch-action, .MuiSwitch-input, .MuiSwitch-root.Mui-checked .MuiSwitch-track, .MuiSwitch-track.Mui-checked, .MuiSwitch-root.Mui-checked .MuiSwitch-thumb, .MuiSwitch-thumb.Mui-checked, [role='switch']").forEach((node) => {
+        if (node.closest("#ada-overlay-widget-container")) return;
         node.style.removeProperty("color");
         node.style.removeProperty("background");
         node.style.removeProperty("background-color");
