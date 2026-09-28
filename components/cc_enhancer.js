@@ -45,6 +45,7 @@ function observeNodeChanges() {
             applyTableMenuVisibility(activeContrast);
             applyModalTreeSelectVisibility(activeContrast);
             applySurveyModalRadioVisibility(activeContrast);
+            applySurveyProgressVisibility(activeContrast);
             applyUploadListFlowVisibility(activeContrast);
         });
     };
@@ -114,6 +115,7 @@ function handleUpdatedNodes(addedNodes) {
         applyTableMenuVisibility(localStorage.getItem("cc_enhancer"));
         applyModalTreeSelectVisibility(localStorage.getItem("cc_enhancer"));
         applySurveyModalRadioVisibility(localStorage.getItem("cc_enhancer"));
+        applySurveyProgressVisibility(localStorage.getItem("cc_enhancer"));
         applyUploadListFlowVisibility(localStorage.getItem("cc_enhancer"));
     }
 }
@@ -216,6 +218,7 @@ let handleColorChange = (colorCombination) => {
         applyTableMenuVisibility(colorCombination);
         applyModalTreeSelectVisibility(colorCombination);
         applySurveyModalRadioVisibility(colorCombination);
+        applySurveyProgressVisibility(colorCombination);
         applyUploadListFlowVisibility(colorCombination);
     }
     else {
@@ -227,6 +230,7 @@ let handleColorChange = (colorCombination) => {
         clearTableMenuVisibility();
         clearModalTreeSelectVisibility();
         clearSurveyModalRadioVisibility();
+        clearSurveyProgressVisibility();
         clearUploadListFlowVisibility();
         clearContrastArtifacts();
     }
@@ -1314,6 +1318,31 @@ let clearSurveyModalRadioVisibility = () => {
             label.style.removeProperty("border-radius");
             label.style.removeProperty("padding");
         });
+    });
+}
+
+let applySurveyProgressVisibility = (colorCombination) => {
+    const foreground = getContrastForeground(colorCombination);
+    const progressBars = document.querySelectorAll(".MuiLinearProgress-root, [role='progressbar'][aria-label*='Survey']");
+
+    progressBars.forEach((bar) => {
+        bar.style.setProperty("border", `1px solid ${foreground}`, "important");
+        bar.style.setProperty("border-color", foreground, "important");
+        bar.style.setProperty("border-style", "solid", "important");
+        bar.style.setProperty("border-width", "1px", "important");
+        bar.style.setProperty("box-sizing", "border-box", "important");
+    });
+}
+
+let clearSurveyProgressVisibility = () => {
+    const progressBars = document.querySelectorAll(".MuiLinearProgress-root, [role='progressbar'][aria-label*='Survey']");
+
+    progressBars.forEach((bar) => {
+        bar.style.removeProperty("border");
+        bar.style.removeProperty("border-color");
+        bar.style.removeProperty("border-style");
+        bar.style.removeProperty("border-width");
+        bar.style.removeProperty("box-sizing");
     });
 }
 
