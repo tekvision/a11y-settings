@@ -8,6 +8,7 @@ let defaultSVGStyle = [];
 let processedSVGElements = new Set(); //This will ensure that there is unique element entries while setting up the default styles.
 const CONTRAST_CLASSES = ["yellowOnBlack", "blackOnYellow", "whiteOnBlack", "blackOnWhite"];
 const CONTRAST_MODIFIED_ATTR = "data-ada-contrast-modified";
+const BORDERLESS_BUTTON_ATTR = "data-ada-borderless-button";
 let contrastReapplyQueued = false;
 
 export let handleColorContrastEnhancements = (colorOptions) => {
@@ -38,6 +39,7 @@ function observeNodeChanges() {
             applyGlobalMuiIconVisibility(activeContrast);
             applyMuiTextFieldVisibility(activeContrast);
             applyReportDatePickerVisibility(activeContrast);
+            applyBorderlessButtonVisibility(activeContrast);
             applyTableFilterVisibility(activeContrast);
             applyTableCellToggleVisibility(activeContrast);
             applyTableMenuVisibility(activeContrast);
@@ -105,6 +107,7 @@ function handleUpdatedNodes(addedNodes) {
         applyGlobalMuiIconVisibility(localStorage.getItem("cc_enhancer"));
         applyMuiTextFieldVisibility(localStorage.getItem("cc_enhancer"));
         applyReportDatePickerVisibility(localStorage.getItem("cc_enhancer"));
+        applyBorderlessButtonVisibility(localStorage.getItem("cc_enhancer"));
         applyTableFilterVisibility(localStorage.getItem("cc_enhancer"));
         applyTableCellToggleVisibility(localStorage.getItem("cc_enhancer"));
         applyTableMenuVisibility(localStorage.getItem("cc_enhancer"));
@@ -206,6 +209,7 @@ let handleColorChange = (colorCombination) => {
         applyGlobalMuiIconVisibility(colorCombination);
         applyMuiTextFieldVisibility(colorCombination);
         applyReportDatePickerVisibility(colorCombination);
+        applyBorderlessButtonVisibility(colorCombination);
         applyTableFilterVisibility(colorCombination);
         applyTableCellToggleVisibility(colorCombination);
         applyTableMenuVisibility(colorCombination);
@@ -216,6 +220,7 @@ let handleColorChange = (colorCombination) => {
     else {
         clearMuiTextFieldVisibility();
         clearReportDatePickerVisibility();
+        clearBorderlessButtonVisibility();
         clearTableFilterVisibility();
         clearTableCellToggleVisibility();
         clearTableMenuVisibility();
@@ -361,6 +366,56 @@ let getContrastBackground = (colorCombination) => {
         case "blackOnYellow": return "yellow";
         default: return "white";
     }
+}
+
+let applyBorderlessButtonVisibility = (colorCombination) => {
+    const foreground = getContrastForeground(colorCombination);
+    const candidates = document.querySelectorAll(
+        "button, .MuiButton-root, .MuiToggleButton-root"
+    );
+
+    candidates.forEach((node) => {
+        if (!(node instanceof HTMLElement)) return;
+        if (node.closest("#ada-overlay-widget-container")) return;
+
+        const role = (node.getAttribute("role") || "").toLowerCase();
+        const isComboboxRole = role === "combobox";
+        const behavesLikeCombobox =
+            (node.getAttribute("aria-haspopup") || "").toLowerCase() === "listbox" &&
+            node.hasAttribute("aria-expanded");
+        if (isComboboxRole || behavesLikeCombobox) return;
+
+        const isMuiIconButton = node.classList.contains("MuiIconButton-root");
+        const textContent = (node.textContent || "").trim();
+        const hasIconChild = !!node.querySelector("svg, .MuiSvgIcon-root, [class*='Icon']");
+        const isIconOnly = hasIconChild && textContent.length === 0;
+        if (isMuiIconButton || isIconOnly) return;
+
+        const computed = window.getComputedStyle(node);
+        const borderWidth = parseFloat(computed.borderWidth || "0");
+        const hasNoBorder =
+            computed.borderStyle === "none" ||
+            computed.borderStyle === "hidden" ||
+            borderWidth <= 0.01;
+
+        if (!hasNoBorder) return;
+
+        node.setAttribute(BORDERLESS_BUTTON_ATTR, "true");
+        node.style.setProperty("border", `1px solid ${foreground}`, "important");
+        node.style.setProperty("border-color", foreground, "important");
+        node.style.setProperty("border-style", "solid", "important");
+        node.style.setProperty("border-width", "1px", "important");
+    });
+}
+
+let clearBorderlessButtonVisibility = () => {
+    document.querySelectorAll(`[${BORDERLESS_BUTTON_ATTR}='true']`).forEach((node) => {
+        node.style.removeProperty("border");
+        node.style.removeProperty("border-color");
+        node.style.removeProperty("border-style");
+        node.style.removeProperty("border-width");
+        node.removeAttribute(BORDERLESS_BUTTON_ATTR);
+    });
 }
 
 let applyGlobalMuiIconVisibility = (colorCombination) => {
