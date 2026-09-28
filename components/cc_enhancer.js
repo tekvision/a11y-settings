@@ -1164,22 +1164,44 @@ let applySurveyModalRadioVisibility = (colorCombination) => {
 
         root.querySelectorAll(".MuiRadio-radio").forEach((radio) => {
             radio.style.setProperty("border", `1px solid ${foreground}`, "important");
+            radio.style.setProperty("border-style", "solid", "important");
+            radio.style.setProperty("border-width", "1px", "important");
+            radio.style.setProperty("border-color", foreground, "important");
+            radio.style.setProperty("box-shadow", "none", "important");
+            radio.style.removeProperty("outline");
+            radio.style.removeProperty("outline-offset");
+        });
+
+        // Joy action layer can visually cover the radio ring; style unselected
+        // actions directly so the default state border stays visible.
+        root.querySelectorAll(".MuiRadio-root:not(.Mui-checked):not(.MuiRadio-checked) .MuiRadio-action").forEach((action) => {
+            action.style.setProperty("outline", `1px solid ${foreground}`, "important");
+            action.style.setProperty("outline-offset", "0px", "important");
+            action.style.setProperty("border-radius", "999px", "important");
         });
 
         root.querySelectorAll(".MuiRadio-root.Mui-checked .MuiRadio-radio, .MuiRadio-root.MuiRadio-checked .MuiRadio-radio").forEach((radio) => {
+            radio.style.setProperty("border", `2px solid ${foreground}`, "important");
+            radio.style.setProperty("border-style", "solid", "important");
+            radio.style.setProperty("border-width", "2px", "important");
+            radio.style.setProperty("border-color", foreground, "important");
             radio.style.setProperty("outline", `2px solid ${foreground}`, "important");
             radio.style.setProperty("outline-offset", "2px", "important");
             radio.style.setProperty("box-shadow", `0 0 0 2px ${background} inset`, "important");
         });
 
+        // Explicit outer ring for selected radios on the Joy action layer.
         root.querySelectorAll(".MuiRadio-root.Mui-checked .MuiRadio-action, .MuiRadio-root.MuiRadio-checked .MuiRadio-action").forEach((action) => {
             action.style.setProperty("outline", `2px solid ${foreground}`, "important");
             action.style.setProperty("outline-offset", "2px", "important");
+            action.style.setProperty("border-radius", "999px", "important");
+            action.style.setProperty("background", "transparent", "important");
+            action.style.setProperty("background-color", "transparent", "important");
         });
 
-        // Focus is visually distinct from selected: dashed ring + wider offset.
+        // Focus uses a solid ring (no dotted/dashed outlines).
         root.querySelectorAll(".MuiRadio-input:focus-visible, .MuiRadio-action:focus-visible, .MuiRadio-action.Mui-focusVisible").forEach((focused) => {
-            focused.style.setProperty("outline", `2px dashed ${foreground}`, "important");
+            focused.style.setProperty("outline", `2px solid ${foreground}`, "important");
             focused.style.setProperty("outline-offset", "4px", "important");
             focused.style.setProperty("box-shadow", "none", "important");
         });
