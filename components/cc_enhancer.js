@@ -1372,6 +1372,42 @@ let getUploadFlowRoots = () => {
         }
     });
 
+    // Step 2/3/4 often have no file input. Infer the same flow root from
+    // checkboxes rendered inside a Joy stepper region (TEP contributor upload).
+    document.querySelectorAll(".MuiCheckbox-root").forEach((checkboxRoot) => {
+        let node = checkboxRoot;
+        while (node && node !== document.body) {
+            if (!(node instanceof Element)) break;
+
+            const hasStepper = !!node.querySelector(".MuiStepper-root");
+            const hasUploaderHint = !!(
+                node.querySelector("#episode-list-filter") ||
+                node.querySelector("input#file-upload[type='file'][accept='.xlsx']") ||
+                node.querySelector("button[aria-label*='step'], button[aria-label*='Step']")
+            );
+
+            if (hasStepper && hasUploaderHint) {
+                roots.add(node);
+                break;
+            }
+
+            node = node.parentElement;
+        }
+    });
+
+    // Direct-entry path can land on step 3 without import controls.
+    document.querySelectorAll("#episode-list-filter").forEach((node) => {
+        const flowRoot =
+            node.closest(".MuiDialog-root, .MuiModal-root") ||
+            node.closest(".MuiSheet-root") ||
+            node.closest(".MuiBox-root") ||
+            node.closest("form") ||
+            node.closest("section");
+        if (flowRoot) {
+            roots.add(flowRoot);
+        }
+    });
+
     return roots;
 }
 
