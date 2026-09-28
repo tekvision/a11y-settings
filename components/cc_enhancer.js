@@ -487,6 +487,7 @@ let applyMuiTextFieldVisibility = (colorCombination) => {
         }
 
         root.querySelectorAll("input, textarea, .MuiInputBase-input, .MuiOutlinedInput-input, .MuiInput-input, .MuiFilledInput-input").forEach((input) => {
+            if (input.classList?.contains("MuiSelect-nativeInput")) return;
             input.style.setProperty("color", foreground, "important");
             input.style.setProperty("-webkit-text-fill-color", foreground, "important");
             input.style.setProperty("caret-color", foreground, "important");
@@ -501,6 +502,7 @@ let applyMuiTextFieldVisibility = (colorCombination) => {
     // is driven by CSS vars, not only border-color on inner inputs.
     document.querySelectorAll("[role='combobox'], .MuiSelect-root, .MuiSelect-select, .MuiSelect-button, .MuiAutocomplete-root, .MuiAutocomplete-inputRoot, .MuiInput-root, .MuiOutlinedInput-root, .MuiInputBase-root").forEach((control) => {
         if (control.closest("#ada-overlay-widget-container")) return;
+        if (control.closest(".MuiTablePagination-root")) return;
 
         const computed = window.getComputedStyle(control);
         const borderWidth = parseFloat(computed.borderWidth || "0");
@@ -546,6 +548,7 @@ let clearMuiTextFieldVisibility = () => {
         }
 
         root.querySelectorAll("input, textarea, .MuiInputBase-input, .MuiOutlinedInput-input, .MuiInput-input, .MuiFilledInput-input").forEach((input) => {
+            if (input.classList?.contains("MuiSelect-nativeInput")) return;
             input.style.removeProperty("color");
             input.style.removeProperty("-webkit-text-fill-color");
             input.style.removeProperty("caret-color");
@@ -558,6 +561,7 @@ let clearMuiTextFieldVisibility = () => {
 
     document.querySelectorAll("[role='combobox'], .MuiSelect-root, .MuiSelect-select, .MuiSelect-button, .MuiAutocomplete-root, .MuiAutocomplete-inputRoot, .MuiInput-root, .MuiOutlinedInput-root, .MuiInputBase-root").forEach((control) => {
         if (control.closest("#ada-overlay-widget-container")) return;
+        if (control.closest(".MuiTablePagination-root")) return;
         control.style.removeProperty("border-color");
         control.style.removeProperty("--Select-focusedHighlight");
         control.style.removeProperty("--Input-focusedHighlight");
