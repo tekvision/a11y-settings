@@ -53,3 +53,24 @@
     background: transparent !important;
     background-color: transparent !important;
 }
+
+/* Ensure MUI Material/Joy placeholders stay visible across browsers. */
+.MuiInputBase-input::placeholder,
+.MuiOutlinedInput-input::placeholder,
+.MuiInput-input::placeholder,
+.MuiFilledInput-input::placeholder,
+input.MuiInputBase-input::placeholder,
+textarea.MuiInputBase-input::placeholder {
+    color: var(--ada-placeholder-color, currentColor) !important;
+    opacity: 1 !important;
+}
+
+.MuiInputBase-input::-moz-placeholder,
+.MuiOutlinedInput-input::-moz-placeholder,
+.MuiInput-input::-moz-placeholder,
+.MuiFilledInput-input::-moz-placeholder,
+input.MuiInputBase-input::-moz-placeholder,
+textarea.MuiInputBase-input::-moz-placeholder {
+    color: var(--ada-placeholder-color, currentColor) !important;
+    opacity: 1 !important;
+}
