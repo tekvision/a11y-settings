@@ -1280,12 +1280,68 @@ let clearGlobalCheckboxVisibility = () => {
     });
 }
 
+let isAddUserDialogContext = (node) => {
+    const dialog = node?.closest?.("[role='dialog']");
+    if (!dialog) return false;
+
+    const titleNode = dialog.querySelector(".MuiDialogTitle-root, h1, h2, h3");
+    const titleText = (titleNode?.textContent || "").trim().toLowerCase();
+    return titleText === "add user";
+}
+
 let applySurveyModalRadioVisibility = (colorCombination) => {
     const foreground = getContrastForeground(colorCombination);
     const background = getContrastBackground(colorCombination);
     const modalRoots = document.querySelectorAll(".MuiDialog-root, .MuiModal-root, .MuiRadioGroup-root, [role='group'][aria-labelledby*='question']");
 
     modalRoots.forEach((root) => {
+        if (isAddUserDialogContext(root)) {
+            root.querySelectorAll(".MuiRadio-root, .MuiRadio-radio, .MuiRadio-action, .MuiRadio-input, .MuiRadio-label").forEach((node) => {
+                node.style.setProperty("color", foreground, "important");
+                node.style.setProperty("background", "transparent", "important");
+                node.style.setProperty("background-color", "transparent", "important");
+            });
+
+            root.querySelectorAll(".MuiRadio-radio").forEach((radio) => {
+                radio.style.setProperty("border", `1px solid ${foreground}`, "important");
+                radio.style.setProperty("border-style", "solid", "important");
+                radio.style.setProperty("border-width", "1px", "important");
+                radio.style.setProperty("border-color", foreground, "important");
+                radio.style.setProperty("box-shadow", "none", "important");
+                radio.style.removeProperty("outline");
+                radio.style.removeProperty("outline-offset");
+            });
+
+            root.querySelectorAll(".MuiRadio-root.Mui-checked .MuiRadio-radio, .MuiRadio-root.MuiRadio-checked .MuiRadio-radio").forEach((radio) => {
+                radio.style.setProperty("border", `2px solid ${foreground}`, "important");
+                radio.style.setProperty("border-color", foreground, "important");
+                radio.style.setProperty("background", "transparent", "important");
+                radio.style.setProperty("background-color", "transparent", "important");
+            });
+
+            root.querySelectorAll(".MuiRadio-icon").forEach((icon) => {
+                icon.style.setProperty("border", `1px solid ${foreground}`, "important");
+                icon.style.setProperty("background", "transparent", "important");
+                icon.style.setProperty("background-color", "transparent", "important");
+            });
+
+            root.querySelectorAll(".MuiRadio-root.Mui-checked .MuiRadio-icon, .MuiRadio-root.MuiRadio-checked .MuiRadio-icon").forEach((icon) => {
+                icon.style.setProperty("background", foreground, "important");
+                icon.style.setProperty("background-color", foreground, "important");
+                icon.style.setProperty("color", background, "important");
+                icon.style.setProperty("border", `1px solid ${foreground}`, "important");
+            });
+
+            root.querySelectorAll(".MuiRadio-action, .MuiRadio-input, .MuiRadio-label, label[for]").forEach((node) => {
+                node.style.removeProperty("outline");
+                node.style.removeProperty("outline-offset");
+                node.style.removeProperty("box-shadow");
+                node.style.removeProperty("border-radius");
+                node.style.removeProperty("padding");
+            });
+            return;
+        }
+
         // Reset per-pass stateful styles so previous selections/focus do not linger.
         root.querySelectorAll(".MuiRadio-root, .MuiRadio-radio, .MuiRadio-action, .MuiRadio-input, .MuiRadio-label, .MuiCheckbox-root, .MuiCheckbox-checkbox, .MuiCheckbox-action, .MuiCheckbox-input, .MuiCheckbox-label, label[for]").forEach((node) => {
             node.style.removeProperty("outline");
@@ -1365,6 +1421,19 @@ let applySurveyModalRadioVisibility = (colorCombination) => {
             radio.style.setProperty("box-shadow", "none", "important");
             radio.style.removeProperty("outline");
             radio.style.removeProperty("outline-offset");
+        });
+
+        root.querySelectorAll(".MuiRadio-icon").forEach((icon) => {
+            icon.style.setProperty("border", `1px solid ${foreground}`, "important");
+            icon.style.setProperty("background", "transparent", "important");
+            icon.style.setProperty("background-color", "transparent", "important");
+        });
+
+        root.querySelectorAll(".MuiRadio-root.Mui-checked .MuiRadio-icon, .MuiRadio-root.MuiRadio-checked .MuiRadio-icon").forEach((icon) => {
+            icon.style.setProperty("background", foreground, "important");
+            icon.style.setProperty("background-color", foreground, "important");
+            icon.style.setProperty("color", background, "important");
+            icon.style.setProperty("border", `1px solid ${foreground}`, "important");
         });
 
         // Joy action layer can visually cover the radio ring; style unselected
