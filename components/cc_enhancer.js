@@ -445,6 +445,13 @@ let applyMuiTextFieldVisibility = (colorCombination) => {
     const foreground = getContrastForeground(colorCombination);
     const background = getContrastBackground(colorCombination);
     const fieldRoots = document.querySelectorAll(".MuiTextField-root, .MuiInputBase-root, .MuiOutlinedInput-root, .MuiFilledInput-root, .MuiInput-root");
+    const highContrastBorder = "#767676";
+    const forcedBorderColor =
+        colorCombination === "blackOnWhite"
+            ? highContrastBorder
+            : colorCombination === "blackOnYellow"
+                ? "#000000"
+                : null;
 
     fieldRoots.forEach((root) => {
         root.style.setProperty("color", foreground, "important");
@@ -456,8 +463,13 @@ let applyMuiTextFieldVisibility = (colorCombination) => {
             outline.style.setProperty("background", "transparent", "important");
             outline.style.setProperty("background-color", "transparent", "important");
 
-            // Keep border untouched for borderless designs.
-            outline.style.removeProperty("border-color");
+            const outlineBorderWidth = parseFloat(window.getComputedStyle(outline).borderWidth || "0");
+            if (forcedBorderColor && outlineBorderWidth > 0.01) {
+                outline.style.setProperty("border-color", forcedBorderColor, "important");
+            }
+            else {
+                outline.style.removeProperty("border-color");
+            }
         }
 
         root.querySelectorAll("input, textarea, .MuiInputBase-input, .MuiOutlinedInput-input, .MuiInput-input, .MuiFilledInput-input").forEach((input) => {
@@ -469,6 +481,38 @@ let applyMuiTextFieldVisibility = (colorCombination) => {
             input.style.setProperty("background-color", "transparent", "important");
             input.style.setProperty("--ada-placeholder-color", foreground, "important");
         });
+    });
+
+    // Add Chart filters often render as Joy outlined wrappers where border/focus
+    // is driven by CSS vars, not only border-color on inner inputs.
+    document.querySelectorAll("[role='combobox'], .MuiSelect-root, .MuiSelect-select, .MuiSelect-button, .MuiAutocomplete-root, .MuiAutocomplete-inputRoot, .MuiInput-root, .MuiOutlinedInput-root, .MuiInputBase-root").forEach((control) => {
+        if (control.closest("#ada-overlay-widget-container")) return;
+
+        const computed = window.getComputedStyle(control);
+        const borderWidth = parseFloat(computed.borderWidth || "0");
+        const hasBorder = borderWidth > 0.01 && computed.borderStyle !== "none" && computed.borderStyle !== "hidden";
+        const className = control.className || "";
+        const hasOutlinedVariant =
+            className.includes("variantOutlined") ||
+            className.includes("MuiOutlinedInput-root") ||
+            className.includes("MuiSelect-variantOutlined") ||
+            className.includes("MuiAutocomplete-variantOutlined") ||
+            className.includes("MuiInput-variantOutlined");
+
+        if (forcedBorderColor && (hasBorder || hasOutlinedVariant)) {
+            control.style.setProperty("border-color", forcedBorderColor, "important");
+            if (className.includes("MuiSelect-root")) {
+                control.style.setProperty("--Select-focusedHighlight", forcedBorderColor, "important");
+            }
+            if (className.includes("MuiInput-root") || className.includes("MuiAutocomplete-root") || className.includes("MuiInputBase-root") || className.includes("MuiOutlinedInput-root")) {
+                control.style.setProperty("--Input-focusedHighlight", forcedBorderColor, "important");
+            }
+        }
+        else {
+            control.style.removeProperty("border-color");
+            control.style.removeProperty("--Select-focusedHighlight");
+            control.style.removeProperty("--Input-focusedHighlight");
+        }
     });
 }
 
@@ -484,6 +528,7 @@ let clearMuiTextFieldVisibility = () => {
         if (outline) {
             outline.style.removeProperty("background");
             outline.style.removeProperty("background-color");
+            outline.style.removeProperty("border-color");
         }
 
         root.querySelectorAll("input, textarea, .MuiInputBase-input, .MuiOutlinedInput-input, .MuiInput-input, .MuiFilledInput-input").forEach((input) => {
@@ -495,6 +540,13 @@ let clearMuiTextFieldVisibility = () => {
             input.style.removeProperty("background-color");
             input.style.removeProperty("--ada-placeholder-color");
         });
+    });
+
+    document.querySelectorAll("[role='combobox'], .MuiSelect-root, .MuiSelect-select, .MuiSelect-button, .MuiAutocomplete-root, .MuiAutocomplete-inputRoot, .MuiInput-root, .MuiOutlinedInput-root, .MuiInputBase-root").forEach((control) => {
+        if (control.closest("#ada-overlay-widget-container")) return;
+        control.style.removeProperty("border-color");
+        control.style.removeProperty("--Select-focusedHighlight");
+        control.style.removeProperty("--Input-focusedHighlight");
     });
 }
 
