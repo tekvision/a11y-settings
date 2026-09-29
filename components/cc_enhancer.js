@@ -12,6 +12,21 @@ const BORDERLESS_BUTTON_ATTR = "data-ada-borderless-button";
 const BUTTON_BORDER_COLORIZED_ATTR = "data-ada-button-border-colorized";
 let contrastReapplyQueued = false;
 
+let isToastElement = (ele) => {
+    return !!(ele instanceof Element && ele.closest("[data-rht-toaster]"));
+}
+
+let clearToastContrastOverrides = (ele) => {
+    if (!(ele instanceof Element)) return;
+    ele.classList?.remove(...CONTRAST_CLASSES);
+    ele.style?.removeProperty("background");
+    ele.style?.removeProperty("background-color");
+    ele.style?.removeProperty("color");
+    ele.style?.removeProperty("fill");
+    ele.style?.removeProperty("stroke");
+    ele.removeAttribute?.(CONTRAST_MODIFIED_ATTR);
+}
+
 export let handleColorContrastEnhancements = (colorOptions) => {
     observeNodeChanges();
     handleColorStickiness(colorOptions);
@@ -84,6 +99,14 @@ function handleUpdatedNodes(addedNodes) {
     while (elementsToTrack.length > 0) {
         const element = elementsToTrack.shift();
         if (element.nodeType === Node.ELEMENT_NODE && localStorage.getItem("cc_enhancer")) {
+            if (isToastElement(element)) {
+                clearToastContrastOverrides(element);
+                if (element.hasChildNodes()) {
+                    elementsToTrack.push(...element.childNodes);
+                }
+                continue;
+            }
+
             if (!isNestedUnderParent(element, "#ada-overlay-widget-container") && !isNestedUnderParent(element, "#chart_container")) {
                 saveOriginalStyles(element);
                 updateColor(element, localStorage.getItem('cc_enhancer'));
@@ -133,6 +156,11 @@ let handleColorChange = (colorCombination) => {
     let allElements = document.querySelectorAll("body, body *:not(#ada-overlay-widget-container *):not(svg):not(svg *):not([data-rht-toaster])");
     let overlayIcon = document.getElementById("overlay-icon");
     allElements.forEach((ele) => {
+        if (isToastElement(ele)) {
+            clearToastContrastOverrides(ele);
+            return;
+        }
+
         if (isContrastEnabled) {
             let computedStyles = window.getComputedStyle(ele);
             if (computedStyles.getPropertyValue('background-color') || computedStyles.getPropertyValue('color')) {
@@ -152,6 +180,11 @@ let handleColorChange = (colorCombination) => {
     });
     let allGraphics = document.querySelectorAll("body svg:not(#radar-summary svg):not(#chart_container svg), body svg:not(#radar-summary svg):not(#chart_container svg) *");
     allGraphics.forEach((ele) => {
+        if (isToastElement(ele)) {
+            clearToastContrastOverrides(ele);
+            return;
+        }
+
         if (isContrastEnabled) {
             let computedStyles = window.getComputedStyle(ele);
             if (computedStyles.getPropertyValue("fill") || computedStyles.getPropertyValue("stroke") || ele.hasAttribute("fill") || ele.hasAttribute("stroke")) {
@@ -438,6 +471,14 @@ let applyGlobalMuiIconVisibility = (colorCombination) => {
     const icons = document.querySelectorAll(".MuiSvgIcon-root");
 
     icons.forEach((icon) => {
+        if (isToastElement(icon)) {
+            clearToastContrastOverrides(icon);
+            icon.querySelectorAll("path, circle, rect, polygon, polyline, line, ellipse").forEach((shape) => {
+                clearToastContrastOverrides(shape);
+            });
+            return;
+        }
+
         if (isInsideExcludedSvgZone(icon)) return;
 
         icon.style.setProperty("color", foreground, "important");
@@ -1604,6 +1645,11 @@ let applyMuiSvgIconContrast = (ele, colorCombination) => {
 }
 
 let updateColor = (ele, colorCombination) => {
+    if (isToastElement(ele)) {
+        clearToastContrastOverrides(ele);
+        return;
+    }
+
     if (isUiEffectElement(ele)) {
         // Keep UI effect layers (ripples/backdrops) transparent and unstyled.
         clearContrastStyles(ele);
