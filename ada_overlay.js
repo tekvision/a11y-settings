@@ -12,6 +12,10 @@ document.addEventListener("readystatechange", (e) =>
 {
     if(document.readyState === "complete")
     {
+        if (document.getElementById("ada-overlay-widget-container")) {
+            return;
+        }
+
        //Load Add-on View
         let a11yToolContainer = document.createElement("div");
         a11yToolContainer.setAttribute("id", "ada-overlay-widget-container");

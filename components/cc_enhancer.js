@@ -10,7 +10,11 @@ const CONTRAST_CLASSES = ["yellowOnBlack", "blackOnYellow", "whiteOnBlack", "bla
 const CONTRAST_MODIFIED_ATTR = "data-ada-contrast-modified";
 const BORDERLESS_BUTTON_ATTR = "data-ada-borderless-button";
 const BUTTON_BORDER_COLORIZED_ATTR = "data-ada-button-border-colorized";
+const EDIT_LAYOUT_CHART_TOUCHED_ATTR = "data-ada-edit-layout-chart-visibility";
 let contrastReapplyQueued = false;
+let editLayoutChartSyncQueued = false;
+let contrastEnhancementsInitialized = false;
+let contrastMutationObserver = null;
 
 let isToastElement = (ele) => {
     return !!(ele instanceof Element && ele.closest("[data-rht-toaster]"));
@@ -28,6 +32,12 @@ let clearToastContrastOverrides = (ele) => {
 }
 
 export let handleColorContrastEnhancements = (colorOptions) => {
+    if (contrastEnhancementsInitialized) {
+        handleColorStickiness(colorOptions);
+        return;
+    }
+
+    contrastEnhancementsInitialized = true;
     observeNodeChanges();
     handleColorStickiness(colorOptions);
     colorOptions.forEach(option => {
@@ -43,6 +53,8 @@ export let handleColorContrastEnhancements = (colorOptions) => {
 }
 
 function observeNodeChanges() {
+    if (contrastMutationObserver) return;
+
     const scheduleContrastReapply = () => {
         if (contrastReapplyQueued) return;
         contrastReapplyQueued = true;
@@ -63,18 +75,43 @@ function observeNodeChanges() {
             applyGlobalCheckboxVisibility(activeContrast);
             applySurveyModalRadioVisibility(activeContrast);
             applySurveyProgressVisibility(activeContrast);
+            applyEditLayoutChartVisibility();
         });
     };
 
-    let observer = new MutationObserver((mutations) => {
+    const scheduleEditLayoutChartSync = () => {
+        if (editLayoutChartSyncQueued) return;
+        editLayoutChartSyncQueued = true;
+
+        requestAnimationFrame(() => {
+            editLayoutChartSyncQueued = false;
+            if (!localStorage.getItem("cc_enhancer")) return;
+            applyEditLayoutChartVisibility();
+        });
+    };
+
+    contrastMutationObserver = new MutationObserver((mutations) => {
         mutations.forEach(function (mutation) {
             if (mutation.type === 'childList') {
-                handleUpdatedNodes(mutation.addedNodes);
+                const activeContrast = localStorage.getItem("cc_enhancer");
+                handleUpdatedNodes(mutation.addedNodes, activeContrast);
+                if (activeContrast) {
+                    scheduleContrastReapply();
+                }
             }
 
             if (mutation.type === 'attributes' && localStorage.getItem("cc_enhancer")) {
                 const target = mutation.target;
                 if (!(target instanceof Element)) return;
+
+                const isChartEditModeClassMutation =
+                    mutation.attributeName === "class" &&
+                    target.matches(".chart-container");
+
+                if (isChartEditModeClassMutation) {
+                    scheduleEditLayoutChartSync();
+                    return;
+                }
 
                 if (
                     target.closest(".MuiModal-root, .MuiDialog-root, .MuiPopover-root, .MuiMenu-root") ||
@@ -86,7 +123,7 @@ function observeNodeChanges() {
             }
         });
     });
-    observer.observe(document.body, {
+    contrastMutationObserver.observe(document.body, {
         childList: true,
         subtree: true,
         attributes: true,
@@ -94,11 +131,13 @@ function observeNodeChanges() {
     });
 }
 
-function handleUpdatedNodes(addedNodes) {
+function handleUpdatedNodes(addedNodes, activeContrast) {
+    if (!activeContrast) return;
+
     const elementsToTrack = [...addedNodes];
     while (elementsToTrack.length > 0) {
         const element = elementsToTrack.shift();
-        if (element.nodeType === Node.ELEMENT_NODE && localStorage.getItem("cc_enhancer")) {
+        if (element.nodeType === Node.ELEMENT_NODE) {
             if (isToastElement(element)) {
                 clearToastContrastOverrides(element);
                 if (element.hasChildNodes()) {
@@ -114,16 +153,16 @@ function handleUpdatedNodes(addedNodes) {
 
             if (!isNestedUnderParent(element, "#ada-overlay-widget-container") && !isInsideHighchartsContainer) {
                 saveOriginalStyles(element);
-                updateColor(element, localStorage.getItem('cc_enhancer'));
-                updateSVGs(element, localStorage.getItem('cc_enhancer'));
+                updateColor(element, activeContrast);
+                updateSVGs(element, activeContrast);
             }
             else {
                 if (isInsideHighchartsContainer && isSvgOrSvgChildElement(element)) {
                     saveOriginalSVGStyles(element);
-                    updateHighCharts(element, localStorage.getItem('cc_enhancer'));
+                    updateHighCharts(element, activeContrast);
                 }
                 else {
-                    updateColor(element, localStorage.getItem("cc_enhancer"));
+                    updateColor(element, activeContrast);
                 }
             }
 
@@ -131,20 +170,6 @@ function handleUpdatedNodes(addedNodes) {
                 elementsToTrack.push(...element.childNodes);
             }
         }
-    }
-
-    if (localStorage.getItem("cc_enhancer")) {
-        applyGlobalMuiIconVisibility(localStorage.getItem("cc_enhancer"));
-        applyMuiTextFieldVisibility(localStorage.getItem("cc_enhancer"));
-        applyReportDatePickerVisibility(localStorage.getItem("cc_enhancer"));
-        applyBorderlessButtonVisibility(localStorage.getItem("cc_enhancer"));
-        applyTableFilterVisibility(localStorage.getItem("cc_enhancer"));
-        applyTableCellToggleVisibility(localStorage.getItem("cc_enhancer"));
-        applyTableMenuVisibility(localStorage.getItem("cc_enhancer"));
-        applyModalTreeSelectVisibility(localStorage.getItem("cc_enhancer"));
-        applyGlobalCheckboxVisibility(localStorage.getItem("cc_enhancer"));
-        applySurveyModalRadioVisibility(localStorage.getItem("cc_enhancer"));
-        applySurveyProgressVisibility(localStorage.getItem("cc_enhancer"));
     }
 }
 
@@ -262,6 +287,7 @@ let handleColorChange = (colorCombination) => {
         applyGlobalCheckboxVisibility(colorCombination);
         applySurveyModalRadioVisibility(colorCombination);
         applySurveyProgressVisibility(colorCombination);
+        applyEditLayoutChartVisibility();
     }
     else {
         clearMuiTextFieldVisibility();
@@ -274,6 +300,7 @@ let handleColorChange = (colorCombination) => {
         clearGlobalCheckboxVisibility();
         clearSurveyModalRadioVisibility();
         clearSurveyProgressVisibility();
+        clearEditLayoutChartVisibility();
         clearContrastArtifacts();
     }
 }
@@ -1554,6 +1581,45 @@ let clearSurveyProgressVisibility = () => {
     });
 }
 
+let applyEditLayoutChartVisibility = () => {
+    const activeEditLayoutNodes = new Set();
+
+    const chartWrappers = document.querySelectorAll(".chart-container.edit-mode");
+    chartWrappers.forEach((wrapper) => {
+        if (wrapper.closest("#ada-overlay-widget-container")) return;
+        activeEditLayoutNodes.add(wrapper);
+        wrapper.setAttribute(EDIT_LAYOUT_CHART_TOUCHED_ATTR, "true");
+        wrapper.style.setProperty("opacity", "1", "important");
+    });
+
+    const highchartsContainers = document.querySelectorAll(".chart-container.edit-mode .highcharts-container");
+    highchartsContainers.forEach((container) => {
+        if (container.closest("#ada-overlay-widget-container")) return;
+        activeEditLayoutNodes.add(container);
+        container.setAttribute(EDIT_LAYOUT_CHART_TOUCHED_ATTR, "true");
+        container.style.setProperty("z-index", "auto", "important");
+        container.style.setProperty("pointer-events", "none", "important");
+        container.style.setProperty("opacity", "1", "important");
+    });
+
+    document.querySelectorAll(`[${EDIT_LAYOUT_CHART_TOUCHED_ATTR}='true']`).forEach((node) => {
+        if (activeEditLayoutNodes.has(node)) return;
+        node.style.removeProperty("opacity");
+        node.style.removeProperty("z-index");
+        node.style.removeProperty("pointer-events");
+        node.removeAttribute(EDIT_LAYOUT_CHART_TOUCHED_ATTR);
+    });
+}
+
+let clearEditLayoutChartVisibility = () => {
+    document.querySelectorAll(`[${EDIT_LAYOUT_CHART_TOUCHED_ATTR}='true']`).forEach((node) => {
+        node.style.removeProperty("opacity");
+        node.style.removeProperty("z-index");
+        node.style.removeProperty("pointer-events");
+        node.removeAttribute(EDIT_LAYOUT_CHART_TOUCHED_ATTR);
+    });
+}
+
 
 
 
@@ -1772,6 +1838,49 @@ let isHighchartsBackgroundNode = (ele) => {
     );
 }
 
+const HIGHCHARTS_STRUCTURAL_TAGS = new Set([
+    "defs",
+    "clippath",
+    "pattern",
+    "filter",
+    "mask",
+    "symbol",
+    "marker",
+    "lineargradient",
+    "radialgradient",
+    "stop",
+    "metadata",
+    "desc",
+    "title",
+    "fedropshadow",
+    "fegaussianblur",
+    "feoffset",
+    "fecolormatrix",
+    "fecomposite",
+    "femerge",
+    "femergenode",
+    "fecomponenttransfer",
+    "fefuncr",
+    "fefuncg",
+    "fefuncb",
+    "fefunca"
+]);
+
+let isHighchartsStructuralNode = (ele) => {
+    if (!(ele instanceof Element)) return false;
+
+    let current = ele;
+    while (current) {
+        const tagName = current.tagName?.toLowerCase();
+        if (tagName && HIGHCHARTS_STRUCTURAL_TAGS.has(tagName)) {
+            return true;
+        }
+        current = current.parentElement;
+    }
+
+    return false;
+}
+
 let isHighchartsBarOrColumnPointNode = (ele) => {
     if (!(ele instanceof Element)) return false;
     const inBarOrColumnSeries = !!ele.closest?.(".highcharts-column-series, .highcharts-bar-series");
@@ -1784,13 +1893,22 @@ let updateHighCharts = (ele, colorCombination) => {
     const foreground = getContrastForeground(colorCombination);
     const background = getContrastBackground(colorCombination);
 
+    // Do not recolor SVG definition/filter nodes; mutating them can hide chart data.
+    if (isHighchartsStructuralNode(ele)) {
+        if (ele.hasAttribute(CONTRAST_MODIFIED_ATTR)) {
+            setSVGColorsToDefault(ele);
+            ele.removeAttribute(CONTRAST_MODIFIED_ATTR);
+        }
+        return;
+    }
+
     if (isHighchartsBackgroundNode(ele)) {
         setSVGColors(ele, background, foreground);
         return;
     }
 
     if (isHighchartsBarOrColumnPointNode(ele)) {
-        setSVGColorsToDefault(ele);
+        setSVGColors(ele, foreground, foreground);
         return;
     }
 
