@@ -107,14 +107,18 @@ function handleUpdatedNodes(addedNodes) {
                 continue;
             }
 
-            if (!isNestedUnderParent(element, "#ada-overlay-widget-container") && !isNestedUnderParent(element, "#chart_container")) {
+            const isInsideChartContainer = isNestedUnderParent(element, "#chart_container");
+            const isInsideHighchartsContainer =
+                isInsideChartContainer ||
+                !!element.closest?.(".highcharts-container, .highcharts-root");
+
+            if (!isNestedUnderParent(element, "#ada-overlay-widget-container") && !isInsideHighchartsContainer) {
                 saveOriginalStyles(element);
                 updateColor(element, localStorage.getItem('cc_enhancer'));
                 updateSVGs(element, localStorage.getItem('cc_enhancer'));
             }
             else {
-                let tagName = element.tagName.toLowerCase();
-                if (!tagName === "svg" || element.parentNode?.tagName === "svg" || tagName === "text") {
+                if (isInsideHighchartsContainer && isSvgOrSvgChildElement(element)) {
                     saveOriginalSVGStyles(element);
                     updateHighCharts(element, localStorage.getItem('cc_enhancer'));
                 }
@@ -180,6 +184,10 @@ let handleColorChange = (colorCombination) => {
     });
     let allGraphics = document.querySelectorAll("body svg:not(#radar-summary svg):not(#chart_container svg), body svg:not(#radar-summary svg):not(#chart_container svg) *");
     allGraphics.forEach((ele) => {
+        if (ele.closest?.(".highcharts-container, .highcharts-root")) {
+            return;
+        }
+
         if (isToastElement(ele)) {
             clearToastContrastOverrides(ele);
             return;
@@ -202,7 +210,7 @@ let handleColorChange = (colorCombination) => {
         }
     });
 
-    let highCharts = document.querySelectorAll("body #chart_container svg, body #chart_container svg > *, body #chart_container svg text");
+    let highCharts = document.querySelectorAll("body #chart_container svg, body #chart_container svg *, body .highcharts-container svg, body .highcharts-container svg *");
     if (highCharts) {
         highCharts.forEach((ele) => {
             if (isContrastEnabled) {
@@ -343,7 +351,6 @@ let setSVGColorsToDefault = (ele) => {
         ? ele.setAttribute("fill", defaultFillAttr)
         : ele.removeAttribute("fill");
 }
-
 let handlePressedState = (colorOptions, option) => {
     if ($(option).attr("aria-pressed") === "false") {
         $(colorOptions).attr("aria-pressed", "false").removeClass("active");
@@ -1753,36 +1760,56 @@ let updateSVGs = (ele, colorCombination) => {
     }
 }
 
+let isHighchartsBackgroundNode = (ele) => {
+    if (!(ele instanceof Element)) return false;
+    return !!(
+        ele.classList?.contains("highcharts-background") ||
+        ele.classList?.contains("highcharts-plot-background") ||
+        ele.classList?.contains("highcharts-tooltip-box") ||
+        ele.classList?.contains("highcharts-label-box") ||
+        ele.classList?.contains("highcharts-button-box") ||
+        ele.classList?.contains("highcharts-legend-box")
+    );
+}
+
+let isHighchartsBarOrColumnPointNode = (ele) => {
+    if (!(ele instanceof Element)) return false;
+    const inBarOrColumnSeries = !!ele.closest?.(".highcharts-column-series, .highcharts-bar-series");
+    if (!inBarOrColumnSeries) return false;
+    return !!(ele.classList?.contains("highcharts-point") || ele.closest?.(".highcharts-point"));
+}
+
 let updateHighCharts = (ele, colorCombination) => {
     let overlayIcon = document.getElementById("overlay-icon");
+    const foreground = getContrastForeground(colorCombination);
+    const background = getContrastBackground(colorCombination);
+
+    if (isHighchartsBackgroundNode(ele)) {
+        setSVGColors(ele, background, foreground);
+        return;
+    }
+
+    if (isHighchartsBarOrColumnPointNode(ele)) {
+        setSVGColorsToDefault(ele);
+        return;
+    }
+
     let tagName = ele.tagName.toLowerCase();
     if (tagName === "text" || tagName === 'textpath') {
-        switch (colorCombination) {
-            case "blackOnWhite": setSVGTextStyle(ele, "black", "black"); break;
-            case "whiteOnBlack": setSVGTextStyle(ele, "white", "white"); break;
-            case "yellowOnBlack": setSVGTextStyle(ele, "yellow", "yellow"); break;
-            case "blackOnYellow": setSVGTextStyle(ele, "black", "black"); break;
-            default: break;
-        }
+        setSVGTextStyle(ele, foreground, foreground);
     }
     else {
         if (localStorage.getItem("focusVisiblityToggle") && isFocusable(ele)) {
             switch (colorCombination) {
-                case "blackOnWhite": setSVGColors(ele, "white", "white"); toggleBorder(ele, "focusVisible-On_black"); toggleBorder(overlayIcon, "focusVisible-On_black"); break;
-                case "whiteOnBlack": setSVGColors(ele, "black", "black"); toggleBorder(ele, "focusVisible-On_white"); toggleBorder(overlayIcon, "focusVisible-On_white"); break;
-                case "yellowOnBlack": setSVGColors(ele, "black", "black"); toggleBorder(ele, "focusVisible-On_yellow"); toggleBorder(overlayIcon, "focusVisible-On_yellow"); break;
-                case "blackOnYellow": setSVGColors(ele, "yellow", "yellow"); toggleBorder(ele, "focusVisible-On_black"); toggleBorder(overlayIcon, "focusVisible-On_black"); break;
+                case "blackOnWhite": setSVGColors(ele, foreground, foreground); toggleBorder(ele, "focusVisible-On_black"); toggleBorder(overlayIcon, "focusVisible-On_black"); break;
+                case "whiteOnBlack": setSVGColors(ele, foreground, foreground); toggleBorder(ele, "focusVisible-On_white"); toggleBorder(overlayIcon, "focusVisible-On_white"); break;
+                case "yellowOnBlack": setSVGColors(ele, foreground, foreground); toggleBorder(ele, "focusVisible-On_yellow"); toggleBorder(overlayIcon, "focusVisible-On_yellow"); break;
+                case "blackOnYellow": setSVGColors(ele, foreground, foreground); toggleBorder(ele, "focusVisible-On_black"); toggleBorder(overlayIcon, "focusVisible-On_black"); break;
                 default: break;
             }
         }
         else {
-            switch (colorCombination) {
-                case "blackOnWhite": setSVGColors(ele, "white", "white"); break;
-                case "whiteOnBlack": setSVGColors(ele, "black", "black"); break;
-                case "yellowOnBlack": setSVGColors(ele, "black", "black"); break;
-                case "blackOnYellow": setSVGColors(ele, "yellow", "yellow"); break;
-                default: break;
-            }
+            setSVGColors(ele, foreground, foreground);
         }
     }
 }
@@ -1886,7 +1913,6 @@ let updateSummaryRadar = (ele, colorCombination) => {
         }
     }
 }
-
 let setColorCombination = (ele, foreground, background) => {
     ele.style.setProperty("background-color", background, "important");
     ele.style.setProperty("background", background, "important");
@@ -1897,6 +1923,7 @@ let setSVGTextStyle = (ele, fill, stroke) => {
     markContrastModified(ele);
     ele.style.removeProperty("background");
     ele.style.removeProperty("background-color");
+
     ele.removeAttribute("fill");
     ele.style.removeProperty("fill");
     ele.removeAttribute("stroke");
@@ -1912,25 +1939,32 @@ let setSVGColors = (ele, fill, stroke) => {
     ele.style.removeProperty("background");
     ele.style.removeProperty("background-color");
 
-    if (ele.hasAttribute("fill") && ele.getAttribute("fill") !== "none") {
+    const computedStyles = window.getComputedStyle(ele);
+    const computedFill = computedStyles.getPropertyValue("fill");
+    const computedStroke = computedStyles.getPropertyValue("stroke");
+    const hasVisibleFill =
+        (ele.hasAttribute("fill") && ele.getAttribute("fill") !== "none") ||
+        (computedFill && computedFill !== "none" && computedFill !== "rgba(0, 0, 0, 0)");
+    const hasVisibleStroke =
+        (ele.hasAttribute("stroke") && ele.getAttribute("stroke") !== "none") ||
+        (computedStroke && computedStroke !== "none" && computedStroke !== "rgba(0, 0, 0, 0)");
+
+    if (hasVisibleFill) {
         ele.removeAttribute("fill");
         ele.style.removeProperty("fill");
         ele.setAttribute("fill", fill);
         ele.style.setProperty("fill", fill, "important");
     }
-    else if (ele.hasAttribute("stroke") && ele.getAttribute("stroke") !== "none") {
+
+    if (hasVisibleStroke) {
         ele.removeAttribute("stroke");
         ele.style.removeProperty("stroke");
         ele.setAttribute("stroke", stroke);
         ele.style.setProperty("stroke", stroke, "important");
     }
 
-    if (!ele.hasAttribute("fill") && window.getComputedStyle(ele).getPropertyValue("fill")) {
-        ele.style.removeProperty("fill");
-        ele.style.setProperty("fill", fill, "important");
-    }
-    else if (!ele.hasAttribute("stroke") && window.getComputedStyle(ele).getPropertyValue("stroke")) {
-        ele.style.removeProperty("stroke");
+    // If no paint channel is detectable, force a visible stroke fallback.
+    if (!hasVisibleFill && !hasVisibleStroke) {
         ele.style.setProperty("stroke", stroke, "important");
     }
 }
