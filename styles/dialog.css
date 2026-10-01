@@ -212,6 +212,49 @@
     border: 1px solid;
     border-color: #f7f7f7;
   }
+
+  #overlay-popup .overlay-branding {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    row-gap: 6px;
+    column-gap: 0;
+    padding: 10px 12px;
+  }
+
+  #overlay-popup .overlay-branding .branding-byline {
+    margin: 0;
+    font-family: "Roboto", Helvetica;
+    font-weight: 500;
+    color: #3f3e3e;
+    font-size: 16px;
+    letter-spacing: 2px;
+    line-height: 16px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  #overlay-popup .overlay-branding .company-logo-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    text-decoration: none;
+  }
+
+  #overlay-popup .overlay-branding .company-logo-link:focus,
+  #overlay-popup .overlay-branding .company-logo-link:focus-visible {
+    outline: solid 3px var(--foundation-neutraln400);
+    outline-offset: 2px;
+  }
+
+  #overlay-popup .overlay-branding .company-logo {
+    display: block;
+    width: min(100px, 100%);
+    height: auto;
+    max-width: 100%;
+    object-fit: contain;
+  }
   
   #overlay-popup .div-9 {
     display: flex;

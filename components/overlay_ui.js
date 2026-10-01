@@ -37,6 +37,12 @@ let toolUI = `
                     </div>
                 </div>
                 <div class="div-7">
+                    <div class="div-8 overlay-branding">
+                        <span class="branding-byline">BROUGHT TO YOU BY</span>
+                        <a class="company-logo-link" href="https://www.tekvision.in/" target="_blank" rel="noopener noreferrer" aria-label="Visit TekVision website (opens in new tab)">
+                            <img class="company-logo" src="${imageUrl('Tekvision-Logo.svg')}" draggable="false" alt="TekVision" />
+                        </a>
+                    </div>
                     <div class="div-8" id="ccEnhancer" role="group" aria-labelledby="contrastGroup">
                         <div class="div-9">
                             <img class="img" src="${imageUrl('colors-1.svg')}" />
