@@ -51,7 +51,7 @@ let toolUI = `
                             </div>
                         </div>
                         <div class="div-10">
-                            <div class="div-11" role="button" tabindex="0" id="blackOnWhite" aria-pressed="false">
+                            <div class="div-11" role="button" tabindex="0" id="blackOnWhite" aria-pressed="false" aria-label="White background with Black foreground">
                                 <div class="div-wrapper whiteBg">
                                     <div class="text-wrapper-3 blackText" aria-hidden="true">B/W</div>
                                 </div>
@@ -59,7 +59,7 @@ let toolUI = `
                                     <div class="text-wrapper-4">Black / White</div>
                                 </div>
                             </div>
-                            <div class="div-11" role="button" tabindex="0" id="whiteOnBlack" aria-pressed="false">
+                            <div class="div-11" role="button" tabindex="0" id="whiteOnBlack" aria-pressed="false" aria-label="Black background with white foreground">
                                 <div class="div-wrapper-3 blackBg">
                                     <div class="text-wrapper-5 whiteText" aria-hidden="true">W/B</div>
                                 </div>
@@ -69,7 +69,7 @@ let toolUI = `
                             </div>
                         </div>
                         <div class="div-10">
-                            <div class="div-11" role="button" tabindex="0" id="yellowOnBlack" aria-pressed="false">
+                            <div class="div-11" role="button" tabindex="0" id="yellowOnBlack" aria-pressed="false" aria-label="Black background with Yellow foreground">
                                 <div class="div-wrapper-4 blackBg">
                                     <div class="text-wrapper-5 yellowText" aria-hidden="true">Y/B</div>
                                 </div>
@@ -77,7 +77,7 @@ let toolUI = `
                                     <div class="text-wrapper-4">Yellow / Black</div>
                                 </div>
                             </div>
-                            <div class="div-11" role="button" tabindex="0" id="blackOnYellow" aria-pressed="false">
+                            <div class="div-11" role="button" tabindex="0" id="blackOnYellow" aria-pressed="false" aria-label="Yellow background with Black foreground">
                                 <div class="div-wrapper yellowBg">
                                     <div class="b-w blackText" aria-hidden="true">B/Y</div>
                                 </div>
