@@ -1,3 +1,4 @@
+import $ from "jquery";
 ﻿let isHighlightLinksEnabled = false;
 let defaultStyle = [];
 let processedElements = new Set(); //This will ensure that there is unique element entries while setting up the default styles.

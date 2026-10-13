@@ -1,3 +1,4 @@
+import $ from "jquery";
 export let bindSettingsMenu = (overlayIcon, contextMenu) => {
     if (overlayIcon) {
         let positionContextMenuBelowOverlay = () => {

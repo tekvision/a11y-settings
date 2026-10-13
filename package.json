@@ -1,0 +1,57 @@
+{
+  "name": "@tekvision/a11y-settings",
+  "version": "1.0.0",
+  "description": "Accessibility settings overlay widget for web apps",
+  "keywords": [
+    "accessibility",
+    "a11y",
+    "overlay",
+    "widget",
+    "web"
+  ],
+  "homepage": "https://github.com/tekvision/a11y-settings#readme",
+  "bugs": {
+    "url": "https://github.com/tekvision/a11y-settings/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tekvision/a11y-settings.git"
+  },
+  "license": "ISC",
+  "author": "Tekvision softTech and accessibility solutions LLP",
+  "type": "module",
+  "main": "./index.js",
+  "exports": {
+    ".": "./index.js",
+    "./overlay": "./ada_overlay.js",
+    "./style.css": "./ada_overlay.css"
+  },
+  "files": [
+    "index.js",
+    "ada_overlay.js",
+    "ada_overlay.css",
+    "components",
+    "styles",
+    "images",
+    "README.md"
+  ],
+  "sideEffects": [
+    "*.css",
+    "./index.js",
+    "./ada_overlay.js"
+  ],
+  "dependencies": {
+    "jquery": "^3.7.1"
+  },
+  "scripts": {
+    "pack:check": "npm pack --dry-run",
+    "publish:public": "npm publish --access public",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -1,3 +1,4 @@
+import $ from "jquery";
 import { isFocusable, setOverlayDefaultBorder, toggleBorder } from "./focus_visibility.js";
 import { isNestedUnderParent } from "./global.js";
 

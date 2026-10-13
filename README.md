@@ -1,37 +1,77 @@
 # a11y-settings
 
-**a11y-settings** is an accessibility settings tool that enhances the browsing experience by providing customizable accessibility options for any web page.
+`a11y-settings` is an accessibility overlay widget that adds user-controlled accessibility adjustments to any web page.
 
 ## Features
 
-- **Color Contrast Enhancements:** Improve text and UI visibility for users with low vision or color blindness.
-- **Dyslexia-Friendly Fonts:** Switch to fonts that are easier to read for users with dyslexia.
-- **Focus Indicators:** Add or enhance focus outlines for better keyboard navigation.
-- **Customizable UI:** Easily toggle accessibility features on or off as needed.
-- **Easy Integration:** Embed the tool into any website with minimal setup.
+- Color contrast presets
+- Font style adjustments
+- Font size controls
+- Focus visibility toggle
+- Link and button highlighting
+- Text alignment controls
 
-## Why use a11y-settings?
+## Install
 
-Many websites do not meet accessibility standards, such as minimum color contrast, readable fonts, or visible focus indicators. a11y-settings helps users and developers quickly address these issues without modifying the original website code.
+```bash
+npm install @tekvision/a11y-settings jquery
+```
 
-## Getting Started
+`jquery` is required because internal widget handlers use jQuery APIs.
 
-1. **Clone the repository:**
-   ```sh
-   git clone https://github.com/yourusername/a11y-settings.git
-2. Include the tool in your web page:
-    ```sh
-    <script type="module" src="path/to/ada_overlay.js"><script>
-    <link rel="stylesheet" href="path/to/ada_overlay.css"/>
+## Use In A Bundler App (Vite, Webpack, Next)
 
-3. Open your web page and use the accessibility settings widget.
+Import once in your app entry so the widget mounts on page load:
 
-## Usage
-Once integrated, an accessibility icon will appear on your web page. Click the icon to open the settings panel and toggle features such as:
+```js
+import "@tekvision/a11y-settings";
+```
 
- - High contrast mode
- - Dyslexia-friendly fonts
- - Enhanced focus indicators
+The package entry imports both:
 
-## Contributing
-Contributions are welcome! Please open an issue or submit a pull request.
+- `ada_overlay.js`
+- `ada_overlay.css`
+
+If you only need the style file explicitly:
+
+```js
+import "@tekvision/a11y-settings/style.css";
+```
+
+## Use In Plain HTML
+
+```html
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script type="module" src="./node_modules/@tekvision/a11y-settings/ada_overlay.js"></script>
+<link rel="stylesheet" href="./node_modules/@tekvision/a11y-settings/ada_overlay.css" />
+```
+
+## Publish To npm
+
+1. Update the package name, repository URL, and version in `package.json`.
+2. Sign in to npm:
+
+```bash
+npm login
+```
+
+3. Verify publish contents:
+
+```bash
+npm run pack:check
+```
+
+4. Publish:
+
+```bash
+npm run publish:public
+```
+
+## Local Verification
+
+From this folder:
+
+```bash
+npm install
+npm run pack:check
+```

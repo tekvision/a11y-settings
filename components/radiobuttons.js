@@ -1,3 +1,4 @@
+import $ from "jquery";
 ﻿export let handleRadioButtonAccessibility = (radioGroup) => {
     let radioButtons = radioGroup.querySelectorAll("div[role='radio']");
     if (radioButtons) {

@@ -1,3 +1,4 @@
+import $ from "jquery";
 export let handleDialogAccessibility = (dialogElement, closeElement, overlayIcon) => {
     handleClosePopupClick(dialogElement, closeElement, overlayIcon);
     handleModalFocusTrapAndClose(dialogElement, closeElement, overlayIcon);

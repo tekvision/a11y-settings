@@ -1,3 +1,4 @@
+import $ from "jquery";
 import { isNestedUnderParent } from "./global.js";
 
 var body = document.querySelector("body");
