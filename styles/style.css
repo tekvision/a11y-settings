@@ -49,11 +49,11 @@
     top: 0px !important;
 }
 .popupPositionTopRight {
-    right: 0 !important;                                                                                                                                               ;px !important;
+    right: 0px !important;                                                                                                                                              top: 0px !important;
     top: 0px !important;
 }
 .popupPositionBottomRight {
-    right: 0 !important;
+    right: 0px !important;
     top: 0px !important;
 }
 #overlay-icon {
@@ -133,16 +133,12 @@
 }
 
     .revertFontStyle .revertIcon, .revertFontSize .revertIcon {
-        margin-top: -7px;
-        margin-bottom: -5px;
-        margin-left: -6px;
-        margin-right: -6px;
         color: var(--foundation-primaryprimary-400);
-        font-size: 12px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
         position: relative;
         width: fit-content;
-        font-family: "Font Awesome 5 Pro-Regular", Helvetica !important;
-        font-weight: 400;
         letter-spacing: 0;
         line-height: normal;
         white-space: nowrap;

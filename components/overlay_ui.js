@@ -1,3 +1,8 @@
+import {
+    revertAllIcon, revertFontIcon, closeIcon, highlighterIcon, chevronDownIcon,
+    minusIcon, plusIcon, alignLeftIcon, alignCenterIcon, alignRightIcon
+} from './icons/overlay-icons.js';
+
 let toolUI = `
     <div id='overlay-announcement' aria-live='assertive' aria-atomic='true' aria-relevant='additions'>
         <span class='announce'></span>
@@ -20,7 +25,7 @@ let toolUI = `
                                 <div class="text-wrapper" id="dialog-title">Enhance Accessibility</div>
                             </div>
                             <div class="div-6" role="button" tabindex="0" id="revert-all">
-                                <div class="link" aria-hidden="true"></div>
+                                <div class="link" aria-hidden="true">${revertAllIcon}</div>
                                 <div class="link-wrapper">
                                     <div class="link-2">Revert All</div>
                                 </div>
@@ -28,7 +33,7 @@ let toolUI = `
                         </div>
                         <div class="right-nest" role="button" tabindex="0" id="close-popup" aria-label="Close">
                             <div class="close-icon">
-                                <div class="close-icon-2" aria-hidden="true"></div>
+                                <div class="close-icon-2" aria-hidden="true">${closeIcon}</div>
                                 <span class="visually-hidden">Close</span>
                             </div>
                         </div>
@@ -87,7 +92,7 @@ let toolUI = `
                     </div>
                     <div class="div-8" id="highlightLinks" role="group" aria-labelledby="highlightLinkGroup">
                         <div class="highlight-link-head-wrapper">
-                            <div class="close-icon" aria-hidden="true"></div>
+                            <div class="close-icon" aria-hidden="true">${highlighterIcon}</div>
                             <div class="text-wrapper" id="highlightLinkGroup">Highlight Links & Buttons</div>
                         </div>
                         <div class="highlight-link-switch-wrapper">
@@ -106,7 +111,7 @@ let toolUI = `
                                 Font Style
                             </div>
                             <div class="view-type revertFontStyle" role="button" tabindex='0' aria-label='Revert Font Style to Default'>
-                                <div class="revertIcon"></div>
+                                <div class="revertIcon">${revertFontIcon}</div>
                                 <span class="sr-only">Revert Font Styles</span>
                             </div>
                         </div>
@@ -117,7 +122,7 @@ let toolUI = `
                                     aria-labelledby="fontStyleGroup" aria-activedescendant="">
                                     <div class="content">
                                         <div class="text">Arial</div>
-                                        <div class="text-wrapper-6" aria-hidden="true"></div>
+                                        <div class="text-wrapper-6" aria-hidden="true">${chevronDownIcon}</div>
                                     </div>
                                 </div>
                             </div>
@@ -150,7 +155,7 @@ let toolUI = `
                                 Font Size Adjustment
                             </div>
                             <div class="view-type revertFontSize" role="button" tabindex='0' aria-label='Revert Font Size to Default'>
-                                <div class="revertIcon"></div>
+                                <div class="revertIcon">${revertFontIcon}</div>
                                 <span class="sr-only">Revert Font Sizes</span>
                             </div>
                         </div>
@@ -158,7 +163,7 @@ let toolUI = `
                             <div class="div-15">
                                 <div class="div-16">
                                     <div class="div-wrapper-5" id="fontDecrease" tabindex="0" role="button" aria-label="Decrease font size">
-                                        <div class="text-wrapper-8" aria-hidden="true"></div>
+                                        <div class="text-wrapper-8" aria-hidden="true">${minusIcon}</div>
                                     </div>
                                     <div class="overlap-group">
                                         <div class="div-17"></div>
@@ -172,7 +177,7 @@ let toolUI = `
                                         </div>
                                     </div>
                                     <div class="div-wrapper-6" id="fontIncrease" tabindex="0" role="button" aria-label="Increase font size">
-                                        <div class="text-wrapper-8" aria-hidden="true"></div>
+                                        <div class="text-wrapper-8" aria-hidden="true">${plusIcon}</div>
                                     </div>
                                 </div>
                             </div>
@@ -232,7 +237,7 @@ let toolUI = `
                             <div class="div-20" id="textLeft" role="button" tabindex="0" aria-pressed="false">
                                 <div class="frame-wrapper-3">
                                     <div class="div-wrapper-7">
-                                        <div class="l" aria-hidden="true"></div>
+                                        <div class="l" aria-hidden="true">${alignLeftIcon}</div>
                                     </div>
                                 </div>
                                 <div class="large-wrapper">
@@ -242,7 +247,7 @@ let toolUI = `
                             <div class="div-20" id="textCenter" role="button" tabindex="0" aria-pressed="false">
                                 <div class="frame-wrapper-3">
                                     <div class="div-wrapper-7">
-                                        <div class="l" aria-hidden="true"></div>
+                                        <div class="l" aria-hidden="true">${alignCenterIcon}</div>
                                     </div>
                                 </div>
                                 <div class="large-wrapper">
@@ -252,7 +257,7 @@ let toolUI = `
                             <div class="div-20" id="textRight" role="button" tabindex="0" aria-pressed="false">
                                 <div class="frame-wrapper-3">
                                     <div class="div-wrapper-7">
-                                        <div class="l" aria-hidden="true"></div>
+                                        <div class="l" aria-hidden="true">${alignRightIcon}</div>
                                     </div>
                                 </div>
                                 <div class="large-wrapper">

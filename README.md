@@ -11,6 +11,10 @@
 - Link and button highlighting
 - Text alignment controls
 
+Inline SVG markup is maintained in `components/icons/overlay-icons.js` and
+inserted by `components/overlay_ui.js`. Icons retain their colors, sizes, and
+`ada-ignore-contrast` class without requiring separate image requests.
+
 ## Install
 
 ```bash

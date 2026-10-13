@@ -49,8 +49,10 @@ body {
 a {
   text-decoration: none;
 }*/
+/* Font Awesome @font-face rules removed in favor of lightweight, offline, cross-platform inline SVG icons */
 
-@font-face {
+
+/* @font-face {
   font-family: "Font Awesome 5 Pro-Regular";
   src: url("https://anima-uploads.s3.amazonaws.com/5b59ac6041bb8600090b709d/Font Awesome 5 Pro-Regular-400.otf")
     format("opentype");
@@ -78,7 +80,7 @@ a {
   font-family: "Font Awesome 6 Pro-Solid";
   src: url("https://anima-uploads.s3.amazonaws.com/projects/604bac611956acf622fcb3ae/fonts/font-awesome-6-pro-solid-900.otf")
     format("opentype");
-}
+} */
 
 /*Dropdown list*/
 

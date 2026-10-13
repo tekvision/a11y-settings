@@ -139,6 +139,10 @@ function handleUpdatedNodes(addedNodes, activeContrast) {
     while (elementsToTrack.length > 0) {
         const element = elementsToTrack.shift();
         if (element.nodeType === Node.ELEMENT_NODE) {
+            if (element.closest(".ada-ignore-contrast")) {
+                continue;
+            }
+
             if (isToastElement(element)) {
                 clearToastContrastOverrides(element);
                 if (element.hasChildNodes()) {
@@ -210,6 +214,10 @@ let handleColorChange = (colorCombination) => {
     });
     let allGraphics = document.querySelectorAll("body svg:not(#radar-summary svg):not(#chart_container svg), body svg:not(#radar-summary svg):not(#chart_container svg) *");
     allGraphics.forEach((ele) => {
+        if (ele.closest(".ada-ignore-contrast")) {
+            return;
+        }
+
         if (ele.closest?.(".highcharts-container, .highcharts-root")) {
             return;
         }
@@ -1766,6 +1774,10 @@ let updateColor = (ele, colorCombination) => {
 }
 
 let updateSVGs = (ele, colorCombination) => {
+    if (ele.closest(".ada-ignore-contrast")) {
+        return;
+    }
+
     ele.style?.removeProperty("background");
     ele.style?.removeProperty("background-color");
 

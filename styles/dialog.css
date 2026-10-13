@@ -116,13 +116,19 @@
   #overlay-popup .link {
     position: relative;
     width: fit-content;
-    font-family: "Font Awesome 5 Pro-Regular", Helvetica;
-    font-weight: 400;
+    display: inline-flex;
+    align-items: center;
     color: var(--defaultwhite);
     font-size: 13px;
     letter-spacing: 0;
     line-height: 12.1px;
     white-space: nowrap;
+  }
+
+  #overlay-popup .link svg,
+  #overlay-popup .link svg * {
+    stroke: #ffffff !important;
+    color: #ffffff !important;
   }
   
   #overlay-popup .link-wrapper {
@@ -175,14 +181,21 @@
     position: static;
     width: 24px;
     height: 24px;
-    font-family: "Font Awesome 6 Pro-Light", Helvetica;
-    font-weight: 300;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     color: var(--defaultwhite);
     font-size: 22px;
     text-align: center;
     letter-spacing: 0;
     line-height: 24px;
     white-space: nowrap;
+  }
+
+  #overlay-popup .close-icon-2 svg,
+  #overlay-popup .close-icon-2 svg * {
+    stroke: #ffffff !important;
+    color: #ffffff !important;
   }
   
   #overlay-popup .div-7 {
@@ -513,8 +526,8 @@
   #overlay-popup .text-wrapper-6 {
     position: relative;
     width: fit-content;
-    font-family: "Font Awesome 5 Pro-Regular", Helvetica;
-    font-weight: 400;
+    display: inline-flex;
+    align-items: center;
     color: #667085;
     font-size: 14px;
     letter-spacing: 0;
@@ -636,12 +649,9 @@
   #overlay-popup .text-wrapper-8 {
     position: relative;
     width: fit-content;
-    margin-top: -5px;
-    margin-bottom: -3px;
-    margin-left: -2.5px;
-    margin-right: -2.5px;
-    font-family: "Font Awesome 5 Pro-Regular", Helvetica;
-    font-weight: 400;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     color: var(--foundation-primaryprimary-400);
     font-size: 14px;
     letter-spacing: 0;
@@ -774,9 +784,9 @@
   #overlay-popup .l {
     position: relative;
     width: fit-content;
-    margin-top: -1px;
-    font-family: "Font Awesome 5 Pro-Solid", Helvetica;
-    font-weight: 400;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     color: #424242;
     font-size: 16px;
     letter-spacing: 0;
@@ -957,8 +967,9 @@
     position: relative;
     width: 24px;
     height: 15px;
-    font-family: "Font Awesome 5 Pro-Regular", Helvetica;
-    font-weight: 400;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     color: var(--foundation-primaryprimary-400);
     font-size: 16px;
     text-align: center;
