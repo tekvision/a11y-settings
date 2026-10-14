@@ -1,2 +1,2 @@
 import "./ada_overlay.css";
-import "./ada_overlay.js";
+export { initOverlay } from "./ada_overlay.js";

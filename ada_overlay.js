@@ -8,10 +8,11 @@ import { handleSliderAccessibility } from './components/slider.js';
 import { handleDialogAccessibility, handleRevertAll } from './components/dialog.js';
 import { handleHighlightLinks } from './components/highlight_link.js';
 
-document.addEventListener("readystatechange", (e) =>
-{
-    if(document.readyState === "complete")
-    {
+export function initOverlay() {
+        if (!document.body) {
+            throw new Error("initOverlay() must be called after the document body is available.");
+        }
+
         if (document.getElementById("ada-overlay-widget-container")) {
             return;
         }
@@ -55,5 +56,4 @@ document.addEventListener("readystatechange", (e) =>
 
         //Text Alignment
         handleTextAlignment(document.querySelectorAll("#textAlignment [role='button']"))
-    }
-});
+}
