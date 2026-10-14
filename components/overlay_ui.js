@@ -3,25 +3,37 @@ import {
     minusIcon, plusIcon, alignLeftIcon, alignCenterIcon, alignRightIcon
 } from './icons/overlay-icons.js';
 
+const vectorImage = new URL('../images/vector.svg', import.meta.url).href;
+const vectorOutlineImage = new URL('../images/vector-1.svg', import.meta.url).href;
+const polygonImage = new URL('../images/polygon-1.svg', import.meta.url).href;
+const bodyImage = new URL('../images/body-3.svg', import.meta.url).href;
+const companyLogoImage = new URL('../images/Tekvision-Logo.svg', import.meta.url).href;
+const colorsImage = new URL('../images/colors-1.svg', import.meta.url).href;
+const fontStyleImage = new URL('../images/font-size-1-1.svg', import.meta.url).href;
+const fontSizeImage = new URL('../images/type-2-1.svg', import.meta.url).href;
+const zoomImage = new URL('../images/zoom-in-1.svg', import.meta.url).href;
+const eyeImage = new URL('../images/eye-1.svg', import.meta.url).href;
+const fontAlignmentImage = new URL('../images/font-1.svg', import.meta.url).href;
+
 let toolUI = `
     <div id='overlay-announcement' aria-live='assertive' aria-atomic='true' aria-relevant='additions'>
         <span class='announce'></span>
     </div>
     <div class="frame positionTopRight b-r-Right" id="overlay-icon" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Accessibility settings">
-        <img class="vector" src="/images/vector.svg" draggable="false" alt=''/><span class="fa fa-close" draggable="false" style='display:none !important;'></span>
-        <img class="img" src="/images/vector-1.svg" draggable="false" alt=''/>
+        <img class="vector" src="${vectorImage}" draggable="false" alt=''/><span class="fa fa-close" draggable="false" style='display:none !important;'></span>
+        <img class="img" src="${vectorOutlineImage}" draggable="false" alt=''/>
     </div>
 
     <div class="frame overlay-popup popupPositionTopRight" id="overlay-popup" role="dialog" aria-modal="true" aria-labelledby="dialog-title"
         style="display:none">
         <div class="overlap">
-            <img class="polygon" src="/images/polygon-1.svg" alt="" style="display:none"/>
+            <img class="polygon" src="${polygonImage}" alt="" style="display:none"/>
             <div class="div">
                 <div class="div-2">
                     <div class="div-3">
                         <div class="div-4">
                             <div class="div-5">
-                                <img class="body" src="/images/body-3.svg" alt="" />
+                                <img class="body" src="${bodyImage}" alt="" />
                                 <div class="text-wrapper" id="dialog-title">Enhance Accessibility</div>
                             </div>
                             <div class="div-6" role="button" tabindex="0" id="revert-all">
@@ -43,12 +55,12 @@ let toolUI = `
                     <div class="div-8 overlay-branding">
                         <span class="branding-byline">BROUGHT TO YOU BY</span>
                         <a class="company-logo-link" href="https://www.tekvision.in/" target="_blank" rel="noopener noreferrer" aria-label="Visit TekVision website (opens in new tab)">
-                            <img class="company-logo" src="/images/Tekvision-Logo.svg" draggable="false" alt="TekVision" />
+                            <img class="company-logo" src="${companyLogoImage}" draggable="false" alt="TekVision" />
                         </a>
                     </div>
                     <div class="div-8" id="ccEnhancer" role="group" aria-labelledby="contrastGroup">
                         <div class="div-9">
-                            <img class="img" src="/images/colors-1.svg" />
+                            <img class="img" src="${colorsImage}" />
                             <div class="text-wrapper-2" id="contrastGroup">
                                 Color Contrast
                             </div>
@@ -106,7 +118,7 @@ let toolUI = `
                     </div>
                     <div class="div-8" id="fontStyle" role="group" aria-labelledby="fontStyleGroup">
                         <div class="div-12">
-                            <img class="img" src="/images/font-size-1-1.svg" alt="" />
+                            <img class="img" src="${fontStyleImage}" alt="" />
                             <div class="text-wrapper-2" id="fontStyleGroup">
                                 Font Style
                             </div>
@@ -150,7 +162,7 @@ let toolUI = `
                     </div>
                     <div class="div-8" id="fontSize" role="group" aria-labelledby="fontSizeGroup">
                         <div class="div-9">
-                            <img class="img" src="/images/type-2-1.svg" alt="" />
+                            <img class="img" src="${fontSizeImage}" alt="" />
                             <div class="text-wrapper-2" id="fontSizeGroup">
                                 Font Size Adjustment
                             </div>
@@ -187,7 +199,7 @@ let toolUI = `
                         <div class="div-18" id="textMagnifier" role="group" aria-labelledby="magnifierGroup"
                             style="display:none">
                             <div class="div-12">
-                                <img class="img" src="/images/zoom-in-1.svg" alt="" />
+                                <img class="img" src="${zoomImage}" alt="" />
                                 <div class="text-wrapper-2" id="magnifierGroup">
                                     Text Magnifier
                                 </div>
@@ -207,7 +219,7 @@ let toolUI = `
                         </div>
                         <div class="div-18" id="focusVisibility" role="group" aria-labelledby="focusVisibilityGroup">
                             <div class="div-12">
-                                <img class="img" src="/images/eye-1.svg" alt="" />
+                                <img class="img" src="${eyeImage}" alt="" />
                                 <div class="text-wrapper-2" id="focusVisibilityGroup">
                                     Focus Visibility
                                 </div>
@@ -228,7 +240,7 @@ let toolUI = `
                     </div>
                     <div class="div-8" id="textAlignment" role="group" aria-labelledby="textAlignmentGroup">
                         <div class="div-9">
-                            <img class="img" src="/images/font-1.svg" alt="" />
+                            <img class="img" src="${fontAlignmentImage}" alt="" />
                             <div class="text-wrapper-2" id="textAlignmentGroup">
                                 Font Alignment
                             </div>
