@@ -9,10 +9,6 @@ import { handleDialogAccessibility, handleRevertAll } from './components/dialog.
 import { handleHighlightLinks } from './components/highlight_link.js';
 
 export function initOverlay() {
-        if (!document.body) {
-            throw new Error("initOverlay() must be called after the document body is available.");
-        }
-
         if (document.getElementById("ada-overlay-widget-container")) {
             return;
         }
