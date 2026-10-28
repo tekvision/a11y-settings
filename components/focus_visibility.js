@@ -3,8 +3,11 @@ import { isNestedUnderParent } from "./global.js";
 
 var body = document.querySelector("body");
 let isOutlineToggled = false;
-let defaultFocusBorder = [];
-let processedElements = new Set();
+// Weakly keyed so elements removed from the DOM can be garbage-collected.
+let defaultFocusBorder = new WeakMap();
+let focusOutlineColor = new WeakMap();
+let elementsWithFocusListeners = new WeakSet();
+let focusObserver = null;
 
 let getAllFocusableElements = () => {
     let allFocusableElements = document.querySelectorAll(`body a:not(.overlay-popup *):not(.context-menu-container *), 
@@ -27,7 +30,6 @@ export let isFocusable = (ele) => {
 }
 
 export let handleFocusVisibility = (button) => {
-    observeNodeChanges();
     handleFocusIndicatorStickiness();
     if (button) {
         button.addEventListener("click", function () {
@@ -41,20 +43,28 @@ export let handleFocusVisibility = (button) => {
     }
 }
 
-function observeNodeChanges() {
-    let observer = new MutationObserver((mutations) => {
+let startObservingNodeChanges = () => {
+    if (focusObserver) return;
+    focusObserver = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
             if (mutation.type === 'childList') {
                 handleUpdatedNodes(mutation.addedNodes);
             }
             else if (mutation.type === "attributes" && mutation.attributeName === "tabindex") {
+                if (!localStorage.getItem("focusVisiblityToggle")) return;
                 const element = mutation.target;
                 saveOriginalStyles(element);
                 checkDefaultColorAndApplyBorder(element);
             }
         });
     });
-    observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+    focusObserver.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["tabindex"] });
+}
+
+let stopObservingNodeChanges = () => {
+    if (!focusObserver) return;
+    focusObserver.disconnect();
+    focusObserver = null;
 }
 
 function handleUpdatedNodes(addedNodes) {
@@ -114,6 +124,7 @@ let handlePressedState = (button) =>{
         $(button).find("#visibilityStatus").text("On");
         isOutlineToggled = true;
         localStorage.setItem("focusVisiblityToggle", $(button).find("#visibilityStatus").text());
+        startObservingNodeChanges();
     }
     else{
         button.setAttribute("aria-checked", "false");
@@ -121,16 +132,23 @@ let handlePressedState = (button) =>{
         $(button).find("#visibilityStatus").text("Off");
         isOutlineToggled = false;
         localStorage.removeItem("focusVisiblityToggle", $(button).find("#visibilityStatus").text())
+        stopObservingNodeChanges();
     }
 }
 
-export let toggleBorder = (ele, outlineColor) => {
+// Listeners are attached once per element; later calls only update the outline color they apply.
+let applyFocusOutline = (ele, outlineColor) => {
+    if (!ele) return;
+    focusOutlineColor.set(ele, outlineColor);
+    if (elementsWithFocusListeners.has(ele)) return;
+    elementsWithFocusListeners.add(ele);
+
     ele.addEventListener("focus", () => {
         if (isOutlineToggled) {
             let computedStyle = window.getComputedStyle(ele);
             if (computedStyle.getPropertyValue('outline')) {
                 saveOriginalStyles(ele);
-                updateFocusBorder(ele, outlineColor);
+                updateFocusBorder(ele, focusOutlineColor.get(ele));
             }
         }
     });
@@ -139,30 +157,19 @@ export let toggleBorder = (ele, outlineColor) => {
         ele.classList.remove("focusVisible-On_black", "focusVisible-On_white", "focusVisible-On_yellow", "focusVisible-overlay-default");
         ele.style.removeProperty('outline');
     });
+}
+
+export let toggleBorder = (ele, outlineColor) => {
+    applyFocusOutline(ele, outlineColor);
 }
 
 export let setOverlayDefaultBorder = (ele, outlineColor) => {
-    ele.addEventListener("focus", () => {
-        if (isOutlineToggled) {
-            let computedStyle = window.getComputedStyle(ele);
-            if (computedStyle.getPropertyValue('outline')) {
-                saveOriginalStyles(ele);
-                updateFocusBorder(ele, outlineColor);
-            }
-        }
-    });
-
-    ele.addEventListener("blur", () => {
-        ele.classList.remove("focusVisible-On_black", "focusVisible-On_white", "focusVisible-On_yellow", "focusVisible-overlay-default");
-        ele.style.removeProperty('outline');
-    });
+    applyFocusOutline(ele, outlineColor);
 }
 
 let saveOriginalStyles = (ele) => {
-    if (!processedElements.has(ele)) {
-        processedElements.add(ele);
-        defaultFocusBorder.push({
-            element: ele,
+    if (!defaultFocusBorder.has(ele)) {
+        defaultFocusBorder.set(ele, {
             style: ele.getAttribute("style"),
             outline: ele.style.outline
         });

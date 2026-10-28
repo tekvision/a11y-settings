@@ -3,13 +3,12 @@ import { isNestedUnderParent } from "./global.js";
 
 let textAlignmentToggled = false;
 let isFontStyleToggled = false;
-let defaultFontFamily = [];
-let defaultAlignment = [];
-let processedElementsForAlignments = new Set();
-let processedElementsForFontFamily = new Set();
+// Weakly keyed so elements removed from the DOM can be garbage-collected.
+let defaultFontFamily = new WeakMap();
+let defaultAlignment = new WeakMap();
+let fontObserver = null;
 
 export let handleFontStyles = (fontStyleInput, fontStyleList) => {
-    observeNodeChanges();
     handleFontStyleStickiness(fontStyleInput, fontStyleList);
     fontStyleList.querySelectorAll("[role='option']").forEach(option =>{
         option.addEventListener("click", (e) => {
@@ -46,15 +45,23 @@ export let handleFontStyles = (fontStyleInput, fontStyleList) => {
     });
 }
 
-function observeNodeChanges() {
-    let observer = new MutationObserver((mutations) => {
-        mutations.forEach(function (mutation) {
-            if (mutation.type === 'childList') {
-                handleUpdatedNodes(mutation.addedNodes);
-            }
+// Shared by font style and text alignment; runs only while one of them is active.
+function syncNodeObserver() {
+    const isActive = localStorage.getItem("fontStyle") || localStorage.getItem("textAlign");
+    if (isActive && !fontObserver) {
+        fontObserver = new MutationObserver((mutations) => {
+            mutations.forEach(function (mutation) {
+                if (mutation.type === 'childList') {
+                    handleUpdatedNodes(mutation.addedNodes);
+                }
+            });
         });
-    });
-    observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+        fontObserver.observe(document.body, { childList: true, subtree: true });
+    }
+    else if (!isActive && fontObserver) {
+        fontObserver.disconnect();
+        fontObserver = null;
+    }
 }
 
 function handleUpdatedNodes(addedNodes) {
@@ -65,11 +72,13 @@ function handleUpdatedNodes(addedNodes) {
         if (element.nodeType === Node.ELEMENT_NODE) {
             if (!isNestedUnderParent(element, "#ada-overlay-widget-container")) {
                 if (localStorage.getItem("fontStyle")) {
-                    let option = fontStyleList.querySelector("#" + localStorage.getItem("fontStyle"));
-                    saveOriginalFontFamily(element);
-                    updateFontFamily(element, option.innerText.trim().replace(" ", ""));
+                    let option = document.getElementById(localStorage.getItem("fontStyle"));
+                    if (option) {
+                        saveOriginalFontFamily(element);
+                        updateFontFamily(element, option.innerText.trim().replace(" ", ""));
+                    }
                 }
-                else if (localStorage.getItem("textAlign")) {
+                if (localStorage.getItem("textAlign")) {
                     let option = localStorage.getItem("textAlign");
                     saveOriginalAlignment(element);
                     updateAlignment(element, option);
@@ -102,7 +111,6 @@ export let enlargeFont = (size) =>
 }
 
 export let handleTextAlignment = (alignmentOptions) => {
-    observeNodeChanges();
     handleTextAlignmentStickiness(alignmentOptions);
     alignmentOptions.forEach(option => {
         option.addEventListener("click", (e) => {
@@ -165,13 +173,12 @@ let selectOption = (fontStyleInput, fontStyleList, option) =>{
     $(fontStyleInput).attr("aria-expanded", "false").focus();
     $(fontStyleList).children().attr("tabindex", "-1");
     localStorage.setItem("fontStyle", option.id);
+    syncNodeObserver();
 }
 
 let saveOriginalFontFamily = (ele) => {
-    if (!processedElementsForFontFamily.has(ele)) {
-        processedElementsForFontFamily.add(ele);
-        defaultFontFamily.push({
-            element: ele,
+    if (!defaultFontFamily.has(ele)) {
+        defaultFontFamily.set(ele, {
             style: ele.getAttribute("style"),
             fontFamily: window.getComputedStyle(ele).getPropertyValue('font-family')
         });
@@ -211,6 +218,7 @@ let handlePressedState = (alignmentOptions, option) =>{
         $(option).attr("aria-pressed", "true").addClass("active");
         handleAlignmentChange(option.id);
         localStorage.setItem("textAlign", option.id);
+        syncNodeObserver();
 
     }
     else {
@@ -219,13 +227,14 @@ let handlePressedState = (alignmentOptions, option) =>{
         $(option).attr("aria-pressed", "false").removeClass("active");
         handleAlignmentChange(option.id);
         localStorage.removeItem("textAlign");
+        syncNodeObserver();
     }
 }
 
 let revertFontStyle = (ele, fontStyleList, fontStyleInput) => {
     if (ele.hasAttribute("style")) {
-        let originalFontFamily = defaultFontFamily.find(entry => entry.element === ele)?.fontFamily;
-        let originalStyle = defaultFontFamily.find(entry => entry.element === ele)?.style;
+        let originalFontFamily = defaultFontFamily.get(ele)?.fontFamily;
+        let originalStyle = defaultFontFamily.get(ele)?.style;
         (originalFontFamily && (originalStyle && originalStyle.includes('font-family'))) ? ele.style.fontFamily = originalFontFamily : "";
         ele.classList.remove('fontArial', 'fontCalibri', 'fontComicSans', 'fontVerdana', 'fontTahoma', 'fontCenturyGothic');
         $(fontStyleList).children().attr("aria-selected", "false").removeClass("active");
@@ -242,13 +251,12 @@ let revertFontStyle = (ele, fontStyleList, fontStyleInput) => {
         setTimeout(() => { $("#overlay-announcement .announce").text(""); }, 100);
         localStorage.removeItem("fontStyle");
     }
+    syncNodeObserver();
 }
 
 let saveOriginalAlignment = (ele) => {
-    if (!processedElementsForAlignments.has(ele)) {
-        processedElementsForAlignments.add(ele);
-        defaultAlignment.push({
-            element: ele,
+    if (!defaultAlignment.has(ele)) {
+        defaultAlignment.set(ele, {
             style: ele.getAttribute("style"),
             textAlignment: window.getComputedStyle(ele).getPropertyValue('text-align')
         });
@@ -263,8 +271,8 @@ let updateAlignment = (ele, option) => {
 
 let revertAlignmentToDefault = (ele) => {
     if (ele.hasAttribute("style")) {
-        let originalTextAlignment = defaultAlignment.find(entry => entry.element === ele)?.textAlignment;
-        let originalStyle = defaultAlignment.find(entry => entry.element === ele)?.style;
+        let originalTextAlignment = defaultAlignment.get(ele)?.textAlignment;
+        let originalStyle = defaultAlignment.get(ele)?.style;
         (originalTextAlignment && (originalStyle && originalStyle.includes("text-align"))) ? ele.style.textAlign = originalTextAlignment : ele.style.removeProperty("text-align");
     }
 }

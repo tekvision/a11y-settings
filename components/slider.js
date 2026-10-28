@@ -2,11 +2,11 @@ import $ from "jquery";
 import { isNestedUnderParent } from "./global.js";
 
 let isFontSizeChanged = false;
-let defaultStyles = [];
-let processedElements = new Set();
+// Weakly keyed so elements removed from the DOM can be garbage-collected.
+let defaultStyles = new WeakMap();
+let fontSizeObserver = null;
 
 export let handleSliderAccessibility = (sliderControl, increase, decrease) => {
-    observeNodeChanges();
     handleFontSizeStickiness(sliderControl);
     handleSliderIncreaseDecrease(sliderControl, increase, decrease);
     handleSliderNavigation(sliderControl, increase, decrease);
@@ -14,8 +14,9 @@ export let handleSliderAccessibility = (sliderControl, increase, decrease) => {
     handleRevert(document.querySelector(".revertFontSize"), sliderControl);
 }
 
-function observeNodeChanges() {
-    let observer = new MutationObserver((mutations) => {
+function startObservingNodeChanges() {
+    if (fontSizeObserver) return;
+    fontSizeObserver = new MutationObserver((mutations) => {
         mutations.forEach(function (mutation) {
             if (mutation.type === 'childList') {
                 handleUpdatedNodes(mutation.addedNodes);
@@ -23,7 +24,13 @@ function observeNodeChanges() {
             }
         });
     });
-    observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+    fontSizeObserver.observe(document.body, { childList: true, subtree: true });
+}
+
+function stopObservingNodeChanges() {
+    if (!fontSizeObserver) return;
+    fontSizeObserver.disconnect();
+    fontSizeObserver = null;
 }
 
 function handleUpdatedNodes(addedNodes) {
@@ -113,6 +120,7 @@ let enlargeFont = (size) =>
             localStorage.setItem("fontSize", size);
         } 
     });
+    startObservingNodeChanges();
 }
 
 function checkAndUpdateFontSize(ele, currentFontSizeInPT, newSize) {
@@ -371,24 +379,22 @@ let revert = (ele, sliderControl) => {
     setTimeout(() => { $("#overlay-announcement .announce").text(""); }, 100);
     localStorage.removeItem("fontSize");
     localStorage.removeItem("sliderPosition");
+    stopObservingNodeChanges();
 }
 
 let saveOriginalStyles = (ele) => {
-    let fontSize = window.getComputedStyle(ele).getPropertyValue('font-size');
-    if (!processedElements.has(ele)) {
-        processedElements.add(ele);
-        defaultStyles.push({
-            element: ele,
+    if (!defaultStyles.has(ele)) {
+        defaultStyles.set(ele, {
             style: ele.getAttribute("style"),
-            fontSize: fontSize
+            fontSize: window.getComputedStyle(ele).getPropertyValue('font-size')
         });
     }
 }
 
 let revertFontSize = (ele) => {
     if (ele.hasAttribute("style")) {
-        let defaultFontSize = defaultStyles.find(entry => entry.element === ele)?.fontSize;
-        let defaultStyle = defaultStyles.find(entry => entry.element === ele)?.style;
+        let defaultFontSize = defaultStyles.get(ele)?.fontSize;
+        let defaultStyle = defaultStyles.get(ele)?.style;
         (defaultFontSize && (defaultStyle && defaultStyle.includes("font-size"))) ? ele.style.setProperty('font-size', defaultFontSize) : "";
     }
 }
