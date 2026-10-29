@@ -33,7 +33,8 @@
     "components",
     "styles",
     "images",
-    "README.md"
+    "README.md",
+    "CHANGELOG.md"
   ],
   "sideEffects": [
     "*.css",

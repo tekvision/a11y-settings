@@ -2,6 +2,14 @@
 
 `a11y-settings` is an accessibility overlay widget that adds user-controlled accessibility adjustments to any web page.
 
+## What's New in v1.0.1
+
+### Improvements
+- Fixed memory leaks in the focus visibility, slider, and font enhancer watchers.
+- Reduced duplicate page listeners and watchers for better stability.
+- Fixed font and alignment issues for newly added DOM elements.
+- Improved cleanup so removed elements are released properly.
+
 ## Features
 
 - Color contrast presets
