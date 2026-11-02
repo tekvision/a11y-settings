@@ -19,6 +19,11 @@
     background-color: white !important;
 }
 
+:is(button, input[type="button"], input[type="submit"], input[type="reset"], [role="button"], .MuiButtonBase-root, .MuiButton-root, .MuiIconButton-root, .MuiToggleButton-root):is(:disabled, [aria-disabled="true"], .Mui-disabled):is(.yellowOnBlack, .blackOnYellow, .whiteOnBlack, .blackOnWhite) {
+    opacity: 0.55 !important;
+    cursor: not-allowed !important;
+}
+
 .yellowOnBlack::-webkit-input-placeholder {
     color: yellow !important;
     background-color: black !important;
