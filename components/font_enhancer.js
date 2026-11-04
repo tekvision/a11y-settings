@@ -1,5 +1,5 @@
 import $ from "jquery";
-import { isNestedUnderParent } from "./global.js";
+import { isNestedUnderParent, isCustomOverlayTrigger } from "./global.js";
 
 let textAlignmentToggled = false;
 let isFontStyleToggled = false;
@@ -28,6 +28,7 @@ export let handleFontStyles = (fontStyleInput, fontStyleList) => {
     document.querySelector(".revertFontStyle").addEventListener("click", function () {
         let allElements = document.querySelectorAll("body, body *:not(.ada-overlay-widget-container *)");
         allElements.forEach((ele) => {
+            if (isCustomOverlayTrigger(ele)) return;
             if (isFontStyleToggled) {
                 revertFontStyle(ele, fontStyleList, fontStyleInput);
             }
@@ -37,6 +38,7 @@ export let handleFontStyles = (fontStyleInput, fontStyleList) => {
         if (e.keyCode === 13 || e.keyCode === 32 || e.which === 1) {
             let allElements = document.querySelectorAll("body, body *:not(.ada-overlay-widget-container *)");
             allElements.forEach((ele) => {
+                if (isCustomOverlayTrigger(ele)) return;
                 if (isFontStyleToggled) {
                     revertFontStyle(ele, fontStyleList, fontStyleInput);
                 }
@@ -70,6 +72,7 @@ function handleUpdatedNodes(addedNodes) {
     while (elementsToTrack.length > 0) {
         const element = elementsToTrack.shift();
         if (element.nodeType === Node.ELEMENT_NODE) {
+            if (isCustomOverlayTrigger(element)) continue;
             if (!isNestedUnderParent(element, "#ada-overlay-widget-container")) {
                 if (localStorage.getItem("fontStyle")) {
                     let option = document.getElementById(localStorage.getItem("fontStyle"));
@@ -105,6 +108,7 @@ export let enlargeFont = (size) =>
 {
     let allElements = document.querySelectorAll("body, body *:not(.ada-overlay-widget-container *)");
     allElements.forEach((ele) =>{
+        if (isCustomOverlayTrigger(ele)) return;
         ele.classList.remove('font12', 'font14', 'font16', 'font18', 'font20', 'font22', 'font24', 'font26', 'font28', 'font30');
         ele.classList.add(`font${size}`);
     });
@@ -153,6 +157,7 @@ let selectDyslexicFont = (fontFamily) =>
 {
     var allElementsForFontStyle = document.querySelectorAll("body, body *:not(.ada-overlay-widget-container *):not(.fa):not([class*='fa'])");
     allElementsForFontStyle.forEach((ele) => {
+        if (isCustomOverlayTrigger(ele)) return;
         let computedStyles = window.getComputedStyle(ele);
         if (computedStyles.getPropertyValue("font-family")) {
             saveOriginalFontFamily(ele);
@@ -194,6 +199,7 @@ let updateFontFamily = (ele, fontFamily) => {
 let handleAlignmentChange = (option) => {
     var allElements = document.querySelectorAll("body, body *:not(.ada-overlay-widget-container *)");
     allElements.forEach((ele) => {
+        if (isCustomOverlayTrigger(ele)) return;
         if (textAlignmentToggled) {
             let computedStyles = window.getComputedStyle(ele);
             if (computedStyles.getPropertyValue("text-align")) {

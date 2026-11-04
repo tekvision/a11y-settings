@@ -1,5 +1,5 @@
 import $ from "jquery";
-import { isNestedUnderParent } from "./global.js";
+import { isNestedUnderParent, isCustomOverlayTrigger } from "./global.js";
 
 var body = document.querySelector("body");
 let isOutlineToggled = false;
@@ -53,6 +53,7 @@ let startObservingNodeChanges = () => {
             else if (mutation.type === "attributes" && mutation.attributeName === "tabindex") {
                 if (!localStorage.getItem("focusVisiblityToggle")) return;
                 const element = mutation.target;
+                if (isCustomOverlayTrigger(element)) return;
                 saveOriginalStyles(element);
                 checkDefaultColorAndApplyBorder(element);
             }
@@ -72,6 +73,7 @@ function handleUpdatedNodes(addedNodes) {
     while (elementsToTrack.length > 0) {
         const element = elementsToTrack.shift();
         if (element.nodeType === Node.ELEMENT_NODE && localStorage.getItem("focusVisiblityToggle")) {
+            if (isCustomOverlayTrigger(element)) continue;
             if (!isNestedUnderParent(element, "#ada-overlay-widget-container")) {
                 saveOriginalStyles(element);
                 isFocusable(element) ? checkDefaultColorAndApplyBorder(element) : "";
@@ -138,7 +140,7 @@ let handlePressedState = (button) =>{
 
 // Listeners are attached once per element; later calls only update the outline color they apply.
 let applyFocusOutline = (ele, outlineColor) => {
-    if (!ele) return;
+    if (!ele || isCustomOverlayTrigger(ele)) return;
     focusOutlineColor.set(ele, outlineColor);
     if (elementsWithFocusListeners.has(ele)) return;
     elementsWithFocusListeners.add(ele);
@@ -192,4 +194,3 @@ let updateFocusBorder = (ele, outlineColor) => {
 let setMandatoryOutline = (ele, outline) => {
     ele.style.setProperty("outline", outline, "important");
 }
-

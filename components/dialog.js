@@ -9,6 +9,7 @@ let handleClosePopupClick = (dialogElement, closeElement, overlayIcon) => {
     closeElement.addEventListener("click", (e) => {
         dialogElement.style.display = "none";
         overlayIcon.style.display = "block";
+        overlayIcon.setAttribute("aria-expanded", "false");
         overlayIcon.focus();
     });
 }
@@ -17,12 +18,16 @@ let handleOverlayIconClick = (overlayIcon, dialogElement) => {
     overlayIcon.addEventListener("click", (e) =>{
         dialogElement.style.display = "block";
         overlayIcon.style.display = "none";
+        overlayIcon.setAttribute("aria-expanded", "true");
         document.getElementById("blackOnWhite").focus();
     });
+    if (overlayIcon.tagName === "BUTTON") return;
     overlayIcon.addEventListener("keydown", (e) =>{
         if(e.keyCode === 13 || e.keyCode === 32 || e.which === 1){
+            e.preventDefault();
             dialogElement.style.display = "block";
             overlayIcon.style.display = "none";
+            overlayIcon.setAttribute("aria-expanded", "true");
             document.getElementById("blackOnWhite").focus();
         }
     });

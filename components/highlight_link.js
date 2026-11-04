@@ -1,4 +1,5 @@
 import $ from "jquery";
+import { isCustomOverlayTrigger } from "./global.js";
 ﻿let isHighlightLinksEnabled = false;
 let defaultStyle = [];
 let processedElements = new Set(); //This will ensure that there is unique element entries while setting up the default styles.
@@ -13,13 +14,13 @@ export let handleHighlightLinks = (highlightSwitch) => {
         let addedElements = new Set();
         mutations.forEach(({ addedNodes }) => {
             addedNodes.forEach((node) => {
-                if (!(node instanceof Element) || node.closest("#ada-overlay-widget-container, svg")) return;
+                if (!(node instanceof Element) || isCustomOverlayTrigger(node) || node.closest("#ada-overlay-widget-container, svg")) return;
 
                 if (node.matches(interactiveElementSelector)) {
                     addedElements.add(node);
                 }
                 node.querySelectorAll(interactiveElementSelector).forEach((ele) => {
-                    if (!ele.closest("#ada-overlay-widget-container, svg")) {
+                    if (!isCustomOverlayTrigger(ele) && !ele.closest("#ada-overlay-widget-container, svg")) {
                         addedElements.add(ele);
                     }
                 });
@@ -102,6 +103,7 @@ let isButtonOrLink = (ele) => {
 function performLinksHighlighting(highlightSwitch, elements) {
     let allElements = elements || document.querySelectorAll("body, body *:not(#ada-overlay-widget-container *):not(svg):not(svg *)");
     allElements.forEach((ele) => {
+        if (isCustomOverlayTrigger(ele)) return;
         if (isHighlightLinksEnabled) {
             let computedStyles = window.getComputedStyle(ele);
             if (computedStyles.getPropertyValue('text-decoration')) {

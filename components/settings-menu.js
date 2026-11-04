@@ -1,4 +1,5 @@
 import $ from "jquery";
+import { isCustomOverlayTrigger } from "./global.js";
 export let bindSettingsMenu = (overlayIcon, contextMenu) => {
     if (overlayIcon) {
         let positionContextMenuBelowOverlay = () => {
@@ -209,6 +210,20 @@ export let bindSettingsMenu = (overlayIcon, contextMenu) => {
         function activateMenu(elem, e) {
             let dialog = document.querySelector(".overlay-popup");
             if ($(elem).parent().parent().attr("class") === "context-sub-menu") {
+                if (isCustomOverlayTrigger(overlayIcon)) {
+                    const position = $(elem).text();
+                    if (!["Top-Left", "Top-Right", "Bottom-Left", "Bottom-Right"].includes(position)) return;
+                    const isLeft = position.endsWith("Left");
+                    const isTop = position.startsWith("Top");
+                    overlayIcon.style.left = isLeft ? "0px" : "auto";
+                    overlayIcon.style.right = isLeft ? "auto" : "0px";
+                    overlayIcon.style.top = isTop ? "16px" : "auto";
+                    overlayIcon.style.bottom = isTop ? "auto" : "8px";
+                    handlePositionChange(dialog, overlayIcon, isLeft ? "TopLeft" : "TopRight", "");
+                    closeAllMenus(false);
+                    overlayIcon.focus();
+                    return;
+                }
                 switch ($(elem).text()) {
                     case "Top-Left":
                         overlayIcon.removeAttribute("style");
@@ -452,6 +467,6 @@ export let enableDragAndDrop = (draggableButton) => {
 let handlePositionChange = (overlay, overlayIcon, position, border) => {
     overlayIcon.classList.remove("positionTopLeft", "positionTopRight", "positionBottomRight", "positionBottomLeft", "b-r-Left", "b-r-Right");
     overlay.classList.remove("popupPositionTopRight", "popupPositionTopLeft", "popupPositionBottomRight", "popupPositionBottomLeft");
-    overlayIcon.classList.add(border);
+    if (!isCustomOverlayTrigger(overlayIcon)) overlayIcon.classList.add(border);
     overlay.classList.add("popupPosition"+position);
 } 
