@@ -2,6 +2,15 @@
 
 `a11y-settings` is an accessibility overlay widget that adds user-controlled accessibility adjustments to any web page.
 
+## What's New in v1.0.2
+
+### Improvements
+- Added a System Default font option and improved font restoration.
+- Improved disabled button visibility in colour contrast modes.
+- Moved Tekvision branding to a compact footer.
+- Added highlighting for dynamically added links and buttons.
+- Added support for custom overlay triggers.
+
 ## What's New in v1.0.1
 
 ### Improvements
@@ -56,6 +65,24 @@ If you only need the style file explicitly:
 
 ```js
 import "@sma11y/site-settings/style.css";
+```
+
+### Use A Custom Trigger Button
+
+Pass the button element to `initOverlay()` using the `trigger` option. The
+button must already be in the document and must have the ID `overlay-icon`.
+
+```html
+<button id="overlay-icon" type="button" aria-label="Open accessibility settings">
+  Accessibility settings
+</button>
+```
+
+```js
+import { initOverlay } from "@sma11y/site-settings";
+
+const trigger = document.getElementById("overlay-icon");
+initOverlay({ trigger });
 ```
 
 ## Use In Plain HTML
