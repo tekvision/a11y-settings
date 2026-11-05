@@ -127,7 +127,7 @@ let toolUI = `
                                     aria-haspopup="listbox" aria-controls="fontStyleList" aria-expanded="false"
                                     aria-labelledby="fontStyleGroup" aria-activedescendant="">
                                     <div class="content">
-                                        <div class="text">Arial</div>
+                                        <div class="text">--System Default--</div>
                                         <div class="text-wrapper-6" aria-hidden="true">${chevronDownIcon}</div>
                                     </div>
                                 </div>
@@ -150,6 +150,9 @@ let toolUI = `
                                 </div>
                                 <div class="component-2" tabindex="-1" role="option" id="font-6" aria-selected="false">
                                     <div class="export-as-excel fontCenturyGothic">Century Gothic</div>
+                                </div>
+                                <div class="component-2" tabindex="-1" role="option" id="font-system-default" aria-selected="true">
+                                    <div class="export-as-excel">--System Default--</div>
                                 </div>
                             </div>
                         </div>
