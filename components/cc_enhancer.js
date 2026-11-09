@@ -1,6 +1,6 @@
 import $ from "jquery";
 import { isFocusable, setOverlayDefaultBorder, toggleBorder } from "./focus_visibility.js";
-import { isNestedUnderParent } from "./global.js";
+import { isNestedUnderParent, isCustomOverlayTrigger } from "./global.js";
 
 let isContrastEnabled = false;
 let defaultStyle = [];
@@ -190,6 +190,7 @@ let handleColorChange = (colorCombination) => {
     let allElements = document.querySelectorAll("body, body *:not(#ada-overlay-widget-container *):not(svg):not(svg *):not([data-rht-toaster])");
     let overlayIcon = document.getElementById("overlay-icon");
     allElements.forEach((ele) => {
+        if (isCustomOverlayTrigger(ele)) return;
         if (isToastElement(ele)) {
             clearToastContrastOverrides(ele);
             return;
@@ -458,6 +459,7 @@ let applyBorderlessButtonVisibility = (colorCombination) => {
 
     candidates.forEach((node) => {
         if (!(node instanceof HTMLElement)) return;
+        if (isCustomOverlayTrigger(node)) return;
         if (node.closest("#ada-overlay-widget-container")) return;
 
         const role = (node.getAttribute("role") || "").toLowerCase();
@@ -1658,6 +1660,7 @@ let clearContrastStyles = (ele) => {
 
 let isInsideExcludedSvgZone = (ele) => {
     return !!(
+        isCustomOverlayTrigger(ele) ||
         ele?.closest?.("#chart_container") ||
         ele?.closest?.("#radar-summary") ||
         ele?.closest?.("#ada-overlay-widget-container")

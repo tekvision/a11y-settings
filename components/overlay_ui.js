@@ -52,12 +52,6 @@ let toolUI = `
                     </div>
                 </div>
                 <div class="div-7">
-                    <div class="div-8 overlay-branding">
-                        <span class="branding-byline">BROUGHT TO YOU BY</span>
-                        <a class="company-logo-link" href="https://www.tekvision.in/" target="_blank" rel="noopener noreferrer" aria-label="Visit TekVision website (opens in new tab)">
-                            <img class="company-logo" src="${companyLogoImage}" draggable="false" alt="TekVision" />
-                        </a>
-                    </div>
                     <div class="div-8" id="ccEnhancer" role="group" aria-labelledby="contrastGroup">
                         <div class="div-9">
                             <img class="img" src="${colorsImage}" />
@@ -133,7 +127,7 @@ let toolUI = `
                                     aria-haspopup="listbox" aria-controls="fontStyleList" aria-expanded="false"
                                     aria-labelledby="fontStyleGroup" aria-activedescendant="">
                                     <div class="content">
-                                        <div class="text">Arial</div>
+                                        <div class="text">--System Default--</div>
                                         <div class="text-wrapper-6" aria-hidden="true">${chevronDownIcon}</div>
                                     </div>
                                 </div>
@@ -156,6 +150,9 @@ let toolUI = `
                                 </div>
                                 <div class="component-2" tabindex="-1" role="option" id="font-6" aria-selected="false">
                                     <div class="export-as-excel fontCenturyGothic">Century Gothic</div>
+                                </div>
+                                <div class="component-2" tabindex="-1" role="option" id="font-system-default" aria-selected="true">
+                                    <div class="export-as-excel">--System Default--</div>
                                 </div>
                             </div>
                         </div>
@@ -278,6 +275,12 @@ let toolUI = `
                             </div>
                         </div>
                     </div>
+                </div>
+                <div class="overlay-branding">
+                    <span class="branding-byline">Provided by</span>
+                    <a class="company-logo-link" href="https://www.tekvision.in/" target="_blank" rel="noopener noreferrer" aria-label="Visit TekVision website (opens in new tab)">
+                        <img class="company-logo" src="${companyLogoImage}" draggable="false" alt="TekVision" />
+                    </a>
                 </div>
             </div>
         </div>

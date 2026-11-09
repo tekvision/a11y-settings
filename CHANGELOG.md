@@ -1,5 +1,30 @@
 # Changelog
 
+## v1.0.2
+
+### Improvements
+- Added a System Default font option and improved font restoration.
+- Improved disabled button visibility in colour contrast modes.
+- Moved Tekvision branding to a compact footer.
+- Added highlighting for dynamically added links and buttons.
+- Added support for custom overlay triggers.
+
+To use a custom button, give it the ID `overlay-icon` and pass its DOM element
+to `initOverlay()` after the button is in the document:
+
+```html
+<button id="overlay-icon" type="button" aria-label="Open accessibility settings">
+	Accessibility settings
+</button>
+```
+
+```js
+import { initOverlay } from "@sma11y/site-settings";
+
+const trigger = document.getElementById("overlay-icon");
+initOverlay({ trigger });
+```
+
 ## v1.0.1
 
 ### Memory leak fixes

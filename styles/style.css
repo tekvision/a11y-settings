@@ -56,7 +56,7 @@
     right: 0px !important;
     top: 0px !important;
 }
-#overlay-icon {
+#ada-overlay-widget-container #overlay-icon {
     position: fixed;
     right: 0px;
     top: 30px;
@@ -69,12 +69,12 @@
     user-select: none;
     z-index: 1000000;
 }
-#overlay-icon:focus {
+#ada-overlay-widget-container #overlay-icon:focus {
     outline: solid 3px var(--foundation-primaryprimary-700);
     outline-offset: 2px;
 }
 
-#overlay-icon .vector {
+#ada-overlay-widget-container #overlay-icon .vector {
   position: absolute;
   width: 4px;
   height: 4px;
@@ -83,7 +83,7 @@
   user-select:none;
 }
 
-#overlay-icon .img {
+#ada-overlay-widget-container #overlay-icon .img {
   position: absolute;
   width: 18px;
   height: 18px;

@@ -1,11 +1,38 @@
 import $ from "jquery";
+import { isCustomOverlayTrigger } from "./global.js";
 ﻿let isHighlightLinksEnabled = false;
 let defaultStyle = [];
 let processedElements = new Set(); //This will ensure that there is unique element entries while setting up the default styles.
+let interactiveElementSelector = 'a[href], a[tabindex="0"], button, input[type="submit"], input[type="button"], [role="button"], [role="link"]';
 
 //This function will highlight links on page
 export let handleHighlightLinks = (highlightSwitch) => {
     handleHighlightLinksStickiness(highlightSwitch);
+    let observer = new MutationObserver((mutations) => {
+        if (!isHighlightLinksEnabled) return;
+
+        let addedElements = new Set();
+        mutations.forEach(({ addedNodes }) => {
+            addedNodes.forEach((node) => {
+                if (!(node instanceof Element) || isCustomOverlayTrigger(node) || node.closest("#ada-overlay-widget-container, svg")) return;
+
+                if (node.matches(interactiveElementSelector)) {
+                    addedElements.add(node);
+                }
+                node.querySelectorAll(interactiveElementSelector).forEach((ele) => {
+                    if (!isCustomOverlayTrigger(ele) && !ele.closest("#ada-overlay-widget-container, svg")) {
+                        addedElements.add(ele);
+                    }
+                });
+            });
+        });
+
+        if (addedElements.size) {
+            performLinksHighlighting(highlightSwitch, addedElements);
+        }
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+
     highlightSwitch.addEventListener("click", (e) => {
         handleCheckedState(highlightSwitch);
     });
@@ -73,9 +100,10 @@ let isButtonOrLink = (ele) => {
     }
 }
 
-function performLinksHighlighting(highlightSwitch) {
-    let allElements = document.querySelectorAll("body, body *:not(#ada-overlay-widget-container *):not(svg):not(svg *)");
+function performLinksHighlighting(highlightSwitch, elements) {
+    let allElements = elements || document.querySelectorAll("body, body *:not(#ada-overlay-widget-container *):not(svg):not(svg *)");
     allElements.forEach((ele) => {
+        if (isCustomOverlayTrigger(ele)) return;
         if (isHighlightLinksEnabled) {
             let computedStyles = window.getComputedStyle(ele);
             if (computedStyles.getPropertyValue('text-decoration')) {

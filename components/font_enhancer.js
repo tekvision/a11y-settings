@@ -1,46 +1,33 @@
 import $ from "jquery";
-import { isNestedUnderParent } from "./global.js";
+import { isNestedUnderParent, isCustomOverlayTrigger } from "./global.js";
 
 let textAlignmentToggled = false;
-let isFontStyleToggled = false;
 // Weakly keyed so elements removed from the DOM can be garbage-collected.
-let defaultFontFamily = new WeakMap();
 let defaultAlignment = new WeakMap();
 let fontObserver = null;
+const fontClasses = ['fontArial', 'fontCalibri', 'fontComicSans', 'fontVerdana', 'fontTahoma', 'fontCenturyGothic'];
 
 export let handleFontStyles = (fontStyleInput, fontStyleList) => {
     handleFontStyleStickiness(fontStyleInput, fontStyleList);
     fontStyleList.querySelectorAll("[role='option']").forEach(option =>{
         option.addEventListener("click", (e) => {
-            selectDyslexicFont(option.innerText.replace(" ", ""));
+            selectDyslexicFont(option.id === "font-system-default" ? null : option.textContent.trim());
             selectOption(fontStyleInput, fontStyleList, option);
-            isFontStyleToggled = true;
         });
         option.addEventListener("keydown", (e)=>{
             if(e.keyCode === 13 || e.keyCode === 32 || e.which === 1){
-                selectDyslexicFont(option.innerText.replace(" ", ""));
+                selectDyslexicFont(option.id === "font-system-default" ? null : option.textContent.trim());
                 selectOption(fontStyleInput, fontStyleList, option);
-                isFontStyleToggled = true;
             }
         })
     });
 
     document.querySelector(".revertFontStyle").addEventListener("click", function () {
-        let allElements = document.querySelectorAll("body, body *:not(.ada-overlay-widget-container *)");
-        allElements.forEach((ele) => {
-            if (isFontStyleToggled) {
-                revertFontStyle(ele, fontStyleList, fontStyleInput);
-            }
-        });
+        revertFontStyle(fontStyleList, fontStyleInput);
     });
     document.querySelector(".revertFontStyle").addEventListener("keydown", function (e) {
         if (e.keyCode === 13 || e.keyCode === 32 || e.which === 1) {
-            let allElements = document.querySelectorAll("body, body *:not(.ada-overlay-widget-container *)");
-            allElements.forEach((ele) => {
-                if (isFontStyleToggled) {
-                    revertFontStyle(ele, fontStyleList, fontStyleInput);
-                }
-            });
+            revertFontStyle(fontStyleList, fontStyleInput);
         }
     });
 }
@@ -70,12 +57,12 @@ function handleUpdatedNodes(addedNodes) {
     while (elementsToTrack.length > 0) {
         const element = elementsToTrack.shift();
         if (element.nodeType === Node.ELEMENT_NODE) {
+            if (isCustomOverlayTrigger(element)) continue;
             if (!isNestedUnderParent(element, "#ada-overlay-widget-container")) {
                 if (localStorage.getItem("fontStyle")) {
                     let option = document.getElementById(localStorage.getItem("fontStyle"));
                     if (option) {
-                        saveOriginalFontFamily(element);
-                        updateFontFamily(element, option.innerText.trim().replace(" ", ""));
+                        updateFontFamily(element, option.textContent.trim());
                     }
                 }
                 if (localStorage.getItem("textAlign")) {
@@ -95,9 +82,13 @@ function handleUpdatedNodes(addedNodes) {
 function handleFontStyleStickiness(fontStyleInput, fontStyleList) {
     if (localStorage.getItem("fontStyle")) {
         let option = fontStyleList.querySelector("#" + localStorage.getItem("fontStyle"));
-        selectDyslexicFont(option.innerText.trim().replace(" ", ""));
+        if (!option) {
+            selectDyslexicFont(null);
+            localStorage.removeItem("fontStyle");
+            return;
+        }
+        selectDyslexicFont(option.id === "font-system-default" ? null : option.textContent.trim());
         selectOption(fontStyleInput, fontStyleList, option);
-        isFontStyleToggled = true;
     }
 }
 
@@ -105,6 +96,7 @@ export let enlargeFont = (size) =>
 {
     let allElements = document.querySelectorAll("body, body *:not(.ada-overlay-widget-container *)");
     allElements.forEach((ele) =>{
+        if (isCustomOverlayTrigger(ele)) return;
         ele.classList.remove('font12', 'font14', 'font16', 'font18', 'font20', 'font22', 'font24', 'font26', 'font28', 'font30');
         ele.classList.add(`font${size}`);
     });
@@ -153,14 +145,8 @@ let selectDyslexicFont = (fontFamily) =>
 {
     var allElementsForFontStyle = document.querySelectorAll("body, body *:not(.ada-overlay-widget-container *):not(.fa):not([class*='fa'])");
     allElementsForFontStyle.forEach((ele) => {
-        let computedStyles = window.getComputedStyle(ele);
-        if (computedStyles.getPropertyValue("font-family")) {
-            saveOriginalFontFamily(ele);
-            updateFontFamily(ele, fontFamily);
-        }
-        else {
-            updateFontFamily(ele, fontFamily);
-        }
+        if (isCustomOverlayTrigger(ele)) return;
+        updateFontFamily(ele, fontFamily);
     });
 }
 
@@ -168,32 +154,35 @@ let selectOption = (fontStyleInput, fontStyleList, option) =>{
     $(fontStyleList).children().attr("aria-selected", "false").removeClass("active");
     option.setAttribute("aria-selected", "true");
     option.classList.add("active");
-    $(fontStyleInput).find(".text").text(option.innerText);
+    $(fontStyleInput).find(".text").text(option.textContent.trim());
     $(fontStyleList).removeClass("showListbox");
     $(fontStyleInput).attr("aria-expanded", "false").focus();
     $(fontStyleList).children().attr("tabindex", "-1");
-    localStorage.setItem("fontStyle", option.id);
+    if (option.id === "font-system-default") {
+        localStorage.removeItem("fontStyle");
+    }
+    else {
+        localStorage.setItem("fontStyle", option.id);
+    }
     syncNodeObserver();
 }
 
-let saveOriginalFontFamily = (ele) => {
-    if (!defaultFontFamily.has(ele)) {
-        defaultFontFamily.set(ele, {
-            style: ele.getAttribute("style"),
-            fontFamily: window.getComputedStyle(ele).getPropertyValue('font-family')
-        });
-    }
-}
-
 let updateFontFamily = (ele, fontFamily) => {
-    ele.classList.remove('fontArial', 'fontCalibri', 'fontComicSans', 'fontVerdana', 'fontTahoma', 'fontCenturyGothic');
-    ele.classList.add(`font${fontFamily}`);
+    const fontClass = fontFamily ? `font${fontFamily.replace(/\s/g, "")}` : null;
+    if (fontClass && ele.classList.contains(fontClass)) return;
+    const appliedClasses = fontClasses.filter(className => ele.classList.contains(className));
+    if (appliedClasses.length) ele.classList.remove(...appliedClasses);
+    if (!fontFamily) return;
+    const currentFont = window.getComputedStyle(ele).getPropertyValue("font-family").split(",")[0].trim().replace(/["']/g, "");
+    if (currentFont.toLowerCase() === fontFamily.toLowerCase()) return;
+    ele.classList.add(fontClass);
 }
 
 /*Text alignment helpers */
 let handleAlignmentChange = (option) => {
     var allElements = document.querySelectorAll("body, body *:not(.ada-overlay-widget-container *)");
     allElements.forEach((ele) => {
+        if (isCustomOverlayTrigger(ele)) return;
         if (textAlignmentToggled) {
             let computedStyles = window.getComputedStyle(ele);
             if (computedStyles.getPropertyValue("text-align")) {
@@ -231,27 +220,11 @@ let handlePressedState = (alignmentOptions, option) =>{
     }
 }
 
-let revertFontStyle = (ele, fontStyleList, fontStyleInput) => {
-    if (ele.hasAttribute("style")) {
-        let originalFontFamily = defaultFontFamily.get(ele)?.fontFamily;
-        let originalStyle = defaultFontFamily.get(ele)?.style;
-        (originalFontFamily && (originalStyle && originalStyle.includes('font-family'))) ? ele.style.fontFamily = originalFontFamily : "";
-        ele.classList.remove('fontArial', 'fontCalibri', 'fontComicSans', 'fontVerdana', 'fontTahoma', 'fontCenturyGothic');
-        $(fontStyleList).children().attr("aria-selected", "false").removeClass("active");
-        $(fontStyleInput).find(".text").text("Arial");
-        $("#overlay-announcement .announce").text("Font Style Reverted!");
-        setTimeout(() => { $("#overlay-announcement .announce").text(""); }, 100);
-        localStorage.removeItem("fontStyle");
-    }
-    else {
-        ele.classList.remove('fontArial', 'fontCalibri', 'fontComicSans', 'fontVerdana', 'fontTahoma', 'fontCenturyGothic');
-        $(fontStyleList).children().attr("aria-selected", "false").removeClass("active");
-        $(fontStyleInput).find(".text").text("Arial");
-        $("#overlay-announcement .announce").text("Font Style Reverted!");
-        setTimeout(() => { $("#overlay-announcement .announce").text(""); }, 100);
-        localStorage.removeItem("fontStyle");
-    }
-    syncNodeObserver();
+let revertFontStyle = (fontStyleList, fontStyleInput) => {
+    selectDyslexicFont(null);
+    selectOption(fontStyleInput, fontStyleList, fontStyleList.querySelector("#font-system-default"));
+    $("#overlay-announcement .announce").text("Font Style Reverted!");
+    setTimeout(() => { $("#overlay-announcement .announce").text(""); }, 100);
 }
 
 let saveOriginalAlignment = (ele) => {

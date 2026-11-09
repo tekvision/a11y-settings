@@ -8,7 +8,10 @@ import { handleSliderAccessibility } from './components/slider.js';
 import { handleDialogAccessibility, handleRevertAll } from './components/dialog.js';
 import { handleHighlightLinks } from './components/highlight_link.js';
 
-export function initOverlay() {
+export function initOverlay({ trigger } = {}) {
+        if (trigger && (!(trigger instanceof HTMLElement) || !trigger.isConnected || trigger.id !== "overlay-icon")) {
+            throw new Error('The custom overlay trigger must be a connected HTMLElement with id="overlay-icon".');
+        }
         if (document.getElementById("ada-overlay-widget-container")) {
             return;
         }
@@ -17,10 +20,17 @@ export function initOverlay() {
         let a11yToolContainer = document.createElement("div");
         a11yToolContainer.setAttribute("id", "ada-overlay-widget-container");
         a11yToolContainer.setAttribute("class", "ada-overlay-widget-container");
-        document.getElementsByTagName("body")[0].prepend(a11yToolContainer);
         a11yToolContainer.innerHTML = toolUI;
+        if (trigger) {
+            trigger.setAttribute("data-ada-custom-trigger", "");
+            trigger.classList.add("ada-ignore-contrast");
+            a11yToolContainer.querySelector("#overlay-icon").remove();
+        }
+        document.getElementsByTagName("body")[0].prepend(a11yToolContainer);
 
-        let overlayIcon = document.getElementById("overlay-icon");
+        let overlayIcon = trigger || document.getElementById("overlay-icon");
+        overlayIcon.setAttribute("aria-controls", "overlay-popup");
+        overlayIcon.setAttribute("aria-expanded", "false");
         let addonDialog = document.querySelector("#overlay-popup");
         let contextMenuContainer = document.querySelector(".context-menu-container");
 

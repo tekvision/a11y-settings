@@ -1,5 +1,5 @@
 import $ from "jquery";
-import { isNestedUnderParent } from "./global.js";
+import { isNestedUnderParent, isCustomOverlayTrigger } from "./global.js";
 
 let isFontSizeChanged = false;
 // Weakly keyed so elements removed from the DOM can be garbage-collected.
@@ -38,6 +38,7 @@ function handleUpdatedNodes(addedNodes) {
     while (elementsToTrack.length > 0) {
         const element = elementsToTrack.shift();
         if (element.nodeType === Node.ELEMENT_NODE && localStorage.getItem("fontSize")) {
+            if (isCustomOverlayTrigger(element)) continue;
             if (!isNestedUnderParent(element, "#ada-overlay-widget-container")) {
                 saveOriginalStyles(element);
                 let newSize = localStorage.getItem("fontSize");
@@ -112,6 +113,7 @@ let enlargeFont = (size) =>
 {
     var allElements = document.querySelectorAll("body, body *:not(#ada-overlay-widget-container):not(#ada-overlay-widget-container *):not(.k-icon):not(.k-icon *)");
     allElements.forEach((ele) => {
+        if (isCustomOverlayTrigger(ele)) return;
         if (ele && ele.nodeType === Node.ELEMENT_NODE) {
             let currentFontSizeInPX = parseInt(window.getComputedStyle(ele).getPropertyValue('font-size'), 10);
             let currentFontSizeInPT = currentFontSizeInPX * 0.75;
@@ -369,6 +371,7 @@ let handleRevert = (revertButton, sliderControl) => {
 }
 
 let revert = (ele, sliderControl) => {
+    if (isCustomOverlayTrigger(ele)) return;
     ele.classList.remove('font12', 'font14', 'font16', 'font18', 'font20', 'font22', 'font24', 'font26', 'font28', 'font30');
     sliderControl.parentNode.style.left = "0px";
     $(sliderControl).find(".span").text("12");
