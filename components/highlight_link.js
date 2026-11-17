@@ -4,34 +4,11 @@ import { isCustomOverlayTrigger } from "./global.js";
 let defaultStyle = [];
 let processedElements = new Set(); //This will ensure that there is unique element entries while setting up the default styles.
 let interactiveElementSelector = 'a[href], a[tabindex="0"], button, input[type="submit"], input[type="button"], [role="button"], [role="link"]';
+let highlightLinksObserver = null;
 
 //This function will highlight links on page
 export let handleHighlightLinks = (highlightSwitch) => {
     handleHighlightLinksStickiness(highlightSwitch);
-    let observer = new MutationObserver((mutations) => {
-        if (!isHighlightLinksEnabled) return;
-
-        let addedElements = new Set();
-        mutations.forEach(({ addedNodes }) => {
-            addedNodes.forEach((node) => {
-                if (!(node instanceof Element) || isCustomOverlayTrigger(node) || node.closest("#ada-overlay-widget-container, svg")) return;
-
-                if (node.matches(interactiveElementSelector)) {
-                    addedElements.add(node);
-                }
-                node.querySelectorAll(interactiveElementSelector).forEach((ele) => {
-                    if (!isCustomOverlayTrigger(ele) && !ele.closest("#ada-overlay-widget-container, svg")) {
-                        addedElements.add(ele);
-                    }
-                });
-            });
-        });
-
-        if (addedElements.size) {
-            performLinksHighlighting(highlightSwitch, addedElements);
-        }
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
 
     highlightSwitch.addEventListener("click", (e) => {
         handleCheckedState(highlightSwitch);
@@ -43,6 +20,51 @@ export let handleHighlightLinks = (highlightSwitch) => {
     });
 }
 
+let startObservingHighlightLinks = () => {
+    if (highlightLinksObserver) return;
+    
+    highlightLinksObserver = new MutationObserver((mutations) => {
+        if (!isHighlightLinksEnabled) return;
+
+        let addedElements = new Set();
+        mutations.forEach(({ addedNodes, type, target }) => {
+            // Handle added nodes
+            if (type === 'childList') {
+                addedNodes.forEach((node) => {
+                    if (!(node instanceof Element) || isCustomOverlayTrigger(node) || node.closest("#ada-overlay-widget-container, svg")) return;
+
+                    if (node.matches(interactiveElementSelector)) {
+                        addedElements.add(node);
+                    }
+                    node.querySelectorAll(interactiveElementSelector).forEach((ele) => {
+                        if (!isCustomOverlayTrigger(ele) && !ele.closest("#ada-overlay-widget-container, svg")) {
+                            addedElements.add(ele);
+                        }
+                    });
+                });
+            }
+            // Handle attribute changes (like disabled state)
+            else if (type === 'attributes' && target instanceof Element) {
+                if (!isCustomOverlayTrigger(target) && target.matches(interactiveElementSelector)) {
+                    addedElements.add(target);
+                }
+            }
+        });
+
+        if (addedElements.size) {
+            performLinksHighlighting(null, addedElements);
+        }
+    });
+    
+    highlightLinksObserver.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['disabled', 'aria-disabled'] });
+}
+
+let stopObservingHighlightLinks = () => {
+    if (!highlightLinksObserver) return;
+    highlightLinksObserver.disconnect();
+    highlightLinksObserver = null;
+}
+
 let handleCheckedState = (highlightSwitch) => {
     if ($(highlightSwitch).attr("aria-checked") === "false") {
         isHighlightLinksEnabled = true;
@@ -50,6 +72,7 @@ let handleCheckedState = (highlightSwitch) => {
         $(highlightSwitch).attr("aria-checked", "true").addClass("active");
         localStorage.setItem("isHighlightLinkEnabled", true);
         performLinksHighlighting(highlightSwitch);
+        startObservingHighlightLinks();
     }
     else {
         isHighlightLinksEnabled = false;
@@ -57,6 +80,7 @@ let handleCheckedState = (highlightSwitch) => {
         $(highlightSwitch).attr("aria-checked", "false").removeClass("active");
         localStorage.removeItem("isHighlightLinkEnabled");
         performLinksHighlighting(highlightSwitch);
+        stopObservingHighlightLinks();
     }
 }
 
@@ -65,6 +89,7 @@ let handleHighlightLinksStickiness = (highlightSwitch) => {
         handleCheckedState(highlightSwitch);
         isHighlightLinksEnabled = true;
         performLinksHighlighting(highlightSwitch);
+        startObservingHighlightLinks();
     }
 }
 

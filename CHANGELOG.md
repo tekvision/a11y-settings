@@ -1,5 +1,21 @@
 # Changelog
 
+## v1.0.3
+
+### Fixed
+- **highlightLinks**: Fixed underline not persisting when interactive elements change disabled state
+  - MutationObserver now detects attribute changes (`disabled`, `aria-disabled`)
+  - Reapplies `.highlightLinks` class when button transitions from disabled to enabled
+  - Ensures underline remains visible throughout form editing and state changes
+
+### Changed
+- **highlightLinks**: Optimized observer lifecycle
+  - Observer now starts only when highlighting is enabled
+  - Observer stops when highlighting is disabled
+  - Reduced unnecessary DOM monitoring overhead
+  - Added `attributes: true` and `attributeFilter: ['disabled', 'aria-disabled']` to MutationObserver configuration
+
+
 ## v1.0.2
 
 ### Improvements
