@@ -2,6 +2,16 @@
 
 `a11y-settings` is an accessibility overlay widget that adds user-controlled accessibility adjustments to any web page.
 
+## What's New in v1.0.3
+
+### Bug Fixes
+- **highlightLinks**: Fixed underline disappearing when form buttons change from disabled to enabled state
+- **highlightLinks**: Observer now detects and responds to `disabled` and `aria-disabled` attribute changes
+
+### Performance Improvements
+- **highlightLinks**: Observer now starts only when feature is enabled and stops when disabled
+- Reduced unnecessary DOM monitoring overhead
+
 ## What's New in v1.0.2
 
 ### Improvements

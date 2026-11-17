@@ -1,6 +1,6 @@
 {
   "name": "@sma11y/site-settings",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Accessibility settings overlay widget for web apps",
   "keywords": [
     "accessibility",
